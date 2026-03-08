@@ -1,53 +1,12 @@
-version: "3.9"
-
-services:
-  postgres:
-    image: postgres:15-alpine
-    container_name: cloudhub_db
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: cloudhub_hr
-      POSTGRES_USER: cloudhub
-      POSTGRES_PASSWORD: cloudhub123
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U cloudhub -d cloudhub_hr"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: cloudhub_backend
-    restart: unless-stopped
-    environment:
-      DATABASE_URL: postgresql://cloudhub:cloudhub123@postgres:5432/cloudhub_hr
-      SECRET_KEY: cloudhub-production-secret-key-change-me-in-prod
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./backend/uploads:/app/uploads
-    depends_on:
-      postgres:
-        condition: service_healthy
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: cloudhub_frontend
-    restart: unless-stopped
-    environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8000
-    ports:
-      - "3000:3000"
-    depends_on:
-      - backend
-
-volumes:
-  postgres_data:
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+sqlalchemy==2.0.29
+psycopg2-binary==2.9.9
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.9
+reportlab==4.1.0
+alembic==1.13.1
+pydantic[email]==2.7.1
+python-dotenv==1.0.1
+email-validator==2.1.1
