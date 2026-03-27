@@ -1,0 +1,16 @@
+import React,{useState} from 'react';
+import Link from 'next/link';
+import {useRouter} from 'next/router';
+import {useAuth} from './AuthContext';
+import {LayoutDashboard,Users,Clock,DollarSign,Calendar,FileText,LogOut,Menu,Building2,UserCircle} from 'lucide-react';
+export default function Layout({children}:{children:React.ReactNode}){
+  const{user,logout,isAdmin,isManager}=useAuth();
+  const router=useRouter();
+  const[open,setOpen]=useState(false);
+  if(!user){if(typeof window!=='undefined')router.push('/login');return null;}
+  const adminNav=[{href:'/admin/dashboard',icon:LayoutDashboard,label:'Dashboard'},{href:'/admin/employees',icon:Users,label:'Employees'},{href:'/admin/onboarding',icon:UserCircle,label:'Onboarding'},{href:'/admin/timesheets',icon:Clock,label:'Timesheets'},{href:'/admin/payroll',icon:DollarSign,label:'Payroll'},{href:'/admin/holidays',icon:Calendar,label:'Holidays'},{href:'/admin/documents',icon:FileText,label:'Documents'}];
+  const empNav=[{href:'/employee/dashboard',icon:LayoutDashboard,label:'Dashboard'},{href:'/employee/timesheets',icon:Clock,label:'My Timesheets'},{href:'/employee/payslips',icon:DollarSign,label:'Payslips'},{href:'/employee/holidays',icon:Calendar,label:'Holidays'},{href:'/employee/documents',icon:FileText,label:'Documents'},{href:'/employee/profile',icon:UserCircle,label:'My Profile'}];
+  const nav=(isAdmin||isManager)?adminNav:empNav;
+  const Nav=()=><div className="flex flex-col h-full"><div className="p-4 border-b border-slate-700"><div className="flex items-center gap-2"><Building2 size={24} className="text-blue-400"/><div><h1 className="font-bold text-white text-sm">CloudHub HR</h1><p className="text-xs text-slate-400 capitalize">{user.role} Portal</p></div></div></div><nav className="flex-1 p-4 space-y-1">{nav.map(({href,icon:Icon,label})=><Link key={href} href={href} className={"flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors "+(router.pathname===href?"bg-blue-600 text-white":"text-slate-300 hover:bg-slate-700 hover:text-white")} onClick={()=>setOpen(false)}><Icon size={16}/>{label}</Link>)}</nav><div className="p-4 border-t border-slate-700"><button onClick={logout} className="flex items-center gap-2 text-slate-400 hover:text-white text-sm w-full px-3 py-2 rounded-lg hover:bg-slate-700"><LogOut size={16}/>Sign Out</button></div></div>;
+  return <div className="flex h-screen bg-slate-50 overflow-hidden"><aside className="hidden md:flex flex-col w-56 bg-[#1a3a5c] flex-shrink-0"><Nav/></aside>{open&&<div className="fixed inset-0 z-50 md:hidden"><div className="absolute inset-0 bg-black/50" onClick={()=>setOpen(false)}/><aside className="absolute left-0 top-0 bottom-0 w-56 bg-[#1a3a5c] z-10"><Nav/></aside></div>}<main className="flex-1 overflow-auto"><div className="md:hidden flex items-center gap-3 p-4 bg-white border-b border-slate-200"><button onClick={()=>setOpen(true)} className="text-slate-600"><Menu size={20}/></button><span className="font-semibold text-slate-800">CloudHub HR</span></div><div className="p-6 max-w-7xl mx-auto">{children}</div></main></div>;
+}

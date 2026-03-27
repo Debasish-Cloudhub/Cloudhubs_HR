@@ -1,0 +1,6 @@
+import{useEffect,useState} from 'react';import Layout from '../../components/common/Layout';import{getDocuments} from '../../services/api';import{FileText} from 'lucide-react';import Head from 'next/head';
+export default function EmployeeDocuments(){
+  const[docs,setDocs]=useState<any[]>([]);
+  useEffect(()=>{getDocuments().then(r=>setDocs(r.data)).catch(()=>{});},[]);
+  return <><Head><title>Documents - CloudHub HR</title></Head><Layout><h1 className="font-bold text-2xl text-slate-800 mb-6">HR Documents</h1>{docs.length===0?<div className="card text-center py-12 text-slate-400"><FileText size={32} className="mx-auto mb-2 opacity-30"/><p>No documents available</p></div>:<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">{docs.map(d=><div key={d.id} className="card hover:shadow-md transition-shadow"><div className="flex items-start gap-3"><div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center"><FileText size={18} className="text-blue-600"/></div><div><p className="font-semibold text-slate-800">{d.title}</p><p className="text-xs text-slate-500">{d.file_name}</p><p className="text-xs text-slate-400 mt-1">{new Date(d.created_at).toLocaleDateString('en-IN')}</p></div></div></div>)}</div>}</Layout></>;
+}

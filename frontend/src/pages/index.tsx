@@ -1,0 +1,2 @@
+import{useEffect} from 'react';import{useRouter} from 'next/router';import{useAuth} from '../components/common/AuthContext';
+export default function Home(){const{user}=useAuth();const router=useRouter();useEffect(()=>{if(user){if(user.role==='admin'||user.role==='manager')router.push('/admin/dashboard');else router.push('/employee/dashboard');}else router.push('/login');},[user]);return <div className="flex items-center justify-center h-screen"><p className="text-slate-500">Redirecting...</p></div>;}
