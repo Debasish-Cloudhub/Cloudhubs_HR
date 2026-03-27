@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CloudHub HR Portal</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  .sidebar { background: #1a3a5c; }
+  .badge-pending { background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:9999px;font-size:12px; }
+  .badge-approved { background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:9999px;font-size:12px; }
+  .badge-rejected { background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:9999px;font-size:12px; }
+</style>
+</head>
+<body class="bg-gray-50 font-sans">
+
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="min-h-screen bg-gradient-to-br from-blue-900 to-blue-600 flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
+    <div class="flex items-center gap-3 mb-8">
+      <div class="w-12 h-12 bg-blue-900 rounded-xl flex items-center justify-center">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+      </div>
+      <div>
+        <h1 class="font-bold text-gray-800 text-xl">CloudHub HR</h1>
+        <p class="text-gray-500 text-sm">HR Management Portal</p>
+      </div>
+    </div>
+    <div id="loginError" class="hidden mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm"></div>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+        <input id="loginEmail" type="email" placeholder="admin@cloudhub.in" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+        <input id="loginPassword" type="password" placeholder="••••••••" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+      </div>
+      <button onclick="doLogin()" class="w-full bg-blue-900 text-white py-2.5 rounded-lg font-medium hover:bg-blue-800 transition-colors">Sign In</button>
+    </div>
+    <div class="mt-6 p-4 bg-gray-50 rounded-lg text-xs text-gray-600 space-y-1">
+      <p class="font-semibold text-gray-700 mb-2">Demo Credentials:</p>
+      <p>Admin: admin@cloudhub.in / Admin@123</p>
+      <p>Employee: john.doe@cloudhub.in / Employee@123</p>
+      <p>Manager: manager@cloudhub.in / Manager@123</p>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp" class="hidden flex h-screen overflow-hidden">
+  <!-- Sidebar -->
+  <aside class="sidebar w-56 flex-shrink-0 flex flex-col h-full">
+    <div class="p-4 border-b border-blue-800">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16"/></svg>
+        </div>
+        <div>
+          <h1 class="font-bold text-white text-sm">CloudHub HR</h1>
+          <p id="roleLabel" class="text-xs text-blue-300 capitalize"></p>
+        </div>
+      </div>
+    </div>
+    <nav class="flex-1 p-3 space-y-1" id="sidebarNav"></nav>
+    <div class="p-3 border-t border-blue-800">
+      <button onclick="logout()" class="flex items-center gap-2 text-blue-300 hover:text-white text-sm w-full px-3 py-2 rounded-lg hover:bg-blue-800 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- Content -->
+  <main class="flex-1 overflow-auto bg-gray-50">
+    <div class="p-6 max-w-6xl mx-auto" id="pageContent">
+      <p class="text-gray-400">Loading...</p>
+    </div>
+  </main>
+</div>
+
+<script>
+const API = '';
+let authToken = '', userRole = '', userId = '';
+
+function api(path, method, body) {
+  const opts = { method: method||'GET', headers: { 'Content-Type':'application/json' } };
+  if (authToken) opts.headers['Authorization'] = 'Bearer ' + authToken;
+  if (body) opts.body = JSON.stringify(body);
+  return fetch(API + path, opts).then(r => { if(!r.ok) throw r; return r.json(); });
+}
+
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  try {
+    const d = await api('/auth/login','POST',{email,password});
+    authToken = d.access_token; userRole = d.role; userId = d.user_id;
+    document.getElementById('loginPage').classList.add('hidden');
+    document.getElementById('mainApp').classList.remove('hidden');
+    document.getElementById('mainApp').classList.add('flex');
+    document.getElementById('roleLabel').textContent = userRole + ' Portal';
+    setupNav();
+    showDashboard();
+  } catch(e) {
+    const err = document.getElementById('loginError');
+    err.textContent = 'Invalid email or password'; err.classList.remove('hidden');
+  }
+}
+
+function logout() {
+  authToken=''; userRole=''; userId='';
+  document.getElementById('mainApp').classList.add('hidden');
+  document.getElementById('mainApp').classList.remove('flex');
+  document.getElementById('loginPage').classList.remove('hidden');
+}
+
+function setupNav() {
+  const isAdmin = userRole==='admin' || userRole==='manager';
+  const adminNav = [
+    {label:'Dashboard',icon:'grid',fn:'showDashboard'},
+    {label:'Employees',icon:'users',fn:'showEmployees'},
+    {label:'Onboarding',icon:'user-plus',fn:'showOnboarding'},
+    {label:'Timesheets',icon:'clock',fn:'showTimesheets'},
+    {label:'Payroll',icon:'dollar-sign',fn:'showPayroll'},
+    {label:'Holidays',icon:'calendar',fn:'showHolidays'},
+    {label:'Documents',icon:'file-text',fn:'showDocuments'},
+  ];
+  const empNav = [
+    {label:'Dashboard',icon:'grid',fn:'showEmpDashboard'},
+    {label:'My Timesheets',icon:'clock',fn:'showMyTimesheets'},
+    {label:'Payslips',icon:'dollar-sign',fn:'showPayslips'},
+    {label:'Holidays',icon:'calendar',fn:'showHolidays'},
+    {label:'Documents',icon:'file-text',fn:'showDocuments'},
+    {label:'My Profile',icon:'user',fn:'showProfile'},
+  ];
+  const nav = isAdmin ? adminNav : empNav;
+  document.getElementById('sidebarNav').innerHTML = nav.map(n =>
+    '<button onclick="'+n.fn+'()" class="nav-btn flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-blue-200 hover:bg-blue-800 hover:text-white transition-colors w-full text-left">'+n.label+'</button>'
+  ).join('');
+}
+
+function setContent(html) { document.getElementById('pageContent').innerHTML = html; }
+function h1(t) { return '<h1 class="font-bold text-2xl text-gray-800 mb-6">'+t+'</h1>'; }
+function card(content) { return '<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-4">'+content+'</div>'; }
+
+async function showDashboard() {
+  setContent(h1('Dashboard') + '<p class="text-gray-400">Loading stats...</p>');
+  try {
+    const s = await api('/dashboard/stats');
+    const emps = await api('/employees/');
+    setContent(h1('Dashboard') +
+      '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">' +
+      statCard('Total Employees', s.total_employees, '#3b82f6') +
+      statCard('Pending Timesheets', s.pending_timesheets, '#f59e0b') +
+      statCard('Approved Timesheets', s.approved_timesheets, '#10b981') +
+      statCard('Upcoming Holidays', s.upcoming_holidays.length, '#8b5cf6') +
+      '</div>' +
+      (s.upcoming_holidays.length ? card('<h2 class="font-semibold text-gray-700 mb-3">Upcoming Holidays</h2>' +
+        s.upcoming_holidays.map(h=>'<div class="flex justify-between text-sm py-1 border-b border-gray-50"><span class="font-medium">'+h.name+'</span><span class="text-gray-500">'+h.date+'</span></div>').join('')) : '')
+    );
+  } catch(e) { setContent(h1('Dashboard') + '<p class="text-red-500">Failed to load stats</p>'); }
+}
+
+function statCard(label, value, color) {
+  return '<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex items-center gap-4">' +
+    '<div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:'+color+'">' +
+    '<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>' +
+    '</div><div><p class="text-2xl font-bold text-gray-800">'+value+'</p><p class="text-sm text-gray-500">'+label+'</p></div></div>';
+}
+
+async function showEmployees() {
+  setContent(h1('Employees') + '<p class="text-gray-400">Loading...</p>');
+  try {
+    const emps = await api('/employees/');
+    setContent(h1('Employees ('+emps.length+')') +
+      '<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">' +
+      '<table class="w-full"><thead class="bg-gray-50 border-b"><tr>' +
+      '<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Employee</th>' +
+      '<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">ID</th>' +
+      '<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Designation</th>' +
+      '<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Department</th>' +
+      '<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Type</th>' +
+      '</tr></thead><tbody class="divide-y divide-gray-50">' +
+      emps.map(e => '<tr class="hover:bg-gray-50"><td class="px-4 py-3"><p class="font-medium text-gray-800">'+e.first_name+' '+e.last_name+'</p><p class="text-xs text-gray-500">'+e.email+'</p></td>' +
+        '<td class="px-4 py-3 text-xs font-mono text-blue-600">'+e.employee_id+'</td>' +
+        '<td class="px-4 py-3 text-sm">'+( e.designation||'-')+'</td>' +
+        '<td class="px-4 py-3 text-sm">'+(e.department||'-')+'</td>' +
+        '<td class="px-4 py-3 text-sm capitalize">'+e.employment_type+'</td></tr>').join('') +
+      '</tbody></table></div>');
+  } catch(e) { setContent(h1('Employees') + '<p class="text-red-500">Failed to load</p>'); }
+}
+
+function showOnboarding() {
+  setContent(h1('Employee Onboarding') + card(
+    '<form onsubmit="submitOnboarding(event)" class="grid grid-cols-2 gap-4">' +
+    field('first_name','First Name','text',true) + field('last_name','Last Name','text',true) +
+    field('email','Email','email',true) + field('password','Password','password',true) +
+    field('phone','Phone') + field('designation','Designation') +
+    field('department','Department') +
+    '<div><label class="block text-sm font-medium text-gray-700 mb-1">Employment Type</label>' +
+    '<select id="f_employment_type" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">' +
+    '<option value="permanent">Permanent (CH-EMP)</option><option value="contractor">Contractor (CH-CON)</option>' +
+    '<option value="intern">Intern (CH-INT)</option></select></div>' +
+    field('date_of_joining','Date of Joining','date') + field('bank_account','Bank Account') +
+    field('bank_name','Bank Name') + field('ifsc_code','IFSC Code') +
+    field('pf_number','PF Number') + field('uan_number','UAN Number') +
+    '<div class="col-span-2"><button type="submit" class="bg-blue-900 text-white px-6 py-2 rounded-lg hover:bg-blue-800">Create Employee</button></div>' +
+    '<div id="onboardMsg" class="col-span-2"></div>' +
+    '</form>'
+  ));
+}
+
+function field(id, label, type='text', req=false) {
+  return '<div><label class="block text-sm font-medium text-gray-700 mb-1">'+label+(req?' *':'')+'</label>' +
+    '<input id="f_'+id+'" type="'+type+'" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"'+(req?' required':'')+'></div>';
+}
+
+async function submitOnboarding(e) {
+  e.preventDefault();
+  const fields = ['first_name','last_name','email','password','phone','designation','department','employment_type','date_of_joining','bank_account','bank_name','ifsc_code','pf_number','uan_number'];
+  const data = {};
+  fields.forEach(f => { const v = document.getElementById('f_'+f)?.value; if(v) data[f]=v; });
+  try {
+    const r = await api('/employees/','POST',data);
+    document.getElementById('onboardMsg').innerHTML = '<p class="text-green-600 font-medium">✅ Employee created! ID: '+r.employee_id+'</p>';
+    document.querySelector('form').reset();
+  } catch(err) {
+    const d = await err.json().catch(()=>({}));
+    document.getElementById('onboardMsg').innerHTML = '<p class="text-red-600">❌ '+(d.detail||'Failed to create')+'</p>';
+  }
+}
+
+async function showTimesheets() {
+  setContent(h1('Timesheets') + '<p class="text-gray-400">Loading...</p>');
+  try {
+    const ts = await api('/timesheets/');
+    setContent(h1('Timesheets') +
+      '<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">' +
+      '<table class="w-full"><thead class="bg-gray-50 border-b"><tr>' +
+      '<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Emp ID</th>' +
+      '<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Date</th>' +
+      '<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Hours</th>' +
+      '<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Task</th>' +
+      '<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Status</th>' +
+      '<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Actions</th>' +
+      '</tr></thead><tbody class="divide-y divide-gray-50">' +
+      (ts.length ? ts.map(t =>
+        '<tr class="hover:bg-gray-50">' +
+        '<td class="px-4 py-3 text-sm font-mono text-blue-600">'+t.employee_id+'</td>' +
+        '<td class="px-4 py-3 text-sm">'+t.date+'</td>' +
+        '<td class="px-4 py-3 text-sm">'+t.hours_worked+'h</td>' +
+        '<td class="px-4 py-3 text-sm max-w-xs truncate">'+(t.task_description||'-')+'</td>' +
+        '<td class="px-4 py-3"><span class="badge-'+t.status+'">'+t.status+'</span></td>' +
+        '<td class="px-4 py-3">'+(t.status==='pending'?
+          '<button onclick="approveTS('+t.id+',\'approved\')" class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded mr-1 hover:bg-green-200">Approve</button>' +
+          '<button onclick="approveTS('+t.id+',\'rejected\')" class="text-xs px-2 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200">Reject</button>' : '')+'</td>' +
+        '</tr>').join('') : '<tr><td colspan="6" class="px-4 py-8 text-center text-gray-400">No timesheets yet</td></tr>') +
+      '</tbody></table></div>');
+  } catch(e) { setContent(h1('Timesheets') + '<p class="text-red-500">Failed to load</p>'); }
+}
+
+async function approveTS(id, status) {
+  try { await api('/timesheets/'+id+'/approve','PUT',{status}); showTimesheets(); }
+  catch(e) { alert('Failed to update'); }
+}
+
+async function showHolidays() {
+  setContent(h1('Holidays') + '<p class="text-gray-400">Loading...</p>');
+  try {
+    const hs = await api('/holidays/');
+    const isAdmin = userRole==='admin'||userRole==='manager';
+    setContent(h1('Holiday Calendar') +
+      (isAdmin ? card('<h3 class="font-semibold text-gray-700 mb-3">Add Holiday</h3>' +
+        '<div class="flex gap-3 flex-wrap"><input id="hName" placeholder="Holiday name" class="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1">' +
+        '<input id="hDate" type="date" class="border border-gray-200 rounded-lg px-3 py-2 text-sm">' +
+        '<button onclick="addHoliday()" class="bg-blue-900 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-800">Add</button></div>') : '') +
+      '<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">' +
+      '<table class="w-full"><thead class="bg-gray-50 border-b"><tr>' +
+      '<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Holiday</th>' +
+      '<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Date</th>' +
+      '<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Day</th>' +
+      (isAdmin?'<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Actions</th>':'') +
+      '</tr></thead><tbody class="divide-y divide-gray-50">' +
+      (hs.length ? hs.map(h => {
+        const d = new Date(h.date);
+        return '<tr class="hover:bg-gray-50">' +
+          '<td class="px-4 py-3 font-medium text-gray-800">'+h.name+'</td>' +
+          '<td class="px-4 py-3 text-sm">'+h.date+'</td>' +
+          '<td class="px-4 py-3 text-sm text-gray-500">'+d.toLocaleDateString('en-IN',{weekday:'long'})+'</td>' +
+          (isAdmin?'<td class="px-4 py-3"><button onclick="deleteHoliday('+h.id+')" class="text-xs px-2 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200">Delete</button></td>':'') +
+          '</tr>';}).join('') : '<tr><td colspan="4" class="px-4 py-8 text-center text-gray-400">No holidays defined</td></tr>') +
+      '</tbody></table></div>');
+  } catch(e) { setContent(h1('Holidays') + '<p class="text-red-500">Failed to load</p>'); }
+}
+
+async function addHoliday() {
+  const name = document.getElementById('hName').value;
+  const date = document.getElementById('hDate').value;
+  if(!name||!date) return alert('Fill name and date');
+  try { await api('/holidays/','POST',{name,date}); showHolidays(); }
+  catch(e) { alert('Failed'); }
+}
+
+async function deleteHoliday(id) {
+  if(!confirm('Delete holiday?')) return;
+  try { await api('/holidays/'+id,'DELETE'); showHolidays(); }
+  catch(e) { alert('Failed'); }
+}
+
+async function showDocuments() {
+  setContent(h1('HR Documents') + '<p class="text-gray-400">Loading...</p>');
+  try {
+    const docs = await api('/documents/');
+    setContent(h1('HR Documents') +
+      (docs.length ? '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">' +
+        docs.map(d => '<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">' +
+          '<p class="font-semibold text-gray-800">'+d.title+'</p>' +
+          '<p class="text-xs text-gray-500 mt-1">'+d.file_name+'</p>' +
+          '<p class="text-xs text-gray-400 mt-1">'+new Date(d.created_at).toLocaleDateString('en-IN')+'</p>' +
+          '</div>').join('') + '</div>' :
+        card('<p class="text-center text-gray-400 py-8">No documents uploaded yet</p>')));
+  } catch(e) { setContent(h1('Documents') + '<p class="text-red-500">Failed to load</p>'); }
+}
+
+async function showPayroll() {
+  setContent(h1('Payroll') + '<p class="text-gray-400">Loading...</p>');
+  try {
+    const [emps, records] = await Promise.all([api('/employees/'), api('/payroll/records')]);
+    setContent(h1('Payroll Management') +
+      card('<h3 class="font-semibold text-gray-700 mb-3">Generate Payslip</h3>' +
+        '<div class="flex gap-3 flex-wrap items-end">' +
+        '<div><label class="block text-xs text-gray-500 mb-1">Employee</label>' +
+        '<select id="payEmp" class="border border-gray-200 rounded-lg px-3 py-2 text-sm">' +
+        '<option value="">Select...</option>' + emps.map(e=>'<option value="'+e.id+'">'+e.first_name+' '+e.last_name+'</option>').join('') + '</select></div>' +
+        '<div><label class="block text-xs text-gray-500 mb-1">Month</label>' +
+        '<select id="payMonth" class="border border-gray-200 rounded-lg px-3 py-2 text-sm">' +
+        ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map((m,i)=>'<option value="'+(i+1)+'">'+m+'</option>').join('') + '</select></div>' +
+        '<div><label class="block text-xs text-gray-500 mb-1">Year</label>' +
+        '<input id="payYear" type="number" value="'+new Date().getFullYear()+'" class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-24"></div>' +
+        '<button onclick="generatePay()" class="bg-blue-900 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-800">Generate</button>' +
+        '</div><div id="payMsg" class="mt-2"></div>') +
+      '<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">' +
+      '<table class="w-full"><thead class="bg-gray-50 border-b"><tr>' +
+      '<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Employee</th>' +
+      '<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Period</th>' +
+      '<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Gross</th>' +
+      '<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Net Pay</th>' +
+      '<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">PDF</th>' +
+      '</tr></thead><tbody class="divide-y divide-gray-50">' +
+      (records.length ? records.map(r=>'<tr class="hover:bg-gray-50">' +
+        '<td class="px-4 py-3 text-sm">#'+r.employee_id+'</td>' +
+        '<td class="px-4 py-3 text-sm">'+new Date(r.year,r.month-1).toLocaleString('en',{month:'short',year:'numeric'})+'</td>' +
+        '<td class="px-4 py-3 text-sm">₹'+Number(r.gross_salary).toLocaleString('en-IN')+'</td>' +
+        '<td class="px-4 py-3 text-sm font-semibold text-green-600">₹'+Number(r.net_salary).toLocaleString('en-IN')+'</td>' +
+        '<td class="px-4 py-3"><a href="/payroll/slip/'+r.id+'" target="_blank" class="text-xs text-blue-600 hover:underline">Download</a></td>' +
+        '</tr>').join('') : '<tr><td colspan="5" class="px-4 py-8 text-center text-gray-400">No payslips generated</td></tr>') +
+      '</tbody></table></div>');
+  } catch(e) { setContent(h1('Payroll') + '<p class="text-red-500">Failed to load</p>'); }
+}
+
+async function generatePay() {
+  const emp = document.getElementById('payEmp').value;
+  const month = document.getElementById('payMonth').value;
+  const year = document.getElementById('payYear').value;
+  if(!emp) return alert('Select employee');
+  try {
+    await api('/payroll/generate','POST',{employee_id:parseInt(emp),month:parseInt(month),year:parseInt(year)});
+    document.getElementById('payMsg').innerHTML='<p class="text-green-600 text-sm">✅ Payslip generated!</p>';
+    setTimeout(showPayroll, 1000);
+  } catch(e) { document.getElementById('payMsg').innerHTML='<p class="text-red-600 text-sm">❌ Failed (salary components may not be set)</p>'; }
+}
+
+async function showEmpDashboard() {
+  setContent(h1('My Dashboard') + '<p class="text-gray-400">Loading...</p>');
+  try {
+    const [profile, ts, hs] = await Promise.all([api('/employees/me'), api('/timesheets/'), api('/holidays/')]);
+    const approved = ts.filter(t=>t.status==='approved').length;
+    const pending = ts.filter(t=>t.status==='pending').length;
+    setContent(h1('Welcome, '+profile.first_name+'!') +
+      '<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">' +
+      statCard('Employee ID', profile.employee_id, '#3b82f6') +
+      statCard('Approved Timesheets', approved, '#10b981') +
+      statCard('Pending Timesheets', pending, '#f59e0b') +
+      '</div>' +
+      card('<h2 class="font-semibold text-gray-700 mb-4">My Details</h2><div class="grid grid-cols-2 gap-3 text-sm">' +
+        [['Name',profile.first_name+' '+profile.last_name],['Email',profile.email],['Designation',profile.designation||'-'],['Department',profile.department||'-'],['Type',profile.employment_type],['Joined',profile.date_of_joining||'-']].map(([k,v])=>
+          '<div><span class="text-gray-500">'+k+': </span><span class="font-medium text-gray-800">'+v+'</span></div>').join('') + '</div>'));
+  } catch(e) { setContent(h1('Dashboard') + '<p class="text-red-500">Failed to load</p>'); }
+}
+
+async function showMyTimesheets() {
+  setContent(h1('My Timesheets') + '<p class="text-gray-400">Loading...</p>');
+  try {
+    const ts = await api('/timesheets/');
+    const today = new Date().toISOString().split('T')[0];
+    setContent(h1('My Timesheets') +
+      card('<h3 class="font-semibold text-gray-700 mb-3">Submit Timesheet</h3>' +
+        '<div class="grid grid-cols-2 gap-3">' +
+        '<div><label class="block text-xs text-gray-500 mb-1">Date</label><input id="tsDate" type="date" value="'+today+'" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"></div>' +
+        '<div><label class="block text-xs text-gray-500 mb-1">Hours</label><input id="tsHours" type="number" value="8" min="0.5" max="24" step="0.5" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"></div>' +
+        '<div class="col-span-2"><label class="block text-xs text-gray-500 mb-1">Task Description</label><textarea id="tsTask" rows="2" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"></textarea></div>' +
+        '<div><label class="block text-xs text-gray-500 mb-1">Project</label><input id="tsProject" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"></div>' +
+        '<div class="flex items-end"><button onclick="submitTS()" class="bg-blue-900 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-800">Submit</button></div>' +
+        '</div><div id="tsMsg" class="mt-2"></div>') +
+      '<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">' +
+      '<table class="w-full"><thead class="bg-gray-50 border-b"><tr>' +
+      '<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Date</th>' +
+      '<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Hours</th>' +
+      '<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Task</th>' +
+      '<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Status</th>' +
+      '</tr></thead><tbody class="divide-y divide-gray-50">' +
+      (ts.length ? ts.map(t=>'<tr class="hover:bg-gray-50"><td class="px-4 py-3 text-sm">'+t.date+'</td><td class="px-4 py-3 text-sm">'+t.hours_worked+'h</td><td class="px-4 py-3 text-sm max-w-xs truncate">'+(t.task_description||'-')+'</td><td class="px-4 py-3"><span class="badge-'+t.status+'">'+t.status+'</span></td></tr>').join('') :
+        '<tr><td colspan="4" class="px-4 py-8 text-center text-gray-400">No timesheets yet</td></tr>') +
+      '</tbody></table></div>');
+  } catch(e) { setContent(h1('My Timesheets') + '<p class="text-red-500">Failed to load</p>'); }
+}
+
+async function submitTS() {
+  const data = { date: document.getElementById('tsDate').value, hours_worked: parseFloat(document.getElementById('tsHours').value), task_description: document.getElementById('tsTask').value, project: document.getElementById('tsProject').value };
+  try { await api('/timesheets/submit','POST',data); document.getElementById('tsMsg').innerHTML='<p class="text-green-600 text-sm">✅ Submitted!</p>'; setTimeout(showMyTimesheets,1000); }
+  catch(err) { const d = await err.json().catch(()=>({})); document.getElementById('tsMsg').innerHTML='<p class="text-red-600 text-sm">❌ '+(d.detail||'Failed')+'</p>'; }
+}
+
+async function showPayslips() {
+  setContent(h1('My Payslips') + '<p class="text-gray-400">Loading...</p>');
+  try {
+    const records = await api('/payroll/records');
+    setContent(h1('My Payslips') + (records.length ?
+      '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">' +
+      records.map(r=>'<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">' +
+        '<div class="flex justify-between items-start mb-4">' +
+        '<p class="font-semibold text-gray-800">'+new Date(r.year,r.month-1).toLocaleString('en',{month:'long',year:'numeric'})+'</p>' +
+        '<a href="/payroll/slip/'+r.id+'" target="_blank" class="text-blue-600 hover:text-blue-800 text-xs border border-blue-200 rounded px-2 py-1">Download PDF</a>' +
+        '</div>' +
+        '<div class="space-y-1 text-sm">' +
+        '<div class="flex justify-between"><span class="text-gray-500">Gross</span><span>₹'+Number(r.gross_salary).toLocaleString('en-IN')+'</span></div>' +
+        '<div class="flex justify-between"><span class="text-gray-500">Deductions</span><span class="text-red-500">-₹'+Number(r.total_deductions).toLocaleString('en-IN')+'</span></div>' +
+        '<div class="flex justify-between border-t pt-1 mt-1"><span class="font-semibold">Net Pay</span><span class="font-bold text-green-600">₹'+Number(r.net_salary).toLocaleString('en-IN')+'</span></div>' +
+        '</div></div>').join('') + '</div>' :
+      card('<p class="text-center text-gray-400 py-8">No payslips generated yet</p>')));
+  } catch(e) { setContent(h1('Payslips') + '<p class="text-red-500">Failed to load</p>'); }
+}
+
+async function showProfile() {
+  setContent(h1('My Profile') + '<p class="text-gray-400">Loading...</p>');
+  try {
+    const p = await api('/employees/me');
+    setContent(h1('My Profile') + card(
+      '<div class="flex items-center gap-4 mb-6 pb-6 border-b">' +
+      '<div class="w-16 h-16 bg-blue-900 rounded-full flex items-center justify-center text-white text-2xl font-bold">'+p.first_name[0]+p.last_name[0]+'</div>' +
+      '<div><h2 class="font-bold text-xl">'+p.first_name+' '+p.last_name+'</h2>' +
+      '<p class="text-gray-500">'+(p.designation||'Employee')+'</p>' +
+      '<p class="text-sm font-mono text-blue-600">'+p.employee_id+'</p></div></div>' +
+      '<div class="grid grid-cols-2 gap-4">' +
+      [['Employee ID',p.employee_id],['Email',p.email],['Phone',p.phone||'-'],['Designation',p.designation||'-'],['Department',p.department||'-'],['Type',p.employment_type],['Joined',p.date_of_joining||'-'],['Bank',p.bank_name||'-'],['Account',p.bank_account||'-'],['PF',p.pf_number||'-']].map(([k,v])=>
+        '<div><p class="text-xs text-gray-500 uppercase tracking-wide">'+k+'</p><p class="font-medium text-gray-800 mt-0.5">'+v+'</p></div>').join('') + '</div>'
+    ));
+  } catch(e) { setContent(h1('Profile') + '<p class="text-red-500">Failed to load</p>'); }
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Enter' && document.getElementById('loginPage').style.display!=='none') doLogin(); });
+</script>
+</body>
+</html>
