@@ -114,7 +114,7 @@ function alert2(id,msg,t='e'){
 
 function showModal(h){$('mbox').innerHTML=h;$('modal').style.display='flex';}
 function closeModal(){$('modal').style.display='none';}
-$('modal').addEventListener('click',e=>{if(e.target===$('modal'))closeModal();});
+document.addEventListener('DOMContentLoaded',function(){ $('modal').addEventListener('click',function(e){if(e.target===$('modal'))closeModal();}); });
 
 async function doLogin(){
   const email=$('lEmail').value, pass=$('lPass').value;
