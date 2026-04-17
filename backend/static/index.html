@@ -4,7 +4,121 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>CloudHub HR Portal</title>
-<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.tailwindcss.com">
+// ── EDIT EMPLOYEE ──
+async function doEditEmp(id){
+  try{
+    const e = await api('/employees/'+id);
+    showModal(`<h3 style="font-size:16px;font-weight:600;margin:0 0 16px">✏️ Edit Employee: \${e.first_name} \${e.last_name}</h3>
+      <div id="editAlert"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-height:60vh;overflow-y:auto;padding-right:4px">
+        <div><label class="lbl">First Name</label><input id="ed_fn" class="inp" value="\${e.first_name||''}"></div>
+        <div><label class="lbl">Last Name</label><input id="ed_ln" class="inp" value="\${e.last_name||''}"></div>
+        <div><label class="lbl">Phone</label><input id="ed_ph" class="inp" value="\${e.phone||''}"></div>
+        <div><label class="lbl">Designation</label><input id="ed_des" class="inp" value="\${e.designation||''}"></div>
+        <div><label class="lbl">Department</label><input id="ed_dep" class="inp" value="\${e.department||''}"></div>
+        <div><label class="lbl">Employment Type</label>
+          <select id="ed_et" class="inp">
+            <option value="permanent" \${e.employment_type==='permanent'?'selected':''}>Permanent</option>
+            <option value="contractor" \${e.employment_type==='contractor'?'selected':''}>Contractor</option>
+            <option value="intern" \${e.employment_type==='intern'?'selected':''}>Intern</option>
+            <option value="consultant" \${e.employment_type==='consultant'?'selected':''}>Consultant</option>
+          </select>
+        </div>
+        <div><label class="lbl">Date of Joining</label><input id="ed_doj" type="date" class="inp" value="\${e.date_of_joining||''}"></div>
+        <div><label class="lbl">Date of Birth</label><input id="ed_dob" type="date" class="inp" value="\${e.date_of_birth||''}"></div>
+        <div style="grid-column:span 2"><label class="lbl">Address</label><textarea id="ed_addr" class="inp" rows="2">\${e.address||''}</textarea></div>
+        <div><label class="lbl">Bank Account</label><input id="ed_ba" class="inp" value="\${e.bank_account||''}"></div>
+        <div><label class="lbl">Bank Name</label><input id="ed_bn" class="inp" value="\${e.bank_name||''}"></div>
+        <div><label class="lbl">IFSC Code</label><input id="ed_ic" class="inp" value="\${e.ifsc_code||''}"></div>
+        <div><label class="lbl">PF Number</label><input id="ed_pf" class="inp" value="\${e.pf_number||''}"></div>
+        <div><label class="lbl">UAN Number</label><input id="ed_uan" class="inp" value="\${e.uan_number||''}"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:16px">
+        <button onclick="saveEditEmp(\${e.id})" class="btn btn-p">💾 Save Changes</button>
+        <button onclick="closeModal()" class="btn btn-n">Cancel</button>
+      </div>`);
+  }catch(err){ alert('Failed to load employee: '+(err.detail||err.message||'Error')); }
+}
+
+async function saveEditEmp(id){
+  const data={};
+  const fields=[['ed_fn','first_name'],['ed_ln','last_name'],['ed_ph','phone'],['ed_des','designation'],['ed_dep','department'],['ed_et','employment_type'],['ed_doj','date_of_joining'],['ed_dob','date_of_birth'],['ed_addr','address'],['ed_ba','bank_account'],['ed_bn','bank_name'],['ed_ic','ifsc_code'],['ed_pf','pf_number'],['ed_uan','uan_number']];
+  fields.forEach(([elId,key])=>{const v=$(elId)?.value;if(v!==undefined&&v!=='')data[key]=v;});
+  try{
+    await api('/employees/'+id,'PUT',data);
+    alert2('editAlert','✅ Employee updated successfully!','s');
+    setTimeout(()=>{closeModal();showEmployees();},1200);
+  }catch(err){alert2('editAlert','❌ '+(err.detail||'Failed to update'));}
+}
+
+// ── DELETED EMPLOYEES (Reinstate) ──
+async function showDeletedEmps(){
+  setActive('showDeletedEmps');
+  setPage(h1('🗄️ Deleted Employees')+\`
+    <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#92400e">
+      ℹ️ These employees have been soft-deleted. Their data is preserved. You can reinstate them to restore full access.
+    </div>\`+
+    '<p style="color:#94a3b8">Loading...</p>');
+  try{
+    const emps = await api('/employees/inactive');
+    if(!emps.length){
+      setPage(h1('🗄️ Deleted Employees')+\`
+        <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#92400e">
+          ℹ️ These employees have been soft-deleted. Their data is preserved. You can reinstate them to restore full access.
+        </div>
+        <div class="card" style="text-align:center;padding:48px;color:#94a3b8">
+          <div style="font-size:40px;margin-bottom:12px">🗄️</div>
+          <div style="font-size:15px;font-weight:500">No deleted employees</div>
+          <div style="font-size:13px;margin-top:4px">Deleted employees will appear here</div>
+        </div>\`);
+      return;
+    }
+    setPage(h1('🗄️ Deleted Employees ('+emps.length+')')+\`
+      <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#92400e">
+        ℹ️ These employees have been soft-deleted. Their data is preserved. Click <strong>Reinstate</strong> to restore full access.
+      </div>\`+
+      tblWrap(
+        ['Employee','ID','Designation','Department','Last Status','Action'].map(th).join(''),
+        emps.map(e=>\`<tr style="opacity:0.8">
+          <td>
+            <div style="font-weight:500;color:#374151">\${e.first_name} \${e.last_name}</div>
+            <div style="font-size:12px;color:#94a3b8">\${e.email}</div>
+          </td>
+          <td style="font-family:monospace;font-size:12px;color:#64748b">\${e.employee_id}</td>
+          <td style="color:#94a3b8">\${e.designation||'-'}</td>
+          <td style="color:#94a3b8">\${e.department||'-'}</td>
+          <td><span class="badge badge-\${e.status||'terminated'}">\${e.status||'inactive'}</span></td>
+          <td>
+            <button onclick="doReinstate(\${e.id},'\${e.first_name} \${e.last_name}')" class="btn btn-s" style="padding:4px 12px;font-size:12px">
+              ♻️ Reinstate
+            </button>
+          </td>
+        </tr>\`).join('')
+      ));
+  }catch(err){setPage(h1('Deleted Employees')+'<p style="color:#ef4444">Failed to load: '+(err.detail||'Error')+'</p>');}
+}
+
+function doReinstate(id, name){
+  showModal(\`<h3 style="font-size:16px;font-weight:600;margin:0 0 12px">♻️ Reinstate Employee</h3>
+    <p style="font-size:13px;color:#475569;margin:0 0 6px">You are about to reinstate <strong>\${name}</strong>.</p>
+    <p style="font-size:13px;color:#475569;margin:0 0 20px">This will restore their account and mark them as <strong>active</strong>. They will be able to log in again.</p>
+    <div id="reinstateAlert"></div>
+    <div style="display:flex;gap:8px">
+      <button onclick="confirmReinstate(\${id})" class="btn btn-s">♻️ Confirm Reinstate</button>
+      <button onclick="closeModal()" class="btn btn-n">Cancel</button>
+    </div>\`);
+}
+
+async function confirmReinstate(id){
+  try{
+    const r = await api('/employees/'+id+'/reinstate','POST');
+    alert2('reinstateAlert','✅ '+r.message,'s');
+    setTimeout(()=>{closeModal();showDeletedEmps();},1200);
+  }catch(err){alert2('reinstateAlert','❌ '+(err.detail||'Failed to reinstate'));}
+}
+
+</script>
 <style>
   .sidebar{background:#1e3a5f}
   .nav-active{background:#2563eb!important;color:#fff!important}
@@ -150,7 +264,8 @@ function buildNav(){
   const n=(a||m)?[
     ['🏠 Dashboard','showAdminDash'],
     ['👥 Employees','showEmployees'],
-    ...(a?[['➕ Onboarding','showOnboard'],['🔐 Create Admin','showCreateAdmin'],['📋 Resignations','showResignations']]:[] ),
+    ...(a?[['➕ Onboarding','showOnboard'],
+    ['🗄️ Deleted Employees','showDeletedEmps'],['🔐 Create Admin','showCreateAdmin'],['📋 Resignations','showResignations']]:[] ),
     ['🕐 Timesheets','showTimesheets'],
     ['🌴 Leave Requests','showLeaveReq'],
     ['💰 Payroll','showPayroll'],
@@ -214,7 +329,7 @@ async function showEmployees(){
           <td>${e.designation||'-'}</td><td>${e.department||'-'}</td>
           <td><span class="badge badge-${e.status||'active'}">${e.status||'active'}</span></td>
           <td style="white-space:nowrap">
-            <button onclick="doAssignMgrModal(${e.id})" class="btn btn-n" style="padding:3px 8px;font-size:11px;margin-right:4px">Assign Mgr</button>
+            <button onclick="doEditEmp(${e.id})" class="btn btn-n" style="padding:3px 8px;font-size:11px;margin-right:4px;color:#2563eb">✏️ Edit</button>\n            <button onclick="doAssignMgrModal(${e.id})" class="btn btn-n" style="padding:3px 8px;font-size:11px;margin-right:4px">Assign Mgr</button>
             <button onclick="doTermModal(${e.id},'${e.first_name} ${e.last_name}')" class="btn btn-d" style="padding:3px 8px;font-size:11px;margin-right:4px">Terminate</button>
             ${role==='admin'?`<button onclick="doDelEmp(${e.id},'${e.first_name} ${e.last_name}')" class="btn btn-n" style="padding:3px 8px;font-size:11px;color:#dc2626">Delete</button>`:''}
           </td></tr>`).join(''):noRows(6,'No employees found')

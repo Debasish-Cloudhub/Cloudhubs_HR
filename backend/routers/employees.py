@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from database.db import get_db
-from models.models import User, Employee, RoleEnum, TerminationRecord, ResignationRecord, EmployeeStatusEnum
+from models.models import User, Employee, RoleEnum, TerminationRecord, ResignationRecord, EmployeeStatusEnum, EmploymentTypeEnum
 from schemas.schemas import EmployeeCreate, EmployeeOut
 from utils.auth import get_current_user, require_admin, hash_password
 from utils.employee_id import generate_employee_id
@@ -10,6 +10,22 @@ from pydantic import BaseModel
 from datetime import date
 
 router = APIRouter()
+
+class EmployeeUpdate(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    phone: Optional[str] = None
+    designation: Optional[str] = None
+    department: Optional[str] = None
+    employment_type: Optional[EmploymentTypeEnum] = None
+    date_of_joining: Optional[date] = None
+    date_of_birth: Optional[date] = None
+    address: Optional[str] = None
+    bank_account: Optional[str] = None
+    bank_name: Optional[str] = None
+    ifsc_code: Optional[str] = None
+    pf_number: Optional[str] = None
+    uan_number: Optional[str] = None
 
 class TerminateRequest(BaseModel):
     reason: str
@@ -37,12 +53,25 @@ def create_employee(data: EmployeeCreate, db: Session = Depends(get_db), admin: 
     user = User(email=data.email, hashed_password=hash_password(data.password), role=RoleEnum.employee)
     db.add(user); db.flush()
     emp_id = generate_employee_id(db, data.employment_type)
-    emp = Employee(user_id=user.id, employee_id=emp_id, first_name=data.first_name, last_name=data.last_name, email=data.email, phone=data.phone, designation=data.designation, department=data.department, employment_type=data.employment_type, date_of_joining=data.date_of_joining, date_of_birth=data.date_of_birth, address=data.address, bank_account=data.bank_account, bank_name=data.bank_name, ifsc_code=data.ifsc_code, pf_number=data.pf_number, uan_number=data.uan_number)
+    emp = Employee(
+        user_id=user.id, employee_id=emp_id,
+        first_name=data.first_name, last_name=data.last_name, email=data.email,
+        phone=data.phone, designation=data.designation, department=data.department,
+        employment_type=data.employment_type, status=EmployeeStatusEnum.active,
+        date_of_joining=data.date_of_joining, date_of_birth=data.date_of_birth,
+        address=data.address, bank_account=data.bank_account, bank_name=data.bank_name,
+        ifsc_code=data.ifsc_code, pf_number=data.pf_number, uan_number=data.uan_number
+    )
     db.add(emp); db.commit(); db.refresh(emp); return emp
 
 @router.get("/", response_model=List[EmployeeOut])
 def list_employees(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
     return db.query(Employee).filter(Employee.is_active == True).all()
+
+@router.get("/inactive", response_model=List[EmployeeOut])
+def list_inactive_employees(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    """Returns all soft-deleted employees for reinstatement."""
+    return db.query(Employee).filter(Employee.is_active == False).all()
 
 @router.get("/me", response_model=EmployeeOut)
 def get_my_profile(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
@@ -56,6 +85,14 @@ def get_employee(employee_id: int, db: Session = Depends(get_db), admin: User = 
     if not emp: raise HTTPException(status_code=404, detail="Not found")
     return emp
 
+@router.put("/{employee_id}", response_model=EmployeeOut)
+def edit_employee(employee_id: int, data: EmployeeUpdate, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    emp = db.query(Employee).filter(Employee.id == employee_id).first()
+    if not emp: raise HTTPException(status_code=404, detail="Employee not found")
+    for field, value in data.model_dump(exclude_none=True).items():
+        setattr(emp, field, value)
+    db.commit(); db.refresh(emp); return emp
+
 @router.delete("/{employee_id}")
 def delete_employee(employee_id: int, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
     emp = db.query(Employee).filter(Employee.id == employee_id).first()
@@ -64,7 +101,20 @@ def delete_employee(employee_id: int, db: Session = Depends(get_db), admin: User
     if user: user.is_active = False
     emp.is_active = False
     db.commit()
-    return {"message": "Employee deleted"}
+    return {"message": "Employee deleted", "employee_id": emp.employee_id}
+
+@router.post("/{employee_id}/reinstate")
+def reinstate_employee(employee_id: int, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    """Reinstates a soft-deleted employee back to active status."""
+    emp = db.query(Employee).filter(Employee.id == employee_id).first()
+    if not emp: raise HTTPException(status_code=404, detail="Employee not found")
+    if emp.is_active: raise HTTPException(status_code=400, detail="Employee is already active")
+    emp.is_active = True
+    emp.status = EmployeeStatusEnum.active
+    user = db.query(User).filter(User.id == emp.user_id).first()
+    if user: user.is_active = True
+    db.commit()
+    return {"message": "Employee reinstated successfully", "employee_id": emp.employee_id}
 
 @router.post("/{employee_id}/terminate")
 def terminate_employee(employee_id: int, data: TerminateRequest, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
@@ -94,9 +144,8 @@ def create_admin(data: CreateAdminRequest, db: Session = Depends(get_db), admin:
         raise HTTPException(status_code=400, detail="Email already exists")
     new_admin = User(email=data.email, hashed_password=hash_password(data.password), role=RoleEnum.admin)
     db.add(new_admin); db.flush()
-    emp_id = generate_employee_id(db, "permanent")
-    from models.models import EmploymentTypeEnum
-    emp = Employee(user_id=new_admin.id, employee_id=emp_id, first_name=data.first_name, last_name=data.last_name, email=data.email, employment_type=EmploymentTypeEnum.permanent)
+    emp_id = generate_employee_id(db, EmploymentTypeEnum.permanent)
+    emp = Employee(user_id=new_admin.id, employee_id=emp_id, first_name=data.first_name, last_name=data.last_name, email=data.email, employment_type=EmploymentTypeEnum.permanent, status=EmployeeStatusEnum.active)
     db.add(emp); db.commit()
     return {"message": "Admin created", "email": data.email}
 
@@ -111,4 +160,4 @@ def apply_resignation(data: ResignRequest, db: Session = Depends(get_db), curren
 @router.get("/resignations/all")
 def all_resignations(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
     recs = db.query(ResignationRecord).order_by(ResignationRecord.created_at.desc()).all()
-    return [{"id": r.id, "employee_id": r.employee_id, "reason": r.reason, "notice_date": str(r.notice_date), "status": r.status, "created_at": str(r.created_at)} for r in recs]
+    return [{"id": r.id, "employee_id": r.employee_id, "reason": r.reason, "notice_date": str(r.notice_date), "last_working_date": str(r.last_working_date) if r.last_working_date else None, "status": r.status, "created_at": str(r.created_at)} for r in recs]
