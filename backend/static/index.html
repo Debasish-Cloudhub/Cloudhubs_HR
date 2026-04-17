@@ -4,42 +4,40 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>CloudHub HR Portal</title>
-<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.tailwindcss.com">
+</script>
 <style>
-.sb{background:#1e3a5f}
-.na{background:#2563eb!important;color:#fff!important}
-.bdg{padding:2px 10px;border-radius:999px;font-size:11px;font-weight:600;display:inline-block}
-.bdg-pending{background:#fef3c7;color:#92400e}
-.bdg-approved{background:#d1fae5;color:#065f46}
-.bdg-rejected{background:#fee2e2;color:#991b1b}
-.bdg-active{background:#dbeafe;color:#1e40af}
-.bdg-terminated{background:#f3f4f6;color:#6b7280}
-.bdg-resigned{background:#fef9c3;color:#854d0e}
-.crd{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #f1f5f9;padding:20px}
-.inp{width:100%;border:1px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-size:13px;outline:none;box-sizing:border-box;color:#374151}
-.inp:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1)}
-.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
-.bp{background:#1e3a5f;color:#fff}.bp:hover{background:#152d4a}
-.bs{background:#059669;color:#fff}.bs:hover{background:#047857}
-.bd{background:#dc2626;color:#fff}.bd:hover{background:#b91c1c}
-.bn{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}.bn:hover{background:#e2e8f0}
-.be{background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe}.be:hover{background:#dbeafe}
-.tbl th{padding:10px 14px;text-align:left;font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;background:#f8fafc;border-bottom:1px solid #e2e8f0}
-.tbl td{padding:11px 14px;font-size:13px;border-bottom:1px solid #f1f5f9;color:#374151}
-.tbl tr:hover td{background:#fafafa}
-.mbg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px}
-.mbox{background:#fff;border-radius:16px;padding:24px;width:100%;max-width:520px;max-height:88vh;overflow-y:auto}
-.ok{background:#d1fae5;border:1px solid #a7f3d0;color:#065f46;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:10px}
-.er{background:#fee2e2;border:1px solid #fca5a5;color:#991b1b;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:10px}
-.lbl{display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:4px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.sc{display:flex;align-items:center;gap:14px;background:#fff;border-radius:12px;padding:16px;border:1px solid #e2e8f0}
-.si{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-textarea.inp{resize:vertical}
+  .sidebar{background:#1e3a5f}
+  .nav-active{background:#2563eb!important;color:#fff!important}
+  .badge{padding:2px 10px;border-radius:999px;font-size:11px;font-weight:600}
+  .badge-pending{background:#fef3c7;color:#92400e}
+  .badge-approved{background:#d1fae5;color:#065f46}
+  .badge-rejected{background:#fee2e2;color:#991b1b}
+  .badge-active{background:#dbeafe;color:#1e40af}
+  .badge-terminated{background:#f3f4f6;color:#6b7280}
+  .badge-resigned{background:#fef9c3;color:#854d0e}
+  .card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #f1f5f9;padding:20px}
+  .inp{width:100%;border:1px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-size:14px;outline:none;box-sizing:border-box}
+  .inp:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s}
+  .btn-p{background:#1e3a5f;color:#fff}.btn-p:hover{background:#152d4a}
+  .btn-s{background:#059669;color:#fff}.btn-s:hover{background:#047857}
+  .btn-d{background:#dc2626;color:#fff}.btn-d:hover{background:#b91c1c}
+  .btn-n{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}.btn-n:hover{background:#e2e8f0}
+  .tbl th{padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;background:#f8fafc;border-bottom:1px solid #e2e8f0}
+  .tbl td{padding:12px 16px;font-size:13px;border-bottom:1px solid #f1f5f9;color:#374151}
+  .tbl tr:hover td{background:#fafafa}
+  .mbg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:50;display:flex;align-items:center;justify-content:center;padding:16px}
+  .mbox{background:#fff;border-radius:16px;padding:24px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto}
+  .ok{background:#d1fae5;border:1px solid #a7f3d0;color:#065f46;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px}
+  .er{background:#fee2e2;border:1px solid #fca5a5;color:#991b1b;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px}
+  .lbl{display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:4px}
+  select.inp option{color:#374151}
 </style>
 </head>
-<body style="background:#f8fafc;font-family:system-ui,-apple-system,sans-serif;margin:0">
+<body style="background:#f8fafc;font-family:system-ui,sans-serif;margin:0">
 
+<!-- LOGIN PAGE -->
 <div id="pg_login" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;background:linear-gradient(135deg,#1e3a5f 0%,#2563eb 100%)">
   <div style="background:#fff;border-radius:20px;padding:40px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.25)">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px">
@@ -52,17 +50,24 @@ textarea.inp{resize:vertical}
       </div>
     </div>
     <div id="loginErr"></div>
-    <div style="margin-bottom:14px"><label class="lbl">Email Address</label><input id="lEmail" type="email" class="inp" placeholder="Enter your email" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-    <div style="margin-bottom:22px"><label class="lbl">Password</label><input id="lPass" type="password" class="inp" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-    <button onclick="doLogin()" class="btn bp" style="width:100%;justify-content:center;padding:12px;font-size:15px">Sign In</button>
-    <p style="text-align:center;font-size:12px;color:#94a3b8;margin:18px 0 0">Contact your HR administrator for login credentials</p>
+    <div style="margin-bottom:16px">
+      <label class="lbl">Email Address</label>
+      <input id="lEmail" type="email" class="inp" placeholder="Enter your email" onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <div style="margin-bottom:24px">
+      <label class="lbl">Password</label>
+      <input id="lPass" type="password" class="inp" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <button onclick="doLogin()" class="btn btn-p" style="width:100%;justify-content:center;padding:12px 16px;font-size:15px">Sign In</button>
+    <p style="text-align:center;font-size:12px;color:#94a3b8;margin-top:20px;margin-bottom:0">Contact your HR administrator for login credentials</p>
   </div>
 </div>
 
+<!-- MAIN APP (hidden until login) -->
 <div id="pg_app" style="display:none;height:100vh;overflow:hidden">
   <div style="display:flex;height:100%">
-    <aside class="sb" style="width:224px;flex-shrink:0;display:flex;flex-direction:column;height:100%;overflow:hidden">
-      <div style="padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.1)">
+    <aside class="sidebar" style="width:220px;flex-shrink:0;display:flex;flex-direction:column;height:100%;overflow:hidden">
+      <div style="padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.1)">
         <div style="display:flex;align-items:center;gap:10px">
           <div style="width:34px;height:34px;background:#2563eb;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
             <svg width="16" height="16" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16"/></svg>
@@ -73,721 +78,775 @@ textarea.inp{resize:vertical}
           </div>
         </div>
       </div>
-      <nav id="nav" style="flex:1;padding:8px;overflow-y:auto"></nav>
-      <div style="padding:8px;border-top:1px solid rgba(255,255,255,.1)">
-        <div id="userEmail" style="padding:6px 10px;margin-bottom:2px;font-size:11px;color:#7fb3e8;word-break:break-all"></div>
-        <button onclick="logout()" style="display:flex;align-items:center;gap:8px;color:#93c5fd;font-size:13px;padding:8px 10px;border-radius:8px;cursor:pointer;background:none;border:none;width:100%;text-align:left" onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background='none'">
+      <nav id="nav" style="flex:1;padding:10px;overflow-y:auto"></nav>
+      <div style="padding:10px;border-top:1px solid rgba(255,255,255,.1)">
+        <div id="userEmail" style="padding:6px 12px;margin-bottom:4px;font-size:11px;color:#7fb3e8;word-break:break-all"></div>
+        <button onclick="logout()" style="display:flex;align-items:center;gap:8px;color:#93c5fd;font-size:13px;padding:8px 12px;border-radius:8px;cursor:pointer;background:none;border:none;width:100%;text-align:left" onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background='none'">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>Sign Out
         </button>
       </div>
     </aside>
     <main style="flex:1;overflow:auto;background:#f8fafc">
-      <div style="padding:26px;max-width:1200px;margin:0 auto" id="content"><p style="color:#94a3b8">Loading...</p></div>
+      <div style="padding:28px;max-width:1200px;margin:0 auto" id="content"><p style="color:#94a3b8">Loading...</p></div>
     </main>
   </div>
 </div>
 
-<div id="modal" class="mbg" style="display:none" onclick="if(event.target===this)closeModal()">
-  <div class="mbox" id="mbox"></div>
-</div>
+<!-- MODAL -->
+<div id="modal" class="mbg" style="display:none"><div class="mbox" id="mbox"></div></div>
 
 <script>
-var tok='',role='',myEmpId=0;
-function G(id){return document.getElementById(id);}
+let tok='',role='',myEmpId='';
+const $ = id=>document.getElementById(id);
 
-function api(path,method,body){
-  var opts={method:method||'GET',headers:{'Content-Type':'application/json'}};
-  if(tok) opts.headers['Authorization']='Bearer '+tok;
-  if(body) opts.body=JSON.stringify(body);
-  return fetch(path,opts).then(function(r){
-    if(!r.ok) return r.json().then(function(e){throw e;});
-    return r.json();
-  });
+function api(p,m,b){
+  const o={method:m||'GET',headers:{'Content-Type':'application/json'}};
+  if(tok)o.headers.Authorization='Bearer '+tok;
+  if(b)o.body=JSON.stringify(b);
+  return fetch(p,o).then(r=>{if(!r.ok)return r.json().then(e=>{throw e});return r.json()});
 }
 
-function showAlert(id,msg,type){
-  var el=G(id); if(!el) return;
-  el.innerHTML='<div class="'+(type==='s'?'ok':'er')+'">'+msg+'</div>';
-  if(type==='s') setTimeout(function(){if(el) el.innerHTML='';},3500);
+function alert2(id,msg,t='e'){
+  const el=$(id); if(!el)return;
+  el.innerHTML='<div class="'+(t==='s'?'ok':'er')+'">'+msg+'</div>';
+  if(t==='s')setTimeout(()=>{el.innerHTML=''},3500);
 }
 
-function showModal(html){G('mbox').innerHTML=html;G('modal').style.display='flex';}
-function closeModal(){G('modal').style.display='none';}
+function showModal(h){$('mbox').innerHTML=h;$('modal').style.display='flex';}
+function closeModal(){$('modal').style.display='none';}
+$('modal').addEventListener('click',e=>{if(e.target===$('modal'))closeModal();});
 
-function doLogin(){
-  var email=G('lEmail').value, pass=G('lPass').value;
-  if(!email||!pass){showAlert('loginErr','Please enter email and password');return;}
-  api('/auth/login','POST',{email:email,password:pass}).then(function(d){
+async function doLogin(){
+  const email=$('lEmail').value, pass=$('lPass').value;
+  if(!email||!pass){alert2('loginErr','Please enter email and password');return;}
+  try{
+    const d=await api('/auth/login','POST',{email,password:pass});
     tok=d.access_token; role=d.role;
-    G('pg_login').style.display='none';
-    G('pg_app').style.display='flex';
-    G('roleLabel').textContent=role+' Portal';
-    G('userEmail').textContent=email;
-    buildNav();
-    if(role==='employee') showEmpDash(); else showAdminDash();
-  }).catch(function(e){showAlert('loginErr',e.detail||'Invalid email or password');});
+    $('pg_login').style.display='none';
+    $('pg_app').style.display='flex';
+    $('roleLabel').textContent=role+' Portal';
+    $('userEmail').textContent=email;
+    buildNav(); 
+    role==='employee'?showEmpDash():showAdminDash();
+  }catch(e){alert2('loginErr',e.detail||'Invalid email or password');}
 }
 
 function logout(){
-  tok=''; role=''; myEmpId=0;
-  G('pg_app').style.display='none';
-  G('pg_login').style.display='flex';
-  G('lEmail').value=''; G('lPass').value='';
+  tok='';role='';myEmpId='';
+  $('pg_app').style.display='none';
+  $('pg_login').style.display='flex';
+  $('lEmail').value='';$('lPass').value='';
 }
 
-function navBtn(label,fn){
-  return '<button onclick="'+fn+'()" id="nb_'+fn+'" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;font-size:13px;color:#93c5fd;cursor:pointer;background:none;border:none;width:100%;text-align:left;margin-bottom:2px" onmouseover="if(!this.classList.contains(\'na\'))this.style.background=\'rgba(255,255,255,.08)\'" onmouseout="if(!this.classList.contains(\'na\'))this.style.background=\'none\'">'+label+'</button>';
+function navBtn(lbl,fn){
+  return `<button onclick="${fn}()" id="nb_${fn}" style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;font-size:13px;color:#93c5fd;cursor:pointer;background:none;border:none;width:100%;text-align:left;margin-bottom:2px" onmouseover="if(!this.classList.contains('nav-active'))this.style.background='rgba(255,255,255,.08)'" onmouseout="if(!this.classList.contains('nav-active'))this.style.background='none'">${lbl}</button>`;
 }
-
 function setActive(fn){
-  document.querySelectorAll('#nav button').forEach(function(b){b.classList.remove('na');b.style.background='none';b.style.color='#93c5fd';});
-  var el=G('nb_'+fn);
-  if(el){el.classList.add('na');el.style.background='#2563eb';el.style.color='#fff';}
+  document.querySelectorAll('#nav button').forEach(b=>{b.classList.remove('nav-active');b.style.background='none';b.style.color='#93c5fd';});
+  const el=$('nb_'+fn); if(el){el.classList.add('nav-active');el.style.background='#2563eb';el.style.color='#fff';}
 }
 
 function buildNav(){
-  var isA=role==='admin', isM=role==='manager';
-  var items=(isA||isM)?[
-    ['Dashboard','showAdminDash'],
-    ['Employees','showEmployees'],
-    isA?['Onboarding','showOnboard']:null,
-    isA?['Deleted Employees','showDeletedEmps']:null,
-    isA?['Create Admin','showCreateAdmin']:null,
-    ['Timesheets','showTimesheets'],
-    ['Leave Requests','showLeaveReqs'],
-    ['Payroll','showPayroll'],
-    ['Holidays & Leaves','showHolidaysLeaves'],
-    ['Documents','showDocs'],
-    isA?['Resignations','showResignations']:null
+  const a=role==='admin', m=role==='manager', e=role==='employee';
+  const n=(a||m)?[
+    ['🏠 Dashboard','showAdminDash'],
+    ['👥 Employees','showEmployees'],
+    ...(a?[['➕ Onboarding','showOnboard'],
+    ['🗄️ Deleted Employees','showDeletedEmps'],['🔐 Create Admin','showCreateAdmin'],['📋 Resignations','showResignations']]:[] ),
+    ['🕐 Timesheets','showTimesheets'],
+    ['🌴 Leave Requests','showLeaveReq'],
+    ['💰 Payroll','showPayroll'],
+    ['📅 Holidays & Leaves','showHolidaysLeaves'],
+    ['📄 Documents','showDocs'],
   ]:[
-    ['My Dashboard','showEmpDash'],
-    ['My Timesheets','showMyTimesheets'],
-    ['Apply Leave','showApplyLeave'],
-    ['Leave Balance','showLeaveBalance'],
-    ['My Payslips','showPayslips'],
-    ['Holidays','showHolidaysLeaves'],
-    ['Documents','showDocs'],
-    ['My Profile','showProfile'],
-    ['Resign','showResign']
+    ['🏠 My Dashboard','showEmpDash'],
+    ['🕐 My Timesheets','showMyTimesheets'],
+    ['🌴 Apply Leave','showApplyLeave'],
+    ['📊 Leave Balance','showLeaveBalance'],
+    ['💰 My Payslips','showPayslips'],
+    ['📅 Holidays','showHolidaysLeaves'],
+    ['📄 Documents','showDocs'],
+    ['👤 My Profile','showProfile'],
+    ['🚪 Resign','showResign'],
   ];
-  var icons={'showAdminDash':'🏠','showEmployees':'👥','showOnboard':'➕','showDeletedEmps':'🗄️','showCreateAdmin':'🔐','showTimesheets':'🕐','showLeaveReqs':'🌴','showPayroll':'💰','showHolidaysLeaves':'📅','showDocs':'📄','showResignations':'📋','showEmpDash':'🏠','showMyTimesheets':'🕐','showApplyLeave':'🌴','showLeaveBalance':'📊','showPayslips':'💰','showProfile':'👤','showResign':'🚪'};
-  G('nav').innerHTML=items.filter(Boolean).map(function(i){return navBtn(icons[i[1]]||'•'+' '+i[0],i[1]);}).join('');
+  $('nav').innerHTML=n.map(([l,f])=>navBtn(l,f)).join('');
 }
 
-function setPage(html){G('content').innerHTML=html;}
-function H1(t){return '<h1 style="font-size:22px;font-weight:700;color:#1e293b;margin:0 0 20px">'+t+'</h1>';}
+function setPage(h){$('content').innerHTML=h;}
+function h1(t){return `<h1 style="font-size:22px;font-weight:700;color:#1e293b;margin:0 0 20px">${t}</h1>`;}
+function sc(lbl,val,col,ic){return `<div class="card" style="display:flex;align-items:center;gap:16px;padding:16px"><div style="width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;background:${col}20">${ic}</div><div><div style="font-size:26px;font-weight:700;color:#1e293b">${val}</div><div style="font-size:12px;color:#64748b;margin-top:2px">${lbl}</div></div></div>`;}
+function fld(id,lbl,type='text',req=false){return `<div><label class="lbl">${lbl}${req?' *':''}</label><input id="${id}" type="${type}" class="inp"${req?' required':''}></div>`;}
+function tblWrap(head,body){return `<div class="card" style="padding:0;overflow:hidden"><table class="tbl" style="width:100%"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;}
+function th(t){return `<th>${t}</th>`;}
+function noRows(cols,msg='No data'){return `<tr><td colspan="${cols}" style="text-align:center;color:#94a3b8;padding:40px">${msg}</td></tr>`;}
 
-function fld(id,lbl,type,req,val){
-  type=type||'text'; val=val!==undefined?String(val):'';
-  var safeVal=val.replace(/"/g,'&quot;').replace(/</g,'&lt;');
-  return '<div><label class="lbl">'+lbl+(req?' *':'')+'</label><input id="'+id+'" type="'+type+'" class="inp"'+(req?' required':'')+(type==='date'||type==='number'?' value="'+safeVal+'"':' value="'+safeVal+'"')+'></div>';
-}
-
-function scard(lbl,val,col,ic){
-  return '<div class="sc"><div class="si" style="background:'+col+'20">'+ic+'</div><div><div style="font-size:26px;font-weight:700;color:#1e293b">'+val+'</div><div style="font-size:12px;color:#64748b;margin-top:2px">'+lbl+'</div></div></div>';
-}
-
-function tbl(heads,rows,emptyMsg){
-  return '<div class="crd" style="padding:0;overflow:hidden"><table class="tbl" style="width:100%"><thead><tr>'+
-    heads.map(function(h){return '<th>'+h+'</th>';}).join('')+
-    '</tr></thead><tbody>'+
-    (rows||'<tr><td colspan="'+heads.length+'" style="text-align:center;color:#94a3b8;padding:40px">'+(emptyMsg||'No data')+'</td></tr>')+
-    '</tbody></table></div>';
-}
-
-/* ──────────────────────────── ADMIN DASHBOARD ───────────────────────────── */
-function showAdminDash(){
+// ── ADMIN DASHBOARD ──
+async function showAdminDash(){
   setActive('showAdminDash');
-  setPage(H1(role==='manager'?'Manager Dashboard':'Admin Dashboard')+'<p style="color:#94a3b8">Loading...</p>');
-  Promise.all([api('/dashboard/stats'),api('/leaves/all').catch(function(){return[];})]).then(function(res){
-    var s=res[0],lv=Array.isArray(res[1])?res[1]:[];
-    var pl=lv.filter(function(l){return l.status==='pending';}).length;
-    setPage(H1(role==='manager'?'Manager Dashboard':'Admin Dashboard')+
-      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:22px">'+
-      scard('Total Employees',s.total_employees,'#2563eb','👥')+
-      scard('Pending Timesheets',s.pending_timesheets,'#f59e0b','⏳')+
-      scard('Approved Timesheets',s.approved_timesheets,'#10b981','✅')+
-      scard('Pending Leaves',pl,'#8b5cf6','🌴')+'</div>'+
-      (s.upcoming_holidays&&s.upcoming_holidays.length?
-        '<div class="crd"><h3 style="font-size:14px;font-weight:600;margin:0 0 12px">📅 Upcoming Holidays</h3>'+
-        s.upcoming_holidays.map(function(h){return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:13px"><span style="font-weight:500">'+h.name+'</span><span style="color:#64748b">'+h.date+'</span></div>';}).join('')+'</div>':'')
+  setPage(h1(role==='manager'?'Manager Dashboard':'Admin Dashboard')+'<p style="color:#94a3b8">Loading...</p>');
+  try{
+    const [s,lv]=await Promise.all([api('/dashboard/stats'),api('/leaves/all').catch(()=>[])]);
+    const pl=Array.isArray(lv)?lv.filter(l=>l.status==='pending').length:0;
+    setPage(h1(role==='manager'?'Manager Dashboard':'Admin Dashboard')+
+      `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px">
+        ${sc('Total Employees',s.total_employees,'#2563eb','👥')}
+        ${sc('Pending Timesheets',s.pending_timesheets,'#f59e0b','⏳')}
+        ${sc('Approved Timesheets',s.approved_timesheets,'#10b981','✅')}
+        ${sc('Pending Leaves',pl,'#8b5cf6','🌴')}</div>`+
+      (s.upcoming_holidays?.length?`<div class="card"><h3 style="font-size:14px;font-weight:600;color:#374151;margin:0 0 12px">📅 Upcoming Holidays</h3>${s.upcoming_holidays.map(h=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:13px"><span style="font-weight:500">${h.name}</span><span style="color:#64748b">${h.date}</span></div>`).join('')}</div>`:'')+
+      `<div style="margin-top:16px;padding:12px 16px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;font-size:13px;color:#1e40af">
+        <strong>Quick actions:</strong> Use the sidebar to manage employees, timesheets, leaves, payroll, and more.
+      </div>`
     );
-  }).catch(function(){setPage(H1('Dashboard')+'<p style="color:#ef4444">Failed to load</p>');});
+  }catch(e){setPage(h1('Dashboard')+'<p style="color:#ef4444">Failed to load</p>');}
 }
 
-/* ──────────────────────────── EMPLOYEES ─────────────────────────────────── */
-function showEmployees(){
+// ── EMPLOYEES ──
+async function showEmployees(){
   setActive('showEmployees');
-  setPage(H1('Employees')+'<p style="color:#94a3b8">Loading...</p>');
-  api('/employees/').then(function(emps){
-    var rows=emps.length?emps.map(function(e){
-      return '<tr>'+
-        '<td><div style="font-weight:500">'+e.first_name+' '+e.last_name+'</div><div style="font-size:12px;color:#94a3b8">'+e.email+'</div></td>'+
-        '<td style="font-family:monospace;font-size:12px;color:#2563eb">'+e.employee_id+'</td>'+
-        '<td>'+(e.designation||'-')+'</td>'+
-        '<td>'+(e.department||'-')+'</td>'+
-        '<td><span class="bdg bdg-'+(e.status||'active')+'">'+(e.status||'active')+'</span></td>'+
-        '<td style="white-space:nowrap">'+
-          '<button onclick="openEditModal('+e.id+')" class="btn be" style="padding:3px 8px;font-size:11px;margin-right:3px">Edit</button>'+
-          '<button onclick="openAssignMgrModal('+e.id+')" class="btn bn" style="padding:3px 8px;font-size:11px;margin-right:3px">Assign Mgr</button>'+
-          '<button onclick="openTermModal('+e.id+',\''+e.first_name+' '+e.last_name+'\')" class="btn bd" style="padding:3px 8px;font-size:11px;margin-right:3px">Terminate</button>'+
-          (role==='admin'?'<button onclick="doDeleteEmp('+e.id+',\''+e.first_name+' '+e.last_name+'\')" class="btn bn" style="padding:3px 8px;font-size:11px;color:#dc2626">Delete</button>':'')+
-        '</td></tr>';
-    }).join(''):null;
-    setPage(H1('Employees ('+emps.length+')')+tbl(['Employee','ID','Designation','Department','Status','Actions'],rows,'No employees found'));
-  }).catch(function(){setPage(H1('Employees')+'<p style="color:#ef4444">Failed to load</p>');});
+  setPage(h1('Employees')+'<p style="color:#94a3b8">Loading...</p>');
+  try{
+    const emps=await api('/employees/');
+    setPage(h1('Employees ('+emps.length+')')+
+      tblWrap(
+        ['Employee','ID','Designation','Department','Status','Actions'].map(th).join(''),
+        emps.length?emps.map(e=>`<tr>
+          <td><div style="font-weight:500">${e.first_name} ${e.last_name}</div><div style="font-size:12px;color:#94a3b8">${e.email}</div></td>
+          <td style="font-family:monospace;font-size:12px;color:#2563eb">${e.employee_id}</td>
+          <td>${e.designation||'-'}</td><td>${e.department||'-'}</td>
+          <td><span class="badge badge-${e.status||'active'}">${e.status||'active'}</span></td>
+          <td style="white-space:nowrap">
+            <button onclick="doEditEmp(${e.id})" class="btn btn-n" style="padding:3px 8px;font-size:11px;margin-right:4px;color:#2563eb">✏️ Edit</button>\n            <button onclick="doAssignMgrModal(${e.id})" class="btn btn-n" style="padding:3px 8px;font-size:11px;margin-right:4px">Assign Mgr</button>
+            <button onclick="doTermModal(${e.id},'${e.first_name} ${e.last_name}')" class="btn btn-d" style="padding:3px 8px;font-size:11px;margin-right:4px">Terminate</button>
+            ${role==='admin'?`<button onclick="doDelEmp(${e.id},'${e.first_name} ${e.last_name}')" class="btn btn-n" style="padding:3px 8px;font-size:11px;color:#dc2626">Delete</button>`:''}
+          </td></tr>`).join(''):noRows(6,'No employees found')
+      ));
+  }catch(e){setPage(h1('Employees')+'<p style="color:#ef4444">Failed to load</p>');}
 }
 
-function openEditModal(id){
-  api('/employees/'+id).then(function(e){
-    showModal(
-      '<h3 style="font-size:16px;font-weight:600;margin:0 0 16px">Edit Employee</h3>'+
-      '<div id="editAlert"></div>'+
-      '<div style="max-height:56vh;overflow-y:auto;padding-right:4px">'+
-      '<div class="g2" style="margin-bottom:10px">'+
-      fld('ed_fn','First Name','text',false,e.first_name||'')+
-      fld('ed_ln','Last Name','text',false,e.last_name||'')+
-      fld('ed_ph','Phone','text',false,e.phone||'')+
-      fld('ed_des','Designation','text',false,e.designation||'')+
-      fld('ed_dep','Department','text',false,e.department||'')+
-      '<div><label class="lbl">Employment Type</label><select id="ed_et" class="inp">'+
-        ['permanent','contractor','intern','consultant'].map(function(v){
-          return '<option value="'+v+'"'+(e.employment_type===v?' selected':'')+'>'+v.charAt(0).toUpperCase()+v.slice(1)+'</option>';
-        }).join('')+
-      '</select></div>'+
-      fld('ed_doj','Date of Joining','date',false,e.date_of_joining||'')+
-      fld('ed_dob','Date of Birth','date',false,e.date_of_birth||'')+
-      '</div>'+
-      '<div style="margin-bottom:10px"><label class="lbl">Address</label><textarea id="ed_addr" class="inp" rows="2">'+( e.address||'')+'</textarea></div>'+
-      '<div class="g2">'+
-      fld('ed_ba','Bank Account','text',false,e.bank_account||'')+
-      fld('ed_bn','Bank Name','text',false,e.bank_name||'')+
-      fld('ed_ic','IFSC Code','text',false,e.ifsc_code||'')+
-      fld('ed_pf','PF Number','text',false,e.pf_number||'')+
-      fld('ed_uan','UAN Number','text',false,e.uan_number||'')+
-      '</div></div>'+
-      '<div style="display:flex;gap:8px;margin-top:16px">'+
-      '<button onclick="saveEditEmp('+e.id+')" class="btn bp">Save Changes</button>'+
-      '<button onclick="closeModal()" class="btn bn">Cancel</button></div>'
-    );
-  }).catch(function(err){alert('Could not load employee: '+(err.detail||'Error'));});
+function doDelEmp(id,name){
+  showModal(`<h3 style="font-size:16px;font-weight:600;margin:0 0 12px">Delete Employee</h3>
+    <p style="font-size:13px;color:#475569;margin:0 0 20px">Delete <strong>${name}</strong>? This cannot be undone.</p>
+    <div id="delAlert"></div>
+    <div style="display:flex;gap:8px"><button onclick="confirmDelEmp(${id})" class="btn btn-d">Delete</button><button onclick="closeModal()" class="btn btn-n">Cancel</button></div>`);
+}
+async function confirmDelEmp(id){
+  try{await api('/employees/'+id,'DELETE');closeModal();showEmployees();}
+  catch(e){alert2('delAlert','Failed: '+(e.detail||'Error'));}
 }
 
-function saveEditEmp(id){
-  var data={};
-  var map=[['ed_fn','first_name'],['ed_ln','last_name'],['ed_ph','phone'],['ed_des','designation'],
-           ['ed_dep','department'],['ed_et','employment_type'],['ed_doj','date_of_joining'],
-           ['ed_dob','date_of_birth'],['ed_addr','address'],['ed_ba','bank_account'],
-           ['ed_bn','bank_name'],['ed_ic','ifsc_code'],['ed_pf','pf_number'],['ed_uan','uan_number']];
-  map.forEach(function(p){var el=G(p[0]);if(el&&el.value!=='') data[p[1]]=el.value;});
-  api('/employees/'+id,'PUT',data).then(function(){
-    showAlert('editAlert','Employee updated successfully!','s');
-    setTimeout(function(){closeModal();showEmployees();},1200);
-  }).catch(function(err){showAlert('editAlert',err.detail||'Failed to update');});
+function doTermModal(id,name){
+  const today=new Date().toISOString().split('T')[0];
+  showModal(`<h3 style="font-size:16px;font-weight:600;margin:0 0 16px">Terminate: ${name}</h3>
+    <div style="display:grid;gap:12px">
+      <div><label class="lbl">Reason *</label><textarea id="tReason" class="inp" rows="3" placeholder="Enter termination reason..."></textarea></div>
+      <div><label class="lbl">Date *</label><input id="tDate" type="date" class="inp" value="${today}"></div>
+    </div>
+    <div id="termAlert" style="margin-top:10px"></div>
+    <div style="display:flex;gap:8px;margin-top:16px"><button onclick="confirmTerm(${id})" class="btn btn-d">Confirm Terminate</button><button onclick="closeModal()" class="btn btn-n">Cancel</button></div>`);
+}
+async function confirmTerm(id){
+  const r=$('tReason').value, d=$('tDate').value;
+  if(!r||!d){alert2('termAlert','Fill all fields');return;}
+  try{const res=await api('/employees/'+id+'/terminate','POST',{reason:r,termination_date:d});closeModal();alert('✅ '+res.message);showEmployees();}
+  catch(e){alert2('termAlert','Failed: '+(e.detail||'Error'));}
 }
 
-function openAssignMgrModal(empId){
-  api('/employees/').then(function(emps){
-    showModal(
-      '<h3 style="font-size:16px;font-weight:600;margin:0 0 14px">Assign Manager</h3>'+
-      '<select id="mgrSel" class="inp" style="margin-bottom:12px"><option value="">Select manager...</option>'+
-      emps.filter(function(e){return e.id!==empId;}).map(function(e){
-        return '<option value="'+e.id+'">'+e.first_name+' '+e.last_name+' ('+e.employee_id+')</option>';
-      }).join('')+'</select>'+
-      '<div id="mgrAlert"></div>'+
-      '<div style="display:flex;gap:8px"><button onclick="confirmAssignMgr('+empId+')" class="btn bp">Assign</button><button onclick="closeModal()" class="btn bn">Cancel</button></div>'
-    );
-  });
+async function doAssignMgrModal(empId){
+  const emps=await api('/employees/');
+  showModal(`<h3 style="font-size:16px;font-weight:600;margin:0 0 16px">Assign Manager</h3>
+    <select id="mgrSel" class="inp" style="margin-bottom:16px">
+      <option value="">Select manager...</option>
+      ${emps.filter(e=>e.id!==empId).map(e=>'<option value="'+e.id+'">'+e.first_name+' '+e.last_name+' ('+e.employee_id+')</option>').join('')}
+    </select>
+    <div id="mgrAlert"></div>
+    <div style="display:flex;gap:8px"><button onclick="confirmAssignMgr(${empId})" class="btn btn-p">Assign</button><button onclick="closeModal()" class="btn btn-n">Cancel</button></div>`);
+}
+async function confirmAssignMgr(empId){
+  const mid=$('mgrSel').value; if(!mid){alert2('mgrAlert','Select a manager');return;}
+  try{const r=await api('/employees/'+empId+'/assign-manager','POST',{manager_employee_id:parseInt(mid)});closeModal();alert('✅ '+r.message);}
+  catch(e){alert2('mgrAlert','Failed: '+(e.detail||'Error'));}
 }
 
-function confirmAssignMgr(empId){
-  var mid=G('mgrSel').value;
-  if(!mid){showAlert('mgrAlert','Please select a manager');return;}
-  api('/employees/'+empId+'/assign-manager','POST',{manager_employee_id:parseInt(mid)}).then(function(r){
-    showAlert('mgrAlert',r.message,'s');
-    setTimeout(function(){closeModal();},1000);
-  }).catch(function(err){showAlert('mgrAlert',err.detail||'Failed');});
-}
-
-function openTermModal(id,name){
-  var today=new Date().toISOString().split('T')[0];
-  showModal(
-    '<h3 style="font-size:16px;font-weight:600;margin:0 0 14px">Terminate: '+name+'</h3>'+
-    '<div style="display:grid;gap:12px">'+
-    '<div><label class="lbl">Reason *</label><textarea id="tReason" class="inp" rows="3" placeholder="Enter reason..."></textarea></div>'+
-    fld('tDate','Termination Date','date',true,today)+
-    '</div><div id="termAlert" style="margin-top:10px"></div>'+
-    '<div style="display:flex;gap:8px;margin-top:14px">'+
-    '<button onclick="confirmTerminate('+id+')" class="btn bd">Confirm Terminate</button>'+
-    '<button onclick="closeModal()" class="btn bn">Cancel</button></div>'
-  );
-}
-
-function confirmTerminate(id){
-  var reason=G('tReason').value,date=G('tDate').value;
-  if(!reason||!date){showAlert('termAlert','Please fill all fields');return;}
-  api('/employees/'+id+'/terminate','POST',{reason:reason,termination_date:date}).then(function(r){
-    showAlert('termAlert',r.message,'s');
-    setTimeout(function(){closeModal();showEmployees();},1000);
-  }).catch(function(err){showAlert('termAlert',err.detail||'Failed');});
-}
-
-function doDeleteEmp(id,name){
-  showModal(
-    '<h3 style="font-size:16px;font-weight:600;margin:0 0 12px">Delete Employee</h3>'+
-    '<p style="font-size:13px;color:#475569;margin:0 0 6px">Delete <strong>'+name+'</strong>?</p>'+
-    '<p style="font-size:12px;color:#64748b;margin:0 0 16px">They will appear in <strong>Deleted Employees</strong> and can be reinstated.</p>'+
-    '<div id="delAlert"></div>'+
-    '<div style="display:flex;gap:8px">'+
-    '<button onclick="confirmDeleteEmp('+id+')" class="btn bd">Delete</button>'+
-    '<button onclick="closeModal()" class="btn bn">Cancel</button></div>'
-  );
-}
-
-function confirmDeleteEmp(id){
-  api('/employees/'+id,'DELETE').then(function(r){
-    showAlert('delAlert',r.message,'s');
-    setTimeout(function(){closeModal();showEmployees();},1000);
-  }).catch(function(err){showAlert('delAlert',err.detail||'Failed');});
-}
-
-/* ──────────────────────────── DELETED EMPLOYEES ─────────────────────────── */
-function showDeletedEmps(){
-  setActive('showDeletedEmps');
-  setPage(H1('Deleted Employees')+'<p style="color:#94a3b8">Loading...</p>');
-  api('/employees/inactive').then(function(emps){
-    var banner='<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#92400e">Data preserved. Click Reinstate to restore access.</div>';
-    if(!emps.length){
-      setPage(H1('Deleted Employees')+banner+'<div class="crd" style="text-align:center;padding:48px;color:#94a3b8">No deleted employees</div>');
-      return;
-    }
-    var rows=emps.map(function(e){
-      return '<tr>'+
-        '<td><div style="font-weight:500">'+e.first_name+' '+e.last_name+'</div><div style="font-size:12px;color:#94a3b8">'+e.email+'</div></td>'+
-        '<td style="font-family:monospace;font-size:12px;color:#94a3b8">'+e.employee_id+'</td>'+
-        '<td style="color:#94a3b8">'+(e.designation||'-')+'</td>'+
-        '<td style="color:#94a3b8">'+(e.department||'-')+'</td>'+
-        '<td><span class="bdg bdg-'+(e.status||'terminated')+'">'+(e.status||'inactive')+'</span></td>'+
-        '<td><button onclick="openReinstateModal('+e.id+',\''+e.first_name+' '+e.last_name+'\')" class="btn bs" style="padding:4px 10px;font-size:11px">Reinstate</button></td>'+
-        '</tr>';
-    }).join('');
-    setPage(H1('Deleted Employees ('+emps.length+')')+banner+tbl(['Employee','ID','Designation','Department','Status','Action'],rows));
-  }).catch(function(err){setPage(H1('Deleted Employees')+'<p style="color:#ef4444">Failed: '+(err.detail||'Error')+'</p>');});
-}
-
-function openReinstateModal(id,name){
-  showModal(
-    '<h3 style="font-size:16px;font-weight:600;margin:0 0 12px">Reinstate Employee</h3>'+
-    '<p style="font-size:13px;color:#475569;margin:0 0 6px">Reinstate <strong>'+name+'</strong>?</p>'+
-    '<p style="font-size:12px;color:#64748b;margin:0 0 16px">Their account will be restored and they can log in again.</p>'+
-    '<div id="reinAlert"></div>'+
-    '<div style="display:flex;gap:8px">'+
-    '<button onclick="confirmReinstate('+id+')" class="btn bs">Confirm Reinstate</button>'+
-    '<button onclick="closeModal()" class="btn bn">Cancel</button></div>'
-  );
-}
-
-function confirmReinstate(id){
-  api('/employees/'+id+'/reinstate','POST').then(function(r){
-    showAlert('reinAlert',r.message,'s');
-    setTimeout(function(){closeModal();showDeletedEmps();},1200);
-  }).catch(function(err){showAlert('reinAlert',err.detail||'Failed');});
-}
-
-/* ──────────────────────────── ONBOARDING ────────────────────────────────── */
+// ── ONBOARDING ──
 function showOnboard(){
   setActive('showOnboard');
-  setPage(H1('Employee Onboarding')+
-    '<div class="crd" style="max-width:720px"><div id="onbAlert"></div>'+
-    '<form onsubmit="submitOnboard(event)"><div class="g2" style="margin-bottom:10px">'+
-    fld('ob_fn','First Name','text',true)+fld('ob_ln','Last Name','text',true)+
-    fld('ob_em','Email','email',true)+fld('ob_pw','Password','password',true)+
-    fld('ob_ph','Phone')+fld('ob_des','Designation')+
-    fld('ob_dep','Department')+
-    '<div><label class="lbl">Employment Type</label><select id="ob_et" class="inp"><option value="permanent">Permanent (CH-EMP)</option><option value="contractor">Contractor (CH-CON)</option><option value="intern">Intern (CH-INT)</option><option value="consultant">Consultant</option></select></div>'+
-    fld('ob_doj','Date of Joining','date')+
-    fld('ob_ba','Bank Account')+fld('ob_bn','Bank Name')+
-    fld('ob_ic','IFSC Code')+fld('ob_pf','PF Number')+fld('ob_uan','UAN Number')+
-    '</div><button type="submit" class="btn bp" style="margin-top:6px">Create Employee</button></form></div>'
-  );
+  setPage(h1('Employee Onboarding')+`<div class="card" style="max-width:720px">
+    <div id="onbAlert"></div>
+    <form onsubmit="submitOnboard(event)" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      ${fld('f_fn','First Name','text',true)}${fld('f_ln','Last Name','text',true)}
+      ${fld('f_em','Email','email',true)}${fld('f_pw','Password','password',true)}
+      ${fld('f_ph','Phone')}${fld('f_des','Designation')}
+      ${fld('f_dep','Department')}
+      <div><label class="lbl">Employment Type</label><select id="f_et" class="inp"><option value="permanent">Permanent (CH-EMP)</option><option value="contractor">Contractor (CH-CON)</option><option value="intern">Intern (CH-INT)</option></select></div>
+      ${fld('f_doj','Date of Joining','date')}
+      ${fld('f_ba','Bank Account')}${fld('f_bn','Bank Name')}
+      ${fld('f_ic','IFSC Code')}${fld('f_pf','PF Number')}${fld('f_uan','UAN Number')}
+      <div style="grid-column:span 2"><button type="submit" class="btn btn-p">Create Employee</button></div>
+    </form>
+  </div>`);
 }
-
-function submitOnboard(e){
+async function submitOnboard(e){
   e.preventDefault();
-  var d={first_name:G('ob_fn').value,last_name:G('ob_ln').value,email:G('ob_em').value,password:G('ob_pw').value,employment_type:G('ob_et').value};
-  [['ob_ph','phone'],['ob_des','designation'],['ob_dep','department'],['ob_doj','date_of_joining'],
-   ['ob_ba','bank_account'],['ob_bn','bank_name'],['ob_ic','ifsc_code'],['ob_pf','pf_number'],['ob_uan','uan_number']].forEach(function(p){
-    var v=G(p[0])&&G(p[0]).value; if(v) d[p[1]]=v;
-  });
-  api('/employees/','POST',d).then(function(r){
-    showAlert('onbAlert','Employee created! ID: '+r.employee_id,'s'); e.target.reset();
-  }).catch(function(err){showAlert('onbAlert',err.detail||'Failed');});
+  const d={first_name:$('f_fn').value,last_name:$('f_ln').value,email:$('f_em').value,password:$('f_pw').value};
+  ['f_ph','f_des','f_dep','f_doj','f_ba','f_bn','f_ic','f_pf','f_uan'].forEach((id,i)=>{const v=$(id)?.value;if(v)d[['phone','designation','department','date_of_joining','bank_account','bank_name','ifsc_code','pf_number','uan_number'][i]]=v;});
+  d.employment_type=$('f_et').value;
+  try{const r=await api('/employees/','POST',d);alert2('onbAlert','✅ Created! ID: '+r.employee_id,'s');e.target.reset();}
+  catch(err){alert2('onbAlert','❌ '+(err.detail||'Failed'));}
 }
 
-/* ──────────────────────────── CREATE ADMIN ─────────────────────────────── */
+// ── CREATE ADMIN ──
 function showCreateAdmin(){
   setActive('showCreateAdmin');
-  setPage(H1('Create Admin User')+
-    '<div class="crd" style="max-width:480px"><div id="caAlert"></div>'+
-    '<form onsubmit="submitCreateAdmin(event)"><div class="g2" style="margin-bottom:10px">'+
-    fld('ca_fn','First Name','text',true)+fld('ca_ln','Last Name','text',true)+
-    fld('ca_em','Email','email',true)+fld('ca_pw','Password','password',true)+
-    '</div><button type="submit" class="btn bp">Create Admin</button></form></div>'
-  );
+  setPage(h1('Create Admin User')+`<div class="card" style="max-width:480px">
+    <div id="caAlert"></div>
+    <form onsubmit="submitCreateAdmin(event)" style="display:grid;gap:14px">
+      ${fld('ca_fn','First Name','text',true)}${fld('ca_ln','Last Name','text',true)}
+      ${fld('ca_em','Email','email',true)}${fld('ca_pw','Password','password',true)}
+      <button type="submit" class="btn btn-p">Create Admin</button>
+    </form>
+  </div>`);
 }
-
-function submitCreateAdmin(e){
+async function submitCreateAdmin(e){
   e.preventDefault();
-  api('/employees/admin/create','POST',{first_name:G('ca_fn').value,last_name:G('ca_ln').value,email:G('ca_em').value,password:G('ca_pw').value}).then(function(r){
-    showAlert('caAlert',r.message,'s'); e.target.reset();
-  }).catch(function(err){showAlert('caAlert',err.detail||'Failed');});
+  try{const r=await api('/employees/admin/create','POST',{first_name:$('ca_fn').value,last_name:$('ca_ln').value,email:$('ca_em').value,password:$('ca_pw').value});alert2('caAlert','✅ '+r.message,'s');e.target.reset();}
+  catch(err){alert2('caAlert','❌ '+(err.detail||'Failed'));}
 }
 
-/* ──────────────────────────── TIMESHEETS (admin/mgr) ────────────────────── */
-function showTimesheets(){
+// ── TIMESHEETS (admin/manager) ──
+async function showTimesheets(){
   setActive('showTimesheets');
-  setPage(H1('Timesheets')+'<p style="color:#94a3b8">Loading...</p>');
-  api('/timesheets/').then(function(ts){
-    var rows=ts.length?ts.map(function(t){
-      return '<tr>'+
-        '<td style="font-size:12px;font-family:monospace;color:#2563eb">'+t.employee_id+'</td>'+
-        '<td>'+t.date+'</td><td>'+t.hours_worked+'h</td>'+
-        '<td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(t.task_description||'-')+'</td>'+
-        '<td><span class="bdg bdg-'+t.status+'">'+t.status+'</span></td>'+
-        '<td>'+(t.status==='pending'?
-          '<button onclick="approveTS('+t.id+',\'approved\')" class="btn bs" style="padding:3px 8px;font-size:11px;margin-right:3px">Approve</button>'+
-          '<button onclick="approveTS('+t.id+',\'rejected\')" class="btn bd" style="padding:3px 8px;font-size:11px">Reject</button>':'-')+'</td></tr>';
-    }).join(''):null;
-    setPage(H1('Timesheets')+tbl(['Emp ID','Date','Hours','Task','Status','Actions'],rows,'No timesheets'));
-  }).catch(function(){setPage(H1('Timesheets')+'<p style="color:#ef4444">Failed</p>');});
+  setPage(h1('Timesheets')+'<p style="color:#94a3b8">Loading...</p>');
+  try{
+    const ts=await api('/timesheets/');
+    setPage(h1('Timesheets')+tblWrap(
+      ['Emp ID','Date','Hours','Task','Status','Actions'].map(th).join(''),
+      ts.length?ts.map(t=>`<tr>
+        <td style="font-size:12px;font-family:monospace;color:#2563eb">${t.employee_id}</td>
+        <td>${t.date}</td><td>${t.hours_worked}h</td>
+        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.task_description||'-'}</td>
+        <td><span class="badge badge-${t.status}">${t.status}</span></td>
+        <td>${t.status==='pending'?`<button onclick="approveTS(${t.id},'approved')" class="btn btn-s" style="padding:3px 8px;font-size:11px;margin-right:4px">Approve</button><button onclick="approveTS(${t.id},'rejected')" class="btn btn-d" style="padding:3px 8px;font-size:11px">Reject</button>`:'-'}</td>
+      </tr>`).join(''):noRows(6,'No timesheets')
+    ));
+  }catch(e){setPage(h1('Timesheets')+'<p style="color:#ef4444">Failed</p>');}
+}
+async function approveTS(id,status){
+  try{await api('/timesheets/'+id+'/approve','PUT',{status});showTimesheets();}catch(e){alert('Failed');}
 }
 
-function approveTS(id,status){
-  api('/timesheets/'+id+'/approve','PUT',{status:status}).then(function(){showTimesheets();}).catch(function(){alert('Failed');});
+// ── LEAVE REQUESTS (admin/manager) ──
+async function showLeaveReq(){
+  setActive('showLeaveReq');
+  setPage(h1('Leave Requests')+'<p style="color:#94a3b8">Loading...</p>');
+  try{
+    const lv=await api('/leaves/all');
+    setPage(h1('Leave Requests')+tblWrap(
+      ['Emp ID','Type','From','To','Days','Reason','Status','Actions'].map(th).join(''),
+      lv.length?lv.map(l=>`<tr>
+        <td style="font-size:12px;font-family:monospace;color:#2563eb">${l.employee_id}</td>
+        <td><span class="badge" style="background:#ede9fe;color:#5b21b6">${l.leave_type.toUpperCase()}</span></td>
+        <td>${l.start_date}</td><td>${l.end_date}</td>
+        <td style="font-weight:600">${l.days}d</td>
+        <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px">${l.reason||'-'}</td>
+        <td><span class="badge badge-${l.status}">${l.status}</span></td>
+        <td>${l.status==='pending'?`<button onclick="reviewLeave(${l.id},'approved')" class="btn btn-s" style="padding:3px 8px;font-size:11px;margin-right:4px">Approve</button><button onclick="reviewLeave(${l.id},'rejected')" class="btn btn-d" style="padding:3px 8px;font-size:11px">Reject</button>`:'-'}</td>
+      </tr>`).join(''):noRows(8,'No leave requests')
+    ));
+  }catch(e){setPage(h1('Leave Requests')+'<p style="color:#ef4444">Failed</p>');}
+}
+async function reviewLeave(id,status){
+  try{await api('/leaves/'+id+'/review','PUT',{status});showLeaveReq();}catch(e){alert('Failed');}
 }
 
-/* ──────────────────────────── LEAVE REQUESTS ────────────────────────────── */
-function showLeaveReqs(){
-  setActive('showLeaveReqs');
-  setPage(H1('Leave Requests')+'<p style="color:#94a3b8">Loading...</p>');
-  api('/leaves/all').then(function(lv){
-    var rows=lv.length?lv.map(function(l){
-      return '<tr>'+
-        '<td style="font-size:12px;font-family:monospace;color:#2563eb">'+l.employee_id+'</td>'+
-        '<td><span class="bdg" style="background:#ede9fe;color:#5b21b6">'+l.leave_type.toUpperCase()+'</span></td>'+
-        '<td>'+l.start_date+'</td><td>'+l.end_date+'</td>'+
-        '<td style="font-weight:600">'+l.days+'d</td>'+
-        '<td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px">'+(l.reason||'-')+'</td>'+
-        '<td><span class="bdg bdg-'+l.status+'">'+l.status+'</span></td>'+
-        '<td>'+(l.status==='pending'?
-          '<button onclick="reviewLeave('+l.id+',\'approved\')" class="btn bs" style="padding:3px 8px;font-size:11px;margin-right:3px">Approve</button>'+
-          '<button onclick="reviewLeave('+l.id+',\'rejected\')" class="btn bd" style="padding:3px 8px;font-size:11px">Reject</button>':'-')+'</td></tr>';
-    }).join(''):null;
-    setPage(H1('Leave Requests')+tbl(['Emp ID','Type','From','To','Days','Reason','Status','Actions'],rows,'No leave requests'));
-  }).catch(function(){setPage(H1('Leave Requests')+'<p style="color:#ef4444">Failed</p>');});
-}
-
-function reviewLeave(id,status){
-  api('/leaves/'+id+'/review','PUT',{status:status}).then(function(){showLeaveReqs();}).catch(function(){alert('Failed');});
-}
-
-/* ──────────────────────────── PAYROLL ───────────────────────────────────── */
-function showPayroll(){
+// ── PAYROLL ──
+async function showPayroll(){
   setActive('showPayroll');
-  setPage(H1('Payroll')+'<p style="color:#94a3b8">Loading...</p>');
-  Promise.all([api('/employees/'),api('/payroll/records')]).then(function(res){
-    var emps=res[0],recs=res[1];
-    var eOpts1=emps.map(function(e){return '<option value="'+e.id+'">'+e.first_name+' '+e.last_name+' ('+e.employee_id+')</option>';}).join('');
-    var eOpts2=emps.map(function(e){return '<option value="'+e.id+'">'+e.first_name+' '+e.last_name+'</option>';}).join('');
-    var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    var recRows=recs.length?recs.map(function(r){
-      return '<tr>'+
-        '<td style="font-size:12px;font-family:monospace;color:#2563eb">#'+r.employee_id+'</td>'+
-        '<td>'+new Date(r.year,r.month-1).toLocaleString('en',{month:'short',year:'numeric'})+'</td>'+
-        '<td>&#8377;'+Number(r.basic).toLocaleString('en-IN')+'</td>'+
-        '<td>&#8377;'+Number(r.gross_salary).toLocaleString('en-IN')+'</td>'+
-        '<td style="color:#dc2626">-&#8377;'+Number(r.total_deductions).toLocaleString('en-IN')+'</td>'+
-        '<td style="font-weight:700;color:#059669">&#8377;'+Number(r.net_salary).toLocaleString('en-IN')+'</td>'+
-        '<td><a href="/payroll/slip/'+r.id+'" target="_blank" class="btn bn" style="padding:3px 10px;font-size:11px">PDF</a></td></tr>';
-    }).join(''):null;
-    setPage(H1('Payroll Management')+
-      '<div class="crd" style="margin-bottom:16px">'+
-      '<h3 style="font-size:14px;font-weight:600;margin:0 0 4px">Salary Configuration</h3>'+
-      '<p style="font-size:12px;color:#94a3b8;margin:0 0 12px">Set salary components per employee before generating payslips</p>'+
-      '<div style="margin-bottom:12px"><label class="lbl">Select Employee</label>'+
-      '<select id="scEmp" class="inp" onchange="loadSalaryComp(this.value)"><option value="">Select employee to configure...</option>'+eOpts1+'</select></div>'+
-      '<div class="g2" style="margin-bottom:10px">'+
-      fld('sc_basic','Basic Salary','number')+fld('sc_hra','HRA','number')+
-      fld('sc_allow','Allowances','number')+fld('sc_bonus','Bonus','number')+
-      fld('sc_pf','PF Deduction','number')+fld('sc_pt','Professional Tax','number')+
-      fld('sc_it','Income Tax','number')+fld('sc_date','Effective From','date')+
-      '</div><div id="scAlert" style="margin-bottom:8px"></div>'+
-      '<button onclick="saveSalaryComp()" class="btn bp">Save Salary Config</button>'+
-      '</div>'+
-      '<div class="crd" style="margin-bottom:16px">'+
-      '<h3 style="font-size:14px;font-weight:600;margin:0 0 12px">Generate Payslip</h3>'+
-      '<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">'+
-      '<div><label class="lbl">Employee</label><select id="pEmp" class="inp" style="min-width:180px"><option value="">Select...</option>'+eOpts2+'</select></div>'+
-      '<div><label class="lbl">Month</label><select id="pMo" class="inp">'+months.map(function(m,i){return '<option value="'+(i+1)+'">'+m+'</option>';}).join('')+'</select></div>'+
-      '<div><label class="lbl">Year</label><input id="pYr" type="number" value="'+new Date().getFullYear()+'" class="inp" style="width:90px"></div>'+
-      '<div id="payAlert" style="flex:1"></div>'+
-      '<button onclick="genPayslip()" class="btn bs">Generate</button></div></div>'+
-      tbl(['Emp ID','Period','Basic','Gross','Deductions','Net Pay','PDF'],recRows,'No payslips yet. Configure salary components first.')
-    );
-  }).catch(function(){setPage(H1('Payroll')+'<p style="color:#ef4444">Failed</p>');});
+  setPage(h1('Payroll')+'<p style="color:#94a3b8">Loading...</p>');
+  try{
+    const [emps,recs]=await Promise.all([api('/employees/'),api('/payroll/records')]);
+    setPage(h1('Payroll Management')+
+      // ── SALARY CONFIGURATION ──
+      `<div class="card" style="margin-bottom:20px">
+        <h3 style="font-size:14px;font-weight:600;margin:0 0 4px">⚙️ Salary Configuration</h3>
+        <p style="font-size:12px;color:#94a3b8;margin:0 0 14px">Set salary components before generating payslips</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+          <div style="grid-column:span 2">
+            <label class="lbl">Employee</label>
+            <select id="scEmp" class="inp" onchange="loadSalaryComp(this.value)">
+              <option value="">Select employee to configure...</option>
+              ${emps.map(e=>'<option value="'+e.id+'">'+e.first_name+' '+e.last_name+' ('+e.employee_id+')</option>').join('')}
+            </select>
+          </div>
+          <div><label class="lbl">Basic Salary (₹)</label><input id="sc_basic" type="number" class="inp" placeholder="e.g. 50000" min="0"></div>
+          <div><label class="lbl">HRA (₹)</label><input id="sc_hra" type="number" class="inp" placeholder="e.g. 20000" min="0"></div>
+          <div><label class="lbl">Allowances (₹)</label><input id="sc_allow" type="number" class="inp" placeholder="e.g. 10000" min="0"></div>
+          <div><label class="lbl">Bonus (₹)</label><input id="sc_bonus" type="number" class="inp" placeholder="e.g. 5000" min="0"></div>
+          <div><label class="lbl">PF Deduction (₹)</label><input id="sc_pf" type="number" class="inp" placeholder="e.g. 6000" min="0"></div>
+          <div><label class="lbl">Professional Tax (₹)</label><input id="sc_pt" type="number" class="inp" placeholder="e.g. 200" min="0"></div>
+          <div><label class="lbl">Income Tax (₹)</label><input id="sc_it" type="number" class="inp" placeholder="e.g. 2000" min="0"></div>
+          <div><label class="lbl">Effective From</label><input id="sc_date" type="date" class="inp"></div>
+        </div>
+        <div id="scAlert" style="margin-bottom:10px"></div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button onclick="saveSalaryComp()" class="btn btn-p">💾 Save Salary Config</button>
+          <span style="font-size:12px;color:#94a3b8">Changes apply from next payslip generation</span>
+        </div>
+      </div>`+
+      // ── GENERATE PAYSLIP ──
+      `<div class="card" style="margin-bottom:20px">
+        <h3 style="font-size:14px;font-weight:600;margin:0 0 14px">📄 Generate Payslip</h3>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
+          <div><label class="lbl">Employee</label><select id="pEmp" class="inp" style="min-width:180px"><option value="">Select...</option>${emps.map(e=>'<option value="'+e.id+'">'+e.first_name+' '+e.last_name+'</option>').join('')}</select></div>
+          <div><label class="lbl">Month</label><select id="pMo" class="inp">${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map((m,i)=>'<option value="'+(i+1)+'">'+m+'</option>').join('')}</select></div>
+          <div><label class="lbl">Year</label><input id="pYr" type="number" value="${new Date().getFullYear()}" class="inp" style="width:90px"></div>
+          <div id="payAlert" style="flex:1"></div>
+          <button onclick="genPayslip()" class="btn btn-s">Generate Payslip</button>
+        </div>
+      </div>`+
+      // ── PAYSLIP RECORDS ──
+      tblWrap(
+        ['Employee','Period','Basic','Gross','Deductions','Net Pay','PDF'].map(th).join(''),
+        recs.length?recs.map(r=>`<tr>
+          <td style="font-size:12px;font-family:monospace;color:#2563eb">#${r.employee_id}</td>
+          <td>${new Date(r.year,r.month-1).toLocaleString('en',{month:'short',year:'numeric'})}</td>
+          <td>₹${Number(r.basic).toLocaleString('en-IN')}</td>
+          <td>₹${Number(r.gross_salary).toLocaleString('en-IN')}</td>
+          <td style="color:#dc2626">-₹${Number(r.total_deductions).toLocaleString('en-IN')}</td>
+          <td style="font-weight:700;color:#059669">₹${Number(r.net_salary).toLocaleString('en-IN')}</td>
+          <td><a href="/payroll/slip/${r.id}" target="_blank" class="btn btn-n" style="padding:3px 10px;font-size:12px">PDF</a></td>
+        </tr>`).join(''):noRows(7,'No payslips generated yet. Configure salary components above and click Generate.')
+      ));
+  }catch(e){setPage(h1('Payroll')+'<p style="color:#ef4444">Failed to load</p>');}
 }
 
-function loadSalaryComp(empId){
+async function loadSalaryComp(empId){
   if(!empId) return;
-  api('/payroll/components/'+empId).then(function(c){
-    G('sc_basic').value=c.basic||0; G('sc_hra').value=c.hra||0;
-    G('sc_allow').value=c.allowances||0; G('sc_bonus').value=c.bonus||0;
-    G('sc_pf').value=c.pf_deduction||0; G('sc_pt').value=c.professional_tax||0;
-    G('sc_it').value=c.income_tax||0; G('sc_date').value=c.effective_from||'';
-    showAlert('scAlert','Existing salary config loaded','s');
-  }).catch(function(){
-    ['sc_basic','sc_hra','sc_allow','sc_bonus','sc_pf','sc_pt','sc_it','sc_date'].forEach(function(id){if(G(id)) G(id).value='';});
-  });
+  try{
+    const c = await api('/payroll/components/'+empId);
+    $('sc_basic').value = c.basic || '';
+    $('sc_hra').value = c.hra || '';
+    $('sc_allow').value = c.allowances || '';
+    $('sc_bonus').value = c.bonus || '';
+    $('sc_pf').value = c.pf_deduction || '';
+    $('sc_pt').value = c.professional_tax || '';
+    $('sc_it').value = c.income_tax || '';
+    $('sc_date').value = c.effective_from || '';
+    alert2('scAlert','✅ Loaded existing salary configuration','s');
+  }catch(e){
+    // 404 = not configured yet, clear fields
+    $('sc_basic').value=''; $('sc_hra').value=''; $('sc_allow').value='';
+    $('sc_bonus').value=''; $('sc_pf').value=''; $('sc_pt').value='';
+    $('sc_it').value=''; $('sc_date').value='';
+    if(e.detail && e.detail.includes('404')) alert2('scAlert','No salary configured yet for this employee — fill in the fields and save','s');
+  }
 }
 
-function saveSalaryComp(){
-  var emp=G('scEmp').value;
-  if(!emp){showAlert('scAlert','Please select an employee first');return;}
-  var data={employee_id:parseInt(emp),basic:parseFloat(G('sc_basic').value)||0,hra:parseFloat(G('sc_hra').value)||0,allowances:parseFloat(G('sc_allow').value)||0,bonus:parseFloat(G('sc_bonus').value)||0,pf_deduction:parseFloat(G('sc_pf').value)||0,professional_tax:parseFloat(G('sc_pt').value)||0,income_tax:parseFloat(G('sc_it').value)||0};
-  var d=G('sc_date').value; if(d) data.effective_from=d;
-  api('/payroll/components','POST',data).then(function(){
-    showAlert('scAlert','Salary configuration saved!','s');
-  }).catch(function(err){showAlert('scAlert',err.detail||'Failed');});
+async function saveSalaryComp(){
+  const emp=$('scEmp').value;
+  if(!emp){alert2('scAlert','Select an employee first');return;}
+  const data={
+    employee_id:parseInt(emp),
+    basic:parseFloat($('sc_basic').value)||0,
+    hra:parseFloat($('sc_hra').value)||0,
+    allowances:parseFloat($('sc_allow').value)||0,
+    bonus:parseFloat($('sc_bonus').value)||0,
+    pf_deduction:parseFloat($('sc_pf').value)||0,
+    professional_tax:parseFloat($('sc_pt').value)||0,
+    income_tax:parseFloat($('sc_it').value)||0,
+  };
+  const d=$('sc_date').value; if(d) data.effective_from=d;
+  try{
+    await api('/payroll/components','POST',data);
+    alert2('scAlert','✅ Salary configuration saved successfully!','s');
+  }catch(err){alert2('scAlert','❌ '+(err.detail||'Failed to save'));}
 }
 
-function genPayslip(){
-  var emp=G('pEmp').value;
-  if(!emp){showAlert('payAlert','Please select an employee');return;}
-  api('/payroll/generate','POST',{employee_id:parseInt(emp),month:parseInt(G('pMo').value),year:parseInt(G('pYr').value)}).then(function(){
-    showAlert('payAlert','Payslip generated!','s'); setTimeout(showPayroll,1200);
-  }).catch(function(err){showAlert('payAlert',err.detail||'Set salary components first');});
+async function genPayslip(){
+  const emp=$('pEmp').value;
+  if(!emp){alert2('payAlert','Select employee');return;}
+  try{await api('/payroll/generate','POST',{employee_id:parseInt(emp),month:parseInt($('pMo').value),year:parseInt($('pYr').value)});alert2('payAlert','✅ Payslip generated!','s');setTimeout(showPayroll,1200);}
+  catch(err){alert2('payAlert','❌ '+(err.detail||'Configure salary components first'));}
 }
 
-/* ──────────────────────────── HOLIDAYS & LEAVES ─────────────────────────── */
-function showHolidaysLeaves(){
+// ── HOLIDAYS & LEAVES ──
+async function showHolidaysLeaves(){
   setActive('showHolidaysLeaves');
-  setPage(H1('Holidays & Leaves')+'<p style="color:#94a3b8">Loading...</p>');
-  Promise.all([api('/holidays/'),api('/leaves/config')]).then(function(res){
-    var hs=res[0],lc=res[1],isA=role==='admin';
-    setPage(H1('Holidays & Leaves')+
-      (lc.length?'<div class="crd" style="margin-bottom:16px"><h3 style="font-size:14px;font-weight:600;margin:0 0 12px">Leave Policy</h3>'+
-        '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px">'+
-        lc.map(function(l){return '<div style="border:1px solid #e2e8f0;border-radius:8px;padding:12px;text-align:center"><div style="font-weight:700;font-size:12px;color:#1e3a5f">'+l.leave_type.toUpperCase()+'</div><div style="font-size:11px;color:#64748b;margin-top:2px">'+(l.description||'')+'</div><div style="font-size:22px;font-weight:700;color:#2563eb;margin:6px 0 2px">'+l.days_per_year+'</div><div style="font-size:11px;color:#94a3b8">days/year</div></div>';}).join('')+
-        '</div></div>':'')+
-      (isA?'<div class="crd" style="margin-bottom:16px"><h3 style="font-size:14px;font-weight:600;margin:0 0 12px">Add Holiday</h3>'+
-        '<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">'+
-        '<div><label class="lbl">Name</label><input id="hName" class="inp" style="width:200px" placeholder="e.g. Diwali"/></div>'+
-        '<div><label class="lbl">Date</label><input id="hDate" type="date" class="inp" style="width:160px"/></div>'+
-        '<button onclick="addHoliday()" class="btn bp">Add</button></div></div>':'')+
-      tbl(isA?['Holiday','Date','Day','Actions']:['Holiday','Date','Day'],
-        hs.length?hs.map(function(h){
-          var day=new Date(h.date+'T00:00:00').toLocaleDateString('en-IN',{weekday:'long'});
-          return '<tr><td style="font-weight:500">'+h.name+'</td><td>'+h.date+'</td><td style="color:#64748b">'+day+'</td>'+
-            (isA?'<td><button onclick="delHoliday('+h.id+')" class="btn bn" style="padding:3px 8px;font-size:11px;color:#dc2626">Delete</button></td>':'')+
-            '</tr>';
-        }).join(''):null,'No holidays defined')
-    );
-  }).catch(function(){setPage(H1('Holidays & Leaves')+'<p style="color:#ef4444">Failed</p>');});
+  setPage(h1('Holidays & Leaves')+'<p style="color:#94a3b8">Loading...</p>');
+  try{
+    const [hs,lc]=await Promise.all([api('/holidays/'),api('/leaves/config')]);
+    const isA=role==='admin';
+    setPage(h1('Holidays & Leaves')+
+      (lc.length?`<div class="card" style="margin-bottom:20px"><h3 style="font-size:14px;font-weight:600;margin:0 0 12px">Leave Policy</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px">
+          ${lc.map(l=>`<div style="border:1px solid #e2e8f0;border-radius:8px;padding:12px;text-align:center">
+            <div style="font-weight:700;font-size:13px;color:#1e3a5f">${l.leave_type.toUpperCase()}</div>
+            <div style="font-size:11px;color:#64748b;margin-top:2px">${l.description||''}</div>
+            <div style="font-size:18px;font-weight:700;color:#2563eb;margin-top:6px">${l.days_per_year}</div>
+            <div style="font-size:11px;color:#94a3b8">days/year</div>
+          </div>`).join('')}
+        </div>
+      </div>`:'')+
+      (isA?`<div class="card" style="margin-bottom:20px"><h3 style="font-size:14px;font-weight:600;margin:0 0 12px">Add Holiday</h3>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
+          <div><label class="lbl">Name</label><input id="hName" class="inp" style="width:200px" placeholder="e.g. Diwali"/></div>
+          <div><label class="lbl">Date</label><input id="hDate" type="date" class="inp" style="width:160px"/></div>
+          <button onclick="addHoliday()" class="btn btn-p">Add Holiday</button>
+        </div>
+      </div>`:'')+
+      tblWrap(
+        (['Holiday','Date','Day'].concat(isA?['Actions']:[])).map(th).join(''),
+        hs.length?hs.map(h=>`<tr>
+          <td style="font-weight:500">${h.name}</td>
+          <td>${h.date}</td>
+          <td style="color:#64748b">${new Date(h.date+'T00:00:00').toLocaleDateString('en-IN',{weekday:'long'})}</td>
+          ${isA?`<td><button onclick="delHoliday(${h.id})" class="btn btn-n" style="padding:3px 8px;font-size:11px;color:#dc2626">Delete</button></td>`:''}
+        </tr>`).join(''):noRows(isA?4:3,'No holidays defined')
+      ));
+  }catch(e){setPage(h1('Holidays & Leaves')+'<p style="color:#ef4444">Failed</p>');}
+}
+async function addHoliday(){
+  const n=$('hName').value,d=$('hDate').value;
+  if(!n||!d)return;
+  try{await api('/holidays/','POST',{name:n,date:d});showHolidaysLeaves();}catch(e){alert('Failed');}
+}
+async function delHoliday(id){
+  if(!confirm('Delete this holiday?'))return;
+  try{await api('/holidays/'+id,'DELETE');showHolidaysLeaves();}catch(e){alert('Failed');}
 }
 
-function addHoliday(){
-  var n=G('hName').value,d=G('hDate').value; if(!n||!d) return;
-  api('/holidays/','POST',{name:n,date:d}).then(function(){showHolidaysLeaves();}).catch(function(){alert('Failed');});
-}
-function delHoliday(id){
-  if(!confirm('Delete this holiday?')) return;
-  api('/holidays/'+id,'DELETE').then(function(){showHolidaysLeaves();}).catch(function(){alert('Failed');});
-}
-
-/* ──────────────────────────── DOCUMENTS ─────────────────────────────────── */
-function showDocs(){
+// ── DOCUMENTS ──
+async function showDocs(){
   setActive('showDocs');
-  setPage(H1('HR Documents')+'<p style="color:#94a3b8">Loading...</p>');
-  api('/documents/').then(function(docs){
-    setPage(H1('HR Documents')+(docs.length?
-      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px">'+
-      docs.map(function(d){return '<div class="crd"><div style="font-weight:600;font-size:14px;color:#1e293b;margin-bottom:6px">'+d.title+'</div><div style="font-size:12px;color:#94a3b8">'+d.file_name+'</div><div style="font-size:11px;color:#94a3b8;margin-top:4px">'+new Date(d.created_at).toLocaleDateString('en-IN')+'</div></div>';}).join('')+'</div>':
-      '<div class="crd" style="text-align:center;padding:48px;color:#94a3b8">No documents available</div>'));
-  }).catch(function(){setPage(H1('Documents')+'<p style="color:#ef4444">Failed</p>');});
+  setPage(h1('HR Documents')+'<p style="color:#94a3b8">Loading...</p>');
+  try{
+    const d=await api('/documents/');
+    setPage(h1('HR Documents')+(d.length?
+      `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px">${d.map(doc=>`<div class="card"><div style="font-weight:600;font-size:14px;color:#1e293b;margin-bottom:6px">📄 ${doc.title}</div><div style="font-size:12px;color:#94a3b8">${doc.file_name}</div><div style="font-size:11px;color:#94a3b8;margin-top:4px">${new Date(doc.created_at).toLocaleDateString('en-IN')}</div></div>`).join('')}</div>`:
+      '<div class="card" style="text-align:center;padding:48px;color:#94a3b8">No documents available</div>'));
+  }catch(e){setPage(h1('Documents')+'<p style="color:#ef4444">Failed</p>');}
 }
 
-/* ──────────────────────────── RESIGNATIONS ──────────────────────────────── */
-function showResignations(){
+// ── RESIGNATIONS ──
+async function showResignations(){
   setActive('showResignations');
-  setPage(H1('Resignation Requests')+'<p style="color:#94a3b8">Loading...</p>');
-  api('/employees/resignations/all').then(function(recs){
-    var rows=recs.length?recs.map(function(r){
-      return '<tr><td style="font-size:12px;font-family:monospace;color:#2563eb">'+r.employee_id+'</td><td>'+r.notice_date+'</td><td>'+(r.last_working_date||'-')+'</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px">'+(r.reason||'-')+'</td><td><span class="bdg bdg-pending">'+r.status+'</span></td></tr>';
-    }).join(''):null;
-    setPage(H1('Resignation Requests')+tbl(['Emp ID','Notice Date','Last Working Day','Reason','Status'],rows,'No resignation requests'));
-  }).catch(function(){setPage(H1('Resignations')+'<p style="color:#ef4444">Failed</p>');});
+  setPage(h1('Resignation Requests')+'<p style="color:#94a3b8">Loading...</p>');
+  try{
+    const r=await api('/employees/resignations/all');
+    setPage(h1('Resignation Requests')+tblWrap(
+      ['Emp ID','Notice Date','Last Working Day','Reason','Status'].map(th).join(''),
+      r.length?r.map(x=>`<tr>
+        <td style="font-size:12px;font-family:monospace;color:#2563eb">${x.employee_id}</td>
+        <td>${x.notice_date}</td><td>${x.last_working_date||'-'}</td>
+        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px">${x.reason||'-'}</td>
+        <td><span class="badge badge-pending">${x.status}</span></td>
+      </tr>`).join(''):noRows(5,'No resignation requests')
+    ));
+  }catch(e){setPage(h1('Resignations')+'<p style="color:#ef4444">Failed</p>');}
 }
 
-/* ──────────────────────────── EMPLOYEE DASHBOARD ────────────────────────── */
-function showEmpDash(){
+// ── EMPLOYEE DASHBOARD ──
+async function showEmpDash(){
   setActive('showEmpDash');
-  setPage(H1('My Dashboard')+'<p style="color:#94a3b8">Loading...</p>');
-  Promise.all([api('/employees/me'),api('/timesheets/'),api('/leaves/my').catch(function(){return[];})]).then(function(res){
-    var p=res[0],ts=res[1],lv=res[2];
+  setPage(h1('My Dashboard')+'<p style="color:#94a3b8">Loading...</p>');
+  try{
+    const [p,ts,lv]=await Promise.all([api('/employees/me'),api('/timesheets/'),api('/leaves/my').catch(()=>[])]);
     myEmpId=p.id;
-    var approved=ts.filter(function(t){return t.status==='approved';}).length;
-    var pending=ts.filter(function(t){return t.status==='pending';}).length;
-    var pendLv=Array.isArray(lv)?lv.filter(function(l){return l.status==='pending';}).length:0;
-    setPage(H1('Welcome, '+p.first_name+'!')+
-      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:22px">'+
-      scard('Employee ID',p.employee_id,'#2563eb','🆔')+
-      scard('Approved',approved,'#10b981','✅')+
-      scard('Pending TS',pending,'#f59e0b','⏳')+
-      scard('Pending Leaves',pendLv,'#8b5cf6','🌴')+'</div>'+
-      '<div class="crd"><h3 style="font-size:14px;font-weight:600;margin:0 0 14px">My Details</h3><div class="g2">'+
-      [['Name',p.first_name+' '+p.last_name],['Email',p.email],['Designation',p.designation||'-'],['Department',p.department||'-'],['Type',p.employment_type],['Joined',p.date_of_joining||'-']].map(function(kv){
-        return '<div><div style="font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px">'+kv[0]+'</div><div style="font-size:13px;font-weight:500;color:#1e293b;margin-top:2px">'+kv[1]+'</div></div>';
-      }).join('')+'</div></div>'
-    );
-  }).catch(function(){setPage(H1('Dashboard')+'<p style="color:#ef4444">Failed</p>');});
+    setPage(h1('Welcome, '+p.first_name+'!')+
+      `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px">
+        ${sc('Employee ID',p.employee_id,'#2563eb','🆔')}
+        ${sc('Approved',ts.filter(t=>t.status==='approved').length,'#10b981','✅')}
+        ${sc('Pending TS',ts.filter(t=>t.status==='pending').length,'#f59e0b','⏳')}
+        ${sc('Pending Leaves',Array.isArray(lv)?lv.filter(l=>l.status==='pending').length:0,'#8b5cf6','🌴')}
+      </div>`+
+      `<div class="card"><h3 style="font-size:14px;font-weight:600;margin:0 0 14px">My Details</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          ${[['Name',p.first_name+' '+p.last_name],['Email',p.email],['Designation',p.designation||'-'],['Department',p.department||'-'],['Type',p.employment_type],['Joined',p.date_of_joining||'-']].map(([k,v])=>`<div><div style="font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px">${k}</div><div style="font-size:13px;font-weight:500;color:#1e293b;margin-top:2px">${v}</div></div>`).join('')}
+        </div>
+      </div>`);
+  }catch(e){setPage(h1('Dashboard')+'<p style="color:#ef4444">Failed</p>');}
 }
 
-/* ──────────────────────────── MY TIMESHEETS ─────────────────────────────── */
-function showMyTimesheets(){
+// ── MY TIMESHEETS ──
+async function showMyTimesheets(){
   setActive('showMyTimesheets');
-  var today=new Date().toISOString().split('T')[0];
-  setPage(H1('My Timesheets')+'<p style="color:#94a3b8">Loading...</p>');
-  api('/timesheets/').then(function(ts){
-    var rows=ts.length?ts.map(function(t){
-      return '<tr><td>'+t.date+'</td><td>'+t.hours_worked+'h</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(t.task_description||'-')+'</td><td>'+(t.project||'-')+'</td><td><span class="bdg bdg-'+t.status+'">'+t.status+'</span>'+(t.rejection_reason?'<div style="font-size:11px;color:#dc2626;margin-top:2px">'+t.rejection_reason+'</div>':'')+'</td></tr>';
-    }).join(''):null;
-    setPage(H1('My Timesheets')+
-      '<div class="crd" style="margin-bottom:16px"><h3 style="font-size:14px;font-weight:600;margin:0 0 12px">Submit Timesheet</h3>'+
-      '<div id="tsAlert"></div><div class="g2">'+
-      fld('tsD','Date','date')+fld('tsH','Hours','number')+
-      '<div style="grid-column:span 2"><label class="lbl">Task Description</label><textarea id="tsT" class="inp" rows="2" placeholder="What did you work on?"></textarea></div>'+
-      fld('tsP','Project')+
-      '<div style="display:flex;align-items:flex-end"><button onclick="submitTS()" class="btn bp">Submit</button></div>'+
-      '</div></div>'+
-      tbl(['Date','Hours','Task','Project','Status'],rows,'No timesheets yet')
-    );
-    G('tsD').value=today; G('tsH').value='8';
-  }).catch(function(){setPage(H1('My Timesheets')+'<p style="color:#ef4444">Failed</p>');});
+  const today=new Date().toISOString().split('T')[0];
+  setPage(h1('My Timesheets'));
+  try{
+    const ts=await api('/timesheets/');
+    setPage(h1('My Timesheets')+
+      `<div class="card" style="margin-bottom:20px"><h3 style="font-size:14px;font-weight:600;margin:0 0 14px">Submit Timesheet</h3>
+        <div id="tsAlert"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          ${fld('tsD','Date','date')}${fld('tsH','Hours','number')}
+          <div style="grid-column:span 2"><label class="lbl">Task Description</label><textarea id="tsT" class="inp" rows="2" placeholder="What did you work on?"></textarea></div>
+          ${fld('tsP','Project')}
+          <div style="display:flex;align-items:flex-end"><button onclick="submitTS()" class="btn btn-p">Submit</button></div>
+        </div>
+      </div>`+
+      tblWrap(
+        ['Date','Hours','Task','Project','Status'].map(th).join(''),
+        ts.length?ts.map(t=>`<tr><td>${t.date}</td><td>${t.hours_worked}h</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.task_description||'-'}</td><td>${t.project||'-'}</td><td><span class="badge badge-${t.status}">${t.status}</span>${t.rejection_reason?`<div style="font-size:11px;color:#dc2626;margin-top:2px">${t.rejection_reason}</div>`:''}</td></tr>`).join(''):noRows(5,'No timesheets yet')
+      ));
+    $('tsD').value=today; $('tsH').value='8';
+  }catch(e){setPage(h1('My Timesheets')+'<p style="color:#ef4444">Failed</p>');}
+}
+async function submitTS(){
+  const d={date:$('tsD').value,hours_worked:parseFloat($('tsH').value||8),task_description:$('tsT').value,project:$('tsP').value};
+  try{await api('/timesheets/submit','POST',d);alert2('tsAlert','✅ Submitted!','s');setTimeout(showMyTimesheets,1000);}
+  catch(err){alert2('tsAlert','❌ '+(err.detail||'Failed'));}
 }
 
-function submitTS(){
-  var d={date:G('tsD').value,hours_worked:parseFloat(G('tsH').value)||8,task_description:G('tsT').value,project:G('tsP').value};
-  api('/timesheets/submit','POST',d).then(function(){
-    showAlert('tsAlert','Timesheet submitted!','s'); setTimeout(showMyTimesheets,1000);
-  }).catch(function(err){showAlert('tsAlert',err.detail||'Failed');});
-}
-
-/* ──────────────────────────── APPLY LEAVE ───────────────────────────────── */
+// ── APPLY LEAVE ──
 function showApplyLeave(){
   setActive('showApplyLeave');
-  setPage(H1('Apply Leave')+
-    '<div class="crd" style="max-width:540px"><div id="lvAlert"></div>'+
-    '<form onsubmit="submitLeave(event)" style="display:grid;gap:14px">'+
-    '<div><label class="lbl">Leave Type *</label><select id="lvType" class="inp" required><option value="">Select type...</option><option value="paid">Paid Leave (PL)</option><option value="sick">Sick Leave (SL)</option><option value="earned">Earned Leave (EL)</option><option value="sabbatical">Sabbatical Leave</option><option value="lop">Leave Without Pay (LOP)</option></select></div>'+
-    '<div class="g2">'+fld('lvF','From Date','date',true)+fld('lvT','To Date','date',true)+'</div>'+
-    '<div><label class="lbl">Reason</label><textarea id="lvR" class="inp" rows="3" placeholder="Reason for leave..."></textarea></div>'+
-    '<button type="submit" class="btn bp" style="justify-content:center;padding:10px">Submit Leave Request</button>'+
-    '</form></div>'
-  );
+  setPage(h1('Apply Leave')+`<div class="card" style="max-width:540px">
+    <div id="lvAlert"></div>
+    <form onsubmit="submitLeave(event)" style="display:grid;gap:14px">
+      <div><label class="lbl">Leave Type *</label>
+        <select id="lvType" class="inp" required>
+          <option value="">Select type...</option>
+          <option value="paid">🏖️ Paid Leave (PL)</option>
+          <option value="sick">🤒 Sick Leave (SL)</option>
+          <option value="earned">⭐ Earned Leave (EL)</option>
+          <option value="sabbatical">📚 Sabbatical Leave</option>
+          <option value="lop">💼 Leave Without Pay (LOP)</option>
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        ${fld('lvFrom','From Date','date')}${fld('lvTo','To Date','date')}
+      </div>
+      <div><label class="lbl">Reason</label><textarea id="lvReason" class="inp" rows="3" placeholder="Reason for leave..."></textarea></div>
+      <button type="submit" class="btn btn-p" style="justify-content:center;padding:10px">Submit Leave Request</button>
+    </form>
+  </div>`);
 }
-
-function submitLeave(e){
+async function submitLeave(e){
   e.preventDefault();
-  api('/leaves/request','POST',{leave_type:G('lvType').value,start_date:G('lvF').value,end_date:G('lvT').value,reason:G('lvR').value}).then(function(){
-    showAlert('lvAlert','Leave request submitted!','s'); e.target.reset();
-  }).catch(function(err){showAlert('lvAlert',err.detail||'Failed');});
+  try{await api('/leaves/request','POST',{leave_type:$('lvType').value,start_date:$('lvFrom').value,end_date:$('lvTo').value,reason:$('lvReason').value});
+    alert2('lvAlert','✅ Leave request submitted successfully!','s');e.target.reset();}
+  catch(err){alert2('lvAlert','❌ '+(err.detail||'Failed'));}
 }
 
-/* ──────────────────────────── LEAVE BALANCE ─────────────────────────────── */
-function showLeaveBalance(){
+// ── LEAVE BALANCE ──
+async function showLeaveBalance(){
   setActive('showLeaveBalance');
-  setPage(H1('Leave Balance')+'<p style="color:#94a3b8">Loading...</p>');
-  Promise.all([api('/leaves/balances/my'),api('/leaves/my')]).then(function(res){
-    var bal=res[0],hist=res[1];
-    var balHtml=bal.length?
-      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:20px">'+
-      bal.map(function(b){
-        var pct=b.total_days>0?Math.round(b.remaining_days/b.total_days*100):0;
-        return '<div class="crd" style="text-align:center;padding:14px"><div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">'+b.leave_type.toUpperCase()+'</div><div style="font-size:28px;font-weight:700;color:#1e3a5f">'+b.remaining_days+'</div><div style="font-size:11px;color:#94a3b8">of '+b.total_days+' days</div><div style="margin-top:8px;height:4px;background:#f1f5f9;border-radius:2px"><div style="height:4px;background:#2563eb;border-radius:2px;width:'+pct+'%"></div></div></div>';
-      }).join('')+'</div>':
-      '<div class="crd" style="text-align:center;padding:20px;color:#94a3b8;margin-bottom:16px">No balance data</div>';
-    var rows=hist.length?hist.map(function(l){
-      return '<tr><td><span class="bdg" style="background:#ede9fe;color:#5b21b6">'+l.leave_type.toUpperCase()+'</span></td><td>'+l.start_date+'</td><td>'+l.end_date+'</td><td style="font-weight:600">'+l.days+'d</td><td style="font-size:12px;color:#64748b;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(l.reason||'-')+'</td><td><span class="bdg bdg-'+l.status+'">'+l.status+'</span>'+(l.review_comment?'<div style="font-size:11px;color:#64748b;margin-top:2px">'+l.review_comment+'</div>':'')+'</td></tr>';
-    }).join(''):null;
-    setPage(H1('Leave Balance & History')+balHtml+tbl(['Type','From','To','Days','Reason','Status'],rows,'No leave requests yet'));
-  }).catch(function(){setPage(H1('Leave Balance')+'<p style="color:#ef4444">Failed</p>');});
+  setPage(h1('Leave Balance')+'<p style="color:#94a3b8">Loading...</p>');
+  try{
+    const [bal,hist]=await Promise.all([api('/leaves/balances/my'),api('/leaves/my')]);
+    setPage(h1('Leave Balance & History')+
+      (bal.length?`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:24px">
+        ${bal.map(b=>`<div class="card" style="text-align:center;padding:14px">
+          <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">${b.leave_type.toUpperCase()}</div>
+          <div style="font-size:28px;font-weight:700;color:#1e3a5f">${b.remaining_days}</div>
+          <div style="font-size:11px;color:#94a3b8">of ${b.total_days} days</div>
+          <div style="margin-top:8px;height:4px;background:#f1f5f9;border-radius:2px">
+            <div style="height:4px;background:#2563eb;border-radius:2px;width:${b.total_days>0?Math.round(b.remaining_days/b.total_days*100):0}%"></div>
+          </div>
+        </div>`).join('')}
+      </div>`:'<div class="card" style="text-align:center;padding:24px;color:#94a3b8;margin-bottom:20px">No leave balance data yet</div>')+
+      tblWrap(
+        ['Type','From','To','Days','Reason','Status'].map(th).join(''),
+        hist.length?hist.map(l=>`<tr>
+          <td><span class="badge" style="background:#ede9fe;color:#5b21b6">${l.leave_type.toUpperCase()}</span></td>
+          <td>${l.start_date}</td><td>${l.end_date}</td>
+          <td style="font-weight:600">${l.days}d</td>
+          <td style="font-size:12px;color:#64748b;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.reason||'-'}</td>
+          <td><span class="badge badge-${l.status}">${l.status}</span>${l.review_comment?`<div style="font-size:11px;color:#64748b;margin-top:2px">${l.review_comment}</div>`:''}</td>
+        </tr>`).join(''):noRows(6,'No leave requests yet')
+      ));
+  }catch(e){setPage(h1('Leave Balance')+'<p style="color:#ef4444">Failed</p>');}
 }
 
-/* ──────────────────────────── PAYSLIPS (employee) ───────────────────────── */
-function showPayslips(){
+// ── PAYSLIPS ──
+async function showPayslips(){
   setActive('showPayslips');
-  setPage(H1('My Payslips')+'<p style="color:#94a3b8">Loading...</p>');
-  api('/payroll/records').then(function(recs){
-    setPage(H1('My Payslips')+(recs.length?
-      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px">'+
-      recs.map(function(r){
-        return '<div class="crd"><div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:14px"><span style="font-weight:600;color:#1e293b">'+
-          new Date(r.year,r.month-1).toLocaleString('en',{month:'long',year:'numeric'})+
-          '</span><a href="/payroll/slip/'+r.id+'" target="_blank" class="btn bn" style="padding:4px 10px;font-size:11px">PDF</a></div>'+
-          [['Gross','&#8377;'+Number(r.gross_salary).toLocaleString('en-IN'),null],
-           ['Deductions','-&#8377;'+Number(r.total_deductions).toLocaleString('en-IN'),'#dc2626'],
-           ['Net Pay','&#8377;'+Number(r.net_salary).toLocaleString('en-IN'),'#059669']].map(function(kvc){
-            return '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f1f5f9"><span style="color:#64748b">'+kvc[0]+'</span><span style="font-weight:'+(kvc[2]?'700':'400')+(kvc[2]?';color:'+kvc[2]:'')+'">'+kvc[1]+'</span></div>';
-          }).join('')+'</div>';
-      }).join('')+'</div>':
-      '<div class="crd" style="text-align:center;padding:48px;color:#94a3b8">No payslips generated yet</div>'));
-  }).catch(function(){setPage(H1('Payslips')+'<p style="color:#ef4444">Failed</p>');});
+  setPage(h1('My Payslips')+'<p style="color:#94a3b8">Loading...</p>');
+  try{
+    const r=await api('/payroll/records');
+    setPage(h1('My Payslips')+(r.length?
+      `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px">${r.map(x=>`<div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:14px">
+          <span style="font-weight:600;color:#1e293b">${new Date(x.year,x.month-1).toLocaleString('en',{month:'long',year:'numeric'})}</span>
+          <a href="/payroll/slip/${x.id}" target="_blank" class="btn btn-n" style="padding:4px 10px;font-size:12px">PDF</a>
+        </div>
+        <div style="font-size:13px">
+          ${[['Gross','₹'+Number(x.gross_salary).toLocaleString('en-IN'),null],['Deductions','-₹'+Number(x.total_deductions).toLocaleString('en-IN'),'#dc2626'],['Net Pay','₹'+Number(x.net_salary).toLocaleString('en-IN'),'#059669']].map(([k,v,c])=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f1f5f9"><span style="color:#64748b">${k}</span><span style="font-weight:${c?'700':'400'}${c?';color:'+c:''}">${v}</span></div>`).join('')}
+        </div>
+      </div>`).join('')}</div>`:
+      '<div class="card" style="text-align:center;padding:48px;color:#94a3b8">No payslips generated yet</div>'));
+  }catch(e){setPage(h1('Payslips')+'<p style="color:#ef4444">Failed</p>');}
 }
 
-/* ──────────────────────────── PROFILE ───────────────────────────────────── */
-function showProfile(){
+// ── PROFILE ──
+async function showProfile(){
   setActive('showProfile');
-  setPage(H1('My Profile')+'<p style="color:#94a3b8">Loading...</p>');
-  api('/employees/me').then(function(p){
-    setPage(H1('My Profile')+
-      '<div class="crd" style="max-width:640px">'+
-      '<div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;padding-bottom:18px;border-bottom:1px solid #f1f5f9">'+
-      '<div style="width:64px;height:64px;background:#1e3a5f;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;flex-shrink:0">'+p.first_name[0]+p.last_name[0]+'</div>'+
-      '<div><h2 style="font-size:18px;font-weight:700;color:#1e293b;margin:0">'+p.first_name+' '+p.last_name+'</h2>'+
-      '<p style="color:#64748b;font-size:13px;margin:2px 0">'+(p.designation||'Employee')+' &middot; '+(p.department||'CloudHub')+'</p>'+
-      '<p style="font-family:monospace;font-size:12px;color:#2563eb;margin:2px 0">'+p.employee_id+'</p></div></div>'+
-      '<div class="g2">'+
-      [['Email',p.email],['Phone',p.phone||'-'],['Designation',p.designation||'-'],['Department',p.department||'-'],['Type',p.employment_type],['Joined',p.date_of_joining||'-'],['Bank Name',p.bank_name||'-'],['Account',p.bank_account||'-'],['IFSC',p.ifsc_code||'-'],['PF Number',p.pf_number||'-']].map(function(kv){
-        return '<div><div style="font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px">'+kv[0]+'</div><div style="font-size:13px;font-weight:500;color:#1e293b;margin-top:3px">'+kv[1]+'</div></div>';
-      }).join('')+'</div></div>'
-    );
-  }).catch(function(){setPage(H1('Profile')+'<p style="color:#ef4444">Failed</p>');});
+  setPage(h1('My Profile')+'<p style="color:#94a3b8">Loading...</p>');
+  try{
+    const p=await api('/employees/me');
+    setPage(h1('My Profile')+`<div class="card" style="max-width:640px">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid #f1f5f9">
+        <div style="width:64px;height:64px;background:#1e3a5f;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;flex-shrink:0">${p.first_name[0]+p.last_name[0]}</div>
+        <div>
+          <h2 style="font-size:18px;font-weight:700;color:#1e293b;margin:0">${p.first_name} ${p.last_name}</h2>
+          <p style="color:#64748b;font-size:13px;margin:2px 0">${p.designation||'Employee'} · ${p.department||'CloudHub'}</p>
+          <p style="font-family:monospace;font-size:12px;color:#2563eb;margin:2px 0">${p.employee_id}</p>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        ${[['Email',p.email],['Phone',p.phone||'-'],['Designation',p.designation||'-'],['Department',p.department||'-'],['Employment Type',p.employment_type],['Date of Joining',p.date_of_joining||'-'],['Bank Name',p.bank_name||'-'],['Bank Account',p.bank_account||'-'],['IFSC Code',p.ifsc_code||'-'],['PF Number',p.pf_number||'-']].map(([k,v])=>`<div><div style="font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px">${k}</div><div style="font-size:13px;font-weight:500;color:#1e293b;margin-top:3px">${v}</div></div>`).join('')}
+      </div>
+    </div>`);
+  }catch(e){setPage(h1('Profile')+'<p style="color:#ef4444">Failed</p>');}
 }
 
-/* ──────────────────────────── RESIGN ────────────────────────────────────── */
+// ── RESIGN ──
 function showResign(){
   setActive('showResign');
-  var today=new Date().toISOString().split('T')[0];
-  setPage(H1('Submit Resignation')+
-    '<div class="crd" style="max-width:520px">'+
-    '<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px;margin-bottom:16px;font-size:13px;color:#991b1b">Please discuss with your manager before submitting.</div>'+
-    '<div id="resAlert"></div>'+
-    '<form onsubmit="submitResign(event)" style="display:grid;gap:14px">'+
-    fld('resDate','Notice Date','date',true,today)+
-    fld('resLWD','Last Working Date','date')+
-    '<div><label class="lbl">Reason</label><textarea id="resR" class="inp" rows="4" placeholder="State your reason..."></textarea></div>'+
-    '<button type="submit" class="btn bd" style="justify-content:center;padding:10px">Submit Resignation</button>'+
-    '</form></div>'
+  const today=new Date().toISOString().split('T')[0];
+  setPage(h1('Submit Resignation')+`<div class="card" style="max-width:520px">
+    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px;margin-bottom:20px;font-size:13px;color:#991b1b">
+      ⚠️ Please ensure you have discussed this with your manager before submitting.
+    </div>
+    <div id="resAlert"></div>
+    <form onsubmit="submitResign(event)" style="display:grid;gap:14px">
+      ${fld('resDate','Notice Date *','date')}${fld('resLWD','Last Working Date','date')}
+      <div><label class="lbl">Reason</label><textarea id="resReason" class="inp" rows="4" placeholder="Please state your reason for resignation..."></textarea></div>
+      <button type="submit" class="btn btn-d" style="justify-content:center;padding:10px">Submit Resignation</button>
+    </form>
+  </div>`);
+  $('resDate').value=today;
+}
+async function submitResign(e){
+  e.preventDefault();
+  try{const r=await api('/employees/me/resign','POST',{notice_date:$('resDate').value,last_working_date:$('resLWD').value||null,reason:$('resReason').value});
+    alert2('resAlert','✅ Resignation submitted. HR will contact you soon.','s');$('resReason').value='';}
+  catch(err){alert2('resAlert','❌ '+(err.detail||'Failed'));}
+}
+
+
+// ── EDIT EMPLOYEE ──
+async function doEditEmp(id){
+  try{
+    const e = await api('/employees/'+id);
+    const selOpt = (val, opts) => opts.map(o =>
+      '<option value="'+o+'"'+(val===o?' selected':'')+'>'+o.charAt(0).toUpperCase()+o.slice(1)+'</option>'
+    ).join('');
+    showModal(
+      '<h3 style="font-size:16px;font-weight:600;margin:0 0 16px">Edit Employee: '+e.first_name+' '+e.last_name+'</h3>'+
+      '<div id="editAlert"></div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-height:60vh;overflow-y:auto;padding-right:4px">'+
+        '<div><label class="lbl">First Name</label><input id="ed_fn" class="inp" value="'+( e.first_name||'')+'"></div>'+
+        '<div><label class="lbl">Last Name</label><input id="ed_ln" class="inp" value="'+(e.last_name||'')+'"></div>'+
+        '<div><label class="lbl">Phone</label><input id="ed_ph" class="inp" value="'+(e.phone||'')+'"></div>'+
+        '<div><label class="lbl">Designation</label><input id="ed_des" class="inp" value="'+(e.designation||'')+'"></div>'+
+        '<div><label class="lbl">Department</label><input id="ed_dep" class="inp" value="'+(e.department||'')+'"></div>'+
+        '<div><label class="lbl">Employment Type</label>'+
+          '<select id="ed_et" class="inp">'+selOpt(e.employment_type,['permanent','contractor','intern','consultant'])+'</select>'+
+        '</div>'+
+        '<div><label class="lbl">Date of Joining</label><input id="ed_doj" type="date" class="inp" value="'+(e.date_of_joining||'')+'"></div>'+
+        '<div><label class="lbl">Date of Birth</label><input id="ed_dob" type="date" class="inp" value="'+(e.date_of_birth||'')+'"></div>'+
+        '<div style="grid-column:span 2"><label class="lbl">Address</label><textarea id="ed_addr" class="inp" rows="2">'+(e.address||'')+'</textarea></div>'+
+        '<div><label class="lbl">Bank Account</label><input id="ed_ba" class="inp" value="'+(e.bank_account||'')+'"></div>'+
+        '<div><label class="lbl">Bank Name</label><input id="ed_bn" class="inp" value="'+(e.bank_name||'')+'"></div>'+
+        '<div><label class="lbl">IFSC Code</label><input id="ed_ic" class="inp" value="'+(e.ifsc_code||'')+'"></div>'+
+        '<div><label class="lbl">PF Number</label><input id="ed_pf" class="inp" value="'+(e.pf_number||'')+'"></div>'+
+        '<div><label class="lbl">UAN Number</label><input id="ed_uan" class="inp" value="'+(e.uan_number||'')+'"></div>'+
+      '</div>'+
+      '<div style="display:flex;gap:8px;margin-top:16px">'+
+        '<button onclick="saveEditEmp('+e.id+')" class="btn btn-p">Save Changes</button>'+
+        '<button onclick="closeModal()" class="btn btn-n">Cancel</button>'+
+      '</div>'
+    );
+  }catch(err){ alert('Failed to load: '+(err.detail||'Error')); }
+}
+
+async function saveEditEmp(id){
+  var data={};
+  var fieldMap=[['ed_fn','first_name'],['ed_ln','last_name'],['ed_ph','phone'],['ed_des','designation'],
+    ['ed_dep','department'],['ed_et','employment_type'],['ed_doj','date_of_joining'],
+    ['ed_dob','date_of_birth'],['ed_addr','address'],['ed_ba','bank_account'],
+    ['ed_bn','bank_name'],['ed_ic','ifsc_code'],['ed_pf','pf_number'],['ed_uan','uan_number']];
+  fieldMap.forEach(function(pair){
+    var el = $(pair[0]);
+    if(el && el.value !== '') data[pair[1]] = el.value;
+  });
+  try{
+    await api('/employees/'+id,'PUT',data);
+    alert2('editAlert','Employee updated successfully!','s');
+    setTimeout(function(){ closeModal(); showEmployees(); }, 1200);
+  }catch(err){ alert2('editAlert','Failed: '+(err.detail||'Error')); }
+}
+
+// ── DELETED EMPLOYEES (Reinstate) ──
+async function showDeletedEmps(){
+  setActive('showDeletedEmps');
+  setPage(h1('Deleted Employees')+
+    '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#92400e">'+
+    'These employees are soft-deleted. Their data is fully preserved. Click Reinstate to restore their access.'+
+    '</div>'+
+    '<p style="color:#94a3b8">Loading...</p>');
+  try{
+    var emps = await api('/employees/inactive');
+    if(!emps.length){
+      setPage(h1('Deleted Employees')+
+        '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#92400e">'+
+        'These employees are soft-deleted. Their data is fully preserved. Click Reinstate to restore their access.'+
+        '</div>'+
+        '<div class="card" style="text-align:center;padding:48px;color:#94a3b8">'+
+        '<div style="font-size:40px;margin-bottom:12px">🗄️</div>'+
+        '<div style="font-size:15px;font-weight:500">No deleted employees</div>'+
+        '<div style="font-size:13px;margin-top:4px">Deleted employees will appear here</div>'+
+        '</div>');
+      return;
+    }
+    var rows = emps.map(function(e){
+      return '<tr style="opacity:0.85">'+
+        '<td><div style="font-weight:500;color:#374151">'+e.first_name+' '+e.last_name+'</div>'+
+        '<div style="font-size:12px;color:#94a3b8">'+e.email+'</div></td>'+
+        '<td style="font-family:monospace;font-size:12px;color:#64748b">'+e.employee_id+'</td>'+
+        '<td style="color:#94a3b8">'+(e.designation||'-')+'</td>'+
+        '<td style="color:#94a3b8">'+(e.department||'-')+'</td>'+
+        '<td><span class="badge badge-'+(e.status||'terminated')+'">'+(e.status||'inactive')+'</span></td>'+
+        '<td><button onclick="doReinstate('+e.id+',\''+e.first_name+' '+e.last_name+'\')" class="btn btn-s" style="padding:4px 12px;font-size:12px">Reinstate</button></td>'+
+        '</tr>';
+    }).join('');
+    setPage(h1('Deleted Employees ('+emps.length+')')+
+      '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#92400e">'+
+      'These employees are soft-deleted. Their data is fully preserved. Click <strong>Reinstate</strong> to restore their access.'+
+      '</div>'+
+      tblWrap(
+        ['Employee','ID','Designation','Department','Status','Action'].map(th).join(''),
+        rows
+      ));
+  }catch(err){
+    setPage(h1('Deleted Employees')+'<p style="color:#ef4444">Failed to load: '+(err.detail||'Error')+'</p>');
+  }
+}
+
+function doReinstate(id, name){
+  showModal(
+    '<h3 style="font-size:16px;font-weight:600;margin:0 0 12px">Reinstate Employee</h3>'+
+    '<p style="font-size:13px;color:#475569;margin:0 0 6px">You are about to reinstate <strong>'+name+'</strong>.</p>'+
+    '<p style="font-size:13px;color:#475569;margin:0 0 20px">This will restore their login access and mark them as <strong>active</strong>.</p>'+
+    '<div id="reinstateAlert"></div>'+
+    '<div style="display:flex;gap:8px">'+
+      '<button onclick="confirmReinstate('+id+')" class="btn btn-s">Confirm Reinstate</button>'+
+      '<button onclick="closeModal()" class="btn btn-n">Cancel</button>'+
+    '</div>'
   );
 }
 
-function submitResign(e){
-  e.preventDefault();
-  var lwd=G('resLWD').value;
-  api('/employees/me/resign','POST',{notice_date:G('resDate').value,last_working_date:lwd||null,reason:G('resR').value}).then(function(){
-    showAlert('resAlert','Resignation submitted. HR will contact you.','s'); G('resR').value='';
-  }).catch(function(err){showAlert('resAlert',err.detail||'Failed');});
+async function confirmReinstate(id){
+  try{
+    var r = await api('/employees/'+id+'/reinstate','POST');
+    alert2('reinstateAlert', r.message || 'Employee reinstated!', 's');
+    setTimeout(function(){ closeModal(); showDeletedEmps(); }, 1200);
+  }catch(err){
+    alert2('reinstateAlert', 'Failed: '+(err.detail||'Error'));
+  }
 }
+
 </script>
 </body>
 </html>
