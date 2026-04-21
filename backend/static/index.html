@@ -204,25 +204,40 @@ async function showAdminDash(){
 // ── EMPLOYEES ──
 async function showEmployees(){
   setActive('showEmployees');
-  setPage(h1('Employees')+'<p style="color:#94a3b8">Loading...</p>');
+  setPage('<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px"><h1 style="font-size:22px;font-weight:700;color:#1e293b;margin:0">Employees</h1><button onclick="exportEmployeesCSV()" class="btn btn-n" style="font-size:13px">&#11015;&#65039; Export CSV</button></div>'+'<p style="color:#94a3b8">Loading...</p>');
   try{
-    const emps=await api('/employees/');
-    setPage('<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px"><h1 style="font-size:22px;font-weight:700;color:#1e293b;margin:0">Employees (' + emps.length + ')</h1><button onclick="exportEmployeesCSV()" class="btn btn-n" style="font-size:13px">⬇️ Export CSV</button></div>' ++
+    var emps = await api('/employees/');
+    var rows = emps.map(function(e){
+      return '<tr>' +
+        '<td><div style="font-weight:500;color:#1e293b">'+e.first_name+' '+e.last_name+'</div><div style="font-size:12px;color:#94a3b8">'+e.email+'</div></td>' +
+        '<td><button onclick="showEmpProfile('+e.id+')" style="font-family:monospace;font-size:12px;color:#2563eb;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0" title="View full profile">'+e.employee_id+'</button></td>' +
+        '<td>'+( e.designation||'-')+'</td>' +
+        '<td>'+(e.department||'-')+'</td>' +
+        '<td><span class="badge badge-'+(e.status||'active')+'">'+(e.status||'active')+'</span></td>' +
+        '<td style="white-space:nowrap">' +
+          '<button onclick="showEmpProfile('+e.id+')" class="btn btn-n" style="padding:3px 8px;font-size:11px;margin-right:3px;color:#7c3aed" title="View Profile">&#x1F194;</button>' +
+          '<button onclick="doEditEmp('+e.id+')" class="btn btn-n" style="padding:3px 8px;font-size:11px;margin-right:3px;color:#2563eb">&#9999; Edit</button>' +
+          '<button onclick="doResetPassword('+e.id+',\''+e.first_name+' '+e.last_name+'\')" class="btn btn-n" style="padding:3px 8px;font-size:11px;margin-right:3px;color:#d97706" title="Reset Password">&#x1F511;</button>' +
+          '<button onclick="downloadEmploymentLetter('+e.id+',\''+e.employee_id+'\')" class="btn btn-n" style="padding:3px 8px;font-size:11px;margin-right:3px;color:#059669" title="Employment Letter">&#128196;</button>' +
+          '<button onclick="doAssignMgrModal('+e.id+')" class="btn btn-n" style="padding:3px 8px;font-size:11px;margin-right:3px">Assign Mgr</button>' +
+          '<button onclick="doTermModal('+e.id+',\''+e.first_name+' '+e.last_name+'\')" class="btn btn-d" style="padding:3px 8px;font-size:11px;margin-right:3px">Terminate</button>' +
+          (role==='admin' ? '<button onclick="doDelEmp('+e.id+',\''+e.first_name+' '+e.last_name+'\')" class="btn btn-n" style="padding:3px 8px;font-size:11px;color:#dc2626">Delete</button>' : '') +
+        '</td>' +
+        '</tr>';
+    }).join('');
+    setPage(
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">' +
+      '<h1 style="font-size:22px;font-weight:700;color:#1e293b;margin:0">Employees ('+emps.length+')</h1>' +
+      '<button onclick="exportEmployeesCSV()" class="btn btn-n" style="font-size:13px">&#11015; Export CSV</button>' +
+      '</div>' +
       tblWrap(
         ['Employee','ID','Designation','Department','Status','Actions'].map(th).join(''),
-        emps.length?emps.map(e=>`<tr>
-          <td><div style="font-weight:500">${e.first_name} ${e.last_name}</div><div style="font-size:12px;color:#94a3b8">${e.email}</div></td>
-          <td><button onclick="showEmpProfile(${e.id})" style="font-family:monospace;font-size:12px;color:#2563eb;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0" title="Click to view full profile">${e.employee_id}</button></td>
-          <td>${e.designation||'-'}</td><td>${e.department||'-'}</td>
-          <td><span class="badge badge-${e.status||'active'}">${e.status||'active'}</span></td>
-          <td style="white-space:nowrap">
-            <button onclick="showEmpProfile(${e.id})" class="btn btn-n" style="padding:3px 8px;font-size:11px;margin-right:4px;color:#7c3aed" title="View Full Profile">🆔</button><button onclick="doEditEmp(${e.id})" class="btn btn-n" style="padding:3px 8px;font-size:11px;margin-right:4px;color:#2563eb">✏️ Edit</button>\n            <button onclick="doResetPassword(${e.id},'${e.first_name} ${e.last_name}')" class="btn btn-n" style="padding:3px 8px;font-size:11px;margin-right:4px;color:#d97706" title="Reset Password">🔑</button><button onclick="downloadEmploymentLetter(${e.id},'${e.employee_id}')" class="btn btn-n" style="padding:3px 8px;font-size:11px;margin-right:4px;color:#059669" title="Employment Letter">📄</button><button onclick="doAssignMgrModal(${e.id})" class="btn btn-n" style="padding:3px 8px;font-size:11px;margin-right:4px">Assign Mgr</button>
-            <button onclick="doTermModal(${e.id},'${e.first_name} ${e.last_name}')" class="btn btn-d" style="padding:3px 8px;font-size:11px;margin-right:4px">Terminate</button>
-            ${role==='admin'?`<button onclick="doDelEmp(${e.id},'${e.first_name} ${e.last_name}')" class="btn btn-n" style="padding:3px 8px;font-size:11px;color:#dc2626">Delete</button>`:''}
-          </td></tr>`).join(''):noRows(6,'No employees found')
-      ));
+        emps.length ? rows : noRows(6,'No employees found')
+      )
+    );
   }catch(e){setPage(h1('Employees')+'<p style="color:#ef4444">Failed to load</p>');}
 }
+
 
 function doDelEmp(id,name){
   showModal(`<h3 style="font-size:16px;font-weight:600;margin:0 0 12px">Delete Employee</h3>
