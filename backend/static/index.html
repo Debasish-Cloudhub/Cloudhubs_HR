@@ -207,16 +207,16 @@ async function showEmployees(){
   setPage(h1('Employees')+'<p style="color:#94a3b8">Loading...</p>');
   try{
     const emps=await api('/employees/');
-    setPage(h1('Employees ('+emps.length+')')+
+    setPage('<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px"><h1 style="font-size:22px;font-weight:700;color:#1e293b;margin:0">Employees (' + emps.length + ')</h1><button onclick="exportEmployeesCSV()" class="btn btn-n" style="font-size:13px">⬇️ Export CSV</button></div>' ++
       tblWrap(
         ['Employee','ID','Designation','Department','Status','Actions'].map(th).join(''),
         emps.length?emps.map(e=>`<tr>
           <td><div style="font-weight:500">${e.first_name} ${e.last_name}</div><div style="font-size:12px;color:#94a3b8">${e.email}</div></td>
-          <td style="font-family:monospace;font-size:12px;color:#2563eb">${e.employee_id}</td>
+          <td><button onclick="showEmpProfile(${e.id})" style="font-family:monospace;font-size:12px;color:#2563eb;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0" title="Click to view full profile">${e.employee_id}</button></td>
           <td>${e.designation||'-'}</td><td>${e.department||'-'}</td>
           <td><span class="badge badge-${e.status||'active'}">${e.status||'active'}</span></td>
           <td style="white-space:nowrap">
-            <button onclick="doEditEmp(${e.id})" class="btn btn-n" style="padding:3px 8px;font-size:11px;margin-right:4px;color:#2563eb">✏️ Edit</button>\n            <button onclick="doAssignMgrModal(${e.id})" class="btn btn-n" style="padding:3px 8px;font-size:11px;margin-right:4px">Assign Mgr</button>
+            <button onclick="showEmpProfile(${e.id})" class="btn btn-n" style="padding:3px 8px;font-size:11px;margin-right:4px;color:#7c3aed" title="View Full Profile">🆔</button><button onclick="doEditEmp(${e.id})" class="btn btn-n" style="padding:3px 8px;font-size:11px;margin-right:4px;color:#2563eb">✏️ Edit</button>\n            <button onclick="doResetPassword(${e.id},'${e.first_name} ${e.last_name}')" class="btn btn-n" style="padding:3px 8px;font-size:11px;margin-right:4px;color:#d97706" title="Reset Password">🔑</button><button onclick="downloadEmploymentLetter(${e.id},'${e.employee_id}')" class="btn btn-n" style="padding:3px 8px;font-size:11px;margin-right:4px;color:#059669" title="Employment Letter">📄</button><button onclick="doAssignMgrModal(${e.id})" class="btn btn-n" style="padding:3px 8px;font-size:11px;margin-right:4px">Assign Mgr</button>
             <button onclick="doTermModal(${e.id},'${e.first_name} ${e.last_name}')" class="btn btn-d" style="padding:3px 8px;font-size:11px;margin-right:4px">Terminate</button>
             ${role==='admin'?`<button onclick="doDelEmp(${e.id},'${e.first_name} ${e.last_name}')" class="btn btn-n" style="padding:3px 8px;font-size:11px;color:#dc2626">Delete</button>`:''}
           </td></tr>`).join(''):noRows(6,'No employees found')
@@ -275,7 +275,7 @@ function showOnboard(){
     <div id="onbAlert"></div>
     <form onsubmit="submitOnboard(event)" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
       ${fld('f_fn','First Name','text',true)}${fld('f_ln','Last Name','text',true)}
-      ${fld('f_em','Email','email',true)}${fld('f_pw','Password','password',true)}
+      ${fld('f_em','Email','email',true)}<div><label class="lbl">Password *</label><div style="position:relative"><input id="f_pw" type="password" class="inp" required style="padding-right:40px"><button type="button" onclick="togglePwd('f_pw','onb_eye')" id="onb_eye" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px">👁</button></div></div>
       ${fld('f_ph','Phone')}${fld('f_des','Designation')}
       ${fld('f_dep','Department')}
       <div><label class="lbl">Employment Type</label><select id="f_et" class="inp"><option value="permanent">Permanent (CH-EMP)</option><option value="contractor">Contractor (CH-CON)</option><option value="intern">Intern (CH-INT)</option></select></div>
@@ -532,15 +532,22 @@ async function showResignations(){
   setActive('showResignations');
   setPage(h1('Resignation Requests')+'<p style="color:#94a3b8">Loading...</p>');
   try{
-    const r=await api('/employees/resignations/all');
+    var r = await api('/employees/resignations/all');
+    var rows = r.map(function(x){
+      return '<tr>' +
+        '<td><div style="font-weight:500">'+(x.emp_name||'')+'</div><div style="font-size:12px;color:#94a3b8">'+(x.department||'')+'</div></td>' +
+        '<td style="font-size:12px;font-family:monospace;color:#2563eb">'+(x.emp_code||'')+'</td>' +
+        '<td style="font-size:12px;color:#64748b">'+(x.designation||'-')+'</td>' +
+        '<td>'+(x.notice_date||'-')+'</td>' +
+        '<td>'+(x.last_working_date||'-')+'</td>' +
+        '<td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px">'+(x.reason||'-')+'</td>' +
+        '<td><span class="badge badge-pending">'+(x.status||'pending')+'</span></td>' +
+        '<td><button onclick="downloadRelievingLetter('+x.id+',\''+(x.emp_name||'Employee').replace(/'/g,'')+'\')" class="btn btn-p" style="padding:3px 10px;font-size:12px">📜 Letter</button></td>' +
+        '</tr>';
+    });
     setPage(h1('Resignation Requests')+tblWrap(
-      ['Emp ID','Notice Date','Last Working Day','Reason','Status'].map(th).join(''),
-      r.length?r.map(x=>`<tr>
-        <td style="font-size:12px;font-family:monospace;color:#2563eb">${x.employee_id}</td>
-        <td>${x.notice_date}</td><td>${x.last_working_date||'-'}</td>
-        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px">${x.reason||'-'}</td>
-        <td><span class="badge badge-pending">${x.status}</span></td>
-      </tr>`).join(''):noRows(5,'No resignation requests')
+      ['Employee','Code','Designation','Notice Date','Last Day','Reason','Status','Actions'].map(th).join(''),
+      r.length ? rows.join('') : noRows(8,'No resignation requests')
     ));
   }catch(e){setPage(h1('Resignations')+'<p style="color:#ef4444">Failed</p>');}
 }
@@ -725,126 +732,274 @@ async function submitResign(e){
 }
 
 
-// ── EDIT EMPLOYEE ──
-async function doEditEmp(id){
-  try{
-    const e = await api('/employees/'+id);
-    const selOpt = (val, opts) => opts.map(o =>
-      '<option value="'+o+'"'+(val===o?' selected':'')+'>'+o.charAt(0).toUpperCase()+o.slice(1)+'</option>'
-    ).join('');
-    showModal(
-      '<h3 style="font-size:16px;font-weight:600;margin:0 0 16px">Edit Employee: '+e.first_name+' '+e.last_name+'</h3>'+
-      '<div id="editAlert"></div>'+
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-height:60vh;overflow-y:auto;padding-right:4px">'+
-        '<div><label class="lbl">First Name</label><input id="ed_fn" class="inp" value="'+( e.first_name||'')+'"></div>'+
-        '<div><label class="lbl">Last Name</label><input id="ed_ln" class="inp" value="'+(e.last_name||'')+'"></div>'+
-        '<div><label class="lbl">Phone</label><input id="ed_ph" class="inp" value="'+(e.phone||'')+'"></div>'+
-        '<div><label class="lbl">Designation</label><input id="ed_des" class="inp" value="'+(e.designation||'')+'"></div>'+
-        '<div><label class="lbl">Department</label><input id="ed_dep" class="inp" value="'+(e.department||'')+'"></div>'+
-        '<div><label class="lbl">Employment Type</label>'+
-          '<select id="ed_et" class="inp">'+selOpt(e.employment_type,['permanent','contractor','intern','consultant'])+'</select>'+
-        '</div>'+
-        '<div><label class="lbl">Date of Joining</label><input id="ed_doj" type="date" class="inp" value="'+(e.date_of_joining||'')+'"></div>'+
-        '<div><label class="lbl">Date of Birth</label><input id="ed_dob" type="date" class="inp" value="'+(e.date_of_birth||'')+'"></div>'+
-        '<div style="grid-column:span 2"><label class="lbl">Address</label><textarea id="ed_addr" class="inp" rows="2">'+(e.address||'')+'</textarea></div>'+
-        '<div><label class="lbl">Bank Account</label><input id="ed_ba" class="inp" value="'+(e.bank_account||'')+'"></div>'+
-        '<div><label class="lbl">Bank Name</label><input id="ed_bn" class="inp" value="'+(e.bank_name||'')+'"></div>'+
-        '<div><label class="lbl">IFSC Code</label><input id="ed_ic" class="inp" value="'+(e.ifsc_code||'')+'"></div>'+
-        '<div><label class="lbl">PF Number</label><input id="ed_pf" class="inp" value="'+(e.pf_number||'')+'"></div>'+
-        '<div><label class="lbl">UAN Number</label><input id="ed_uan" class="inp" value="'+(e.uan_number||'')+'"></div>'+
-      '</div>'+
-      '<div style="display:flex;gap:8px;margin-top:16px">'+
-        '<button onclick="saveEditEmp('+e.id+')" class="btn btn-p">Save Changes</button>'+
-        '<button onclick="closeModal()" class="btn btn-n">Cancel</button>'+
-      '</div>'
-    );
-  }catch(err){ alert('Failed to load: '+(err.detail||'Error')); }
-}
 
-async function saveEditEmp(id){
-  var data={};
-  var fieldMap=[['ed_fn','first_name'],['ed_ln','last_name'],['ed_ph','phone'],['ed_des','designation'],
-    ['ed_dep','department'],['ed_et','employment_type'],['ed_doj','date_of_joining'],
-    ['ed_dob','date_of_birth'],['ed_addr','address'],['ed_ba','bank_account'],
-    ['ed_bn','bank_name'],['ed_ic','ifsc_code'],['ed_pf','pf_number'],['ed_uan','uan_number']];
-  fieldMap.forEach(function(pair){
-    var el = $(pair[0]);
-    if(el && el.value !== '') data[pair[1]] = el.value;
-  });
-  try{
-    await api('/employees/'+id,'PUT',data);
-    alert2('editAlert','Employee updated successfully!','s');
-    setTimeout(function(){ closeModal(); showEmployees(); }, 1200);
-  }catch(err){ alert2('editAlert','Failed: '+(err.detail||'Error')); }
-}
-
-// ── DELETED EMPLOYEES (Reinstate) ──
-async function showDeletedEmps(){
-  setActive('showDeletedEmps');
-  setPage(h1('Deleted Employees')+
-    '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#92400e">'+
-    'These employees are soft-deleted. Their data is fully preserved. Click Reinstate to restore their access.'+
-    '</div>'+
-    '<p style="color:#94a3b8">Loading...</p>');
-  try{
-    var emps = await api('/employees/inactive');
-    if(!emps.length){
-      setPage(h1('Deleted Employees')+
-        '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#92400e">'+
-        'These employees are soft-deleted. Their data is fully preserved. Click Reinstate to restore their access.'+
-        '</div>'+
-        '<div class="card" style="text-align:center;padding:48px;color:#94a3b8">'+
-        '<div style="font-size:40px;margin-bottom:12px">🗄️</div>'+
-        '<div style="font-size:15px;font-weight:500">No deleted employees</div>'+
-        '<div style="font-size:13px;margin-top:4px">Deleted employees will appear here</div>'+
-        '</div>');
-      return;
-    }
-    var rows = emps.map(function(e){
-      return '<tr style="opacity:0.85">'+
-        '<td><div style="font-weight:500;color:#374151">'+e.first_name+' '+e.last_name+'</div>'+
-        '<div style="font-size:12px;color:#94a3b8">'+e.email+'</div></td>'+
-        '<td style="font-family:monospace;font-size:12px;color:#64748b">'+e.employee_id+'</td>'+
-        '<td style="color:#94a3b8">'+(e.designation||'-')+'</td>'+
-        '<td style="color:#94a3b8">'+(e.department||'-')+'</td>'+
-        '<td><span class="badge badge-'+(e.status||'terminated')+'">'+(e.status||'inactive')+'</span></td>'+
-        '<td><button onclick="doReinstate('+e.id+',\''+e.first_name+' '+e.last_name+'\')" class="btn btn-s" style="padding:4px 12px;font-size:12px">Reinstate</button></td>'+
-        '</tr>';
-    }).join('');
-    setPage(h1('Deleted Employees ('+emps.length+')')+
-      '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#92400e">'+
-      'These employees are soft-deleted. Their data is fully preserved. Click <strong>Reinstate</strong> to restore their access.'+
-      '</div>'+
-      tblWrap(
-        ['Employee','ID','Designation','Department','Status','Action'].map(th).join(''),
-        rows
-      ));
-  }catch(err){
-    setPage(h1('Deleted Employees')+'<p style="color:#ef4444">Failed to load: '+(err.detail||'Error')+'</p>');
-  }
-}
-
-function doReinstate(id, name){
+// ══════════════════════════════════════════════════════
+// FEATURE 1+2: PASSWORD RESET (Admin sets employee password)
+// ══════════════════════════════════════════════════════
+function doResetPassword(id, name) {
   showModal(
-    '<h3 style="font-size:16px;font-weight:600;margin:0 0 12px">Reinstate Employee</h3>'+
-    '<p style="font-size:13px;color:#475569;margin:0 0 6px">You are about to reinstate <strong>'+name+'</strong>.</p>'+
-    '<p style="font-size:13px;color:#475569;margin:0 0 20px">This will restore their login access and mark them as <strong>active</strong>.</p>'+
-    '<div id="reinstateAlert"></div>'+
-    '<div style="display:flex;gap:8px">'+
-      '<button onclick="confirmReinstate('+id+')" class="btn btn-s">Confirm Reinstate</button>'+
-      '<button onclick="closeModal()" class="btn btn-n">Cancel</button>'+
+    '<h3 style="font-size:16px;font-weight:600;margin:0 0 4px">Reset Password</h3>' +
+    '<p style="font-size:13px;color:#64748b;margin:0 0 16px">Set new password for <strong>' + name + '</strong></p>' +
+    '<div id="rpAlert"></div>' +
+    '<div style="margin-bottom:12px">' +
+      '<label class="lbl">New Password</label>' +
+      '<div style="position:relative">' +
+        '<input id="rp_pass" type="password" class="inp" placeholder="Min 6 characters" style="padding-right:40px">' +
+        '<button onclick="togglePwd(\'rp_pass\',\'rp_eye\')" id="rp_eye" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px">👁</button>' +
+      '</div>' +
+    '</div>' +
+    '<div style="margin-bottom:16px">' +
+      '<label class="lbl">Confirm Password</label>' +
+      '<div style="position:relative">' +
+        '<input id="rp_conf" type="password" class="inp" placeholder="Repeat password" style="padding-right:40px">' +
+        '<button onclick="togglePwd(\'rp_conf\',\'rp_eye2\')" id="rp_eye2" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px">👁</button>' +
+      '</div>' +
+    '</div>' +
+    '<div style="display:flex;gap:8px">' +
+      '<button onclick="confirmResetPassword(' + id + ')" class="btn btn-p">Reset Password</button>' +
+      '<button onclick="closeModal()" class="btn btn-n">Cancel</button>' +
     '</div>'
   );
 }
 
-async function confirmReinstate(id){
-  try{
-    var r = await api('/employees/'+id+'/reinstate','POST');
-    alert2('reinstateAlert', r.message || 'Employee reinstated!', 's');
-    setTimeout(function(){ closeModal(); showDeletedEmps(); }, 1200);
-  }catch(err){
-    alert2('reinstateAlert', 'Failed: '+(err.detail||'Error'));
+async function confirmResetPassword(id) {
+  var p = document.getElementById('rp_pass').value;
+  var c = document.getElementById('rp_conf').value;
+  if (!p || p.length < 6) { alert2('rpAlert', 'Password must be at least 6 characters'); return; }
+  if (p !== c) { alert2('rpAlert', 'Passwords do not match'); return; }
+  try {
+    var r = await api('/employees/' + id + '/reset-password', 'POST', { new_password: p });
+    alert2('rpAlert', r.message || 'Password reset!', 's');
+    setTimeout(closeModal, 1500);
+  } catch (err) { alert2('rpAlert', 'Failed: ' + (err.detail || 'Error')); }
+}
+
+// ══════════════════════════════════════════════════════
+// FEATURE 3: EXPORT EMPLOYEES CSV
+// ══════════════════════════════════════════════════════
+async function exportEmployeesCSV() {
+  try {
+    var emps = await api('/employees/');
+    var headers = ['Employee ID','First Name','Last Name','Email','Phone','Designation',
+      'Department','Employment Type','Status','Date of Joining','Date of Birth',
+      'Address','Bank Account','Bank Name','IFSC Code','PF Number','UAN Number'];
+    var rows = emps.map(function(e) {
+      return [
+        e.employee_id, e.first_name, e.last_name, e.email, e.phone || '',
+        e.designation || '', e.department || '', e.employment_type, e.status || 'active',
+        e.date_of_joining || '', e.date_of_birth || '', (e.address || '').replace(/,/g,' '),
+        e.bank_account || '', e.bank_name || '', e.ifsc_code || '',
+        e.pf_number || '', e.uan_number || ''
+      ].map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(',');
+    });
+    var csv = [headers.map(function(h){return '"'+h+'"';}).join(',')].concat(rows).join('\n');
+    var blob = new Blob([csv], { type: 'text/csv' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'CloudHub_Employees_' + new Date().toISOString().split('T')[0] + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err) { alert('Export failed: ' + (err.detail || 'Error')); }
+}
+
+// ══════════════════════════════════════════════════════
+// FEATURE 4: EYE TOGGLE (show/hide password)
+// ══════════════════════════════════════════════════════
+function togglePwd(inputId, btnId) {
+  var inp = document.getElementById(inputId);
+  var btn = document.getElementById(btnId);
+  if (!inp) return;
+  if (inp.type === 'password') { inp.type = 'text'; if (btn) btn.textContent = '🙈'; }
+  else { inp.type = 'password'; if (btn) btn.textContent = '👁'; }
+}
+
+// ══════════════════════════════════════════════════════
+// FEATURE 5: RELIEVING LETTER (from Resignations)
+// ══════════════════════════════════════════════════════
+function downloadRelievingLetter(resignationId, empName) {
+  var a = document.createElement('a');
+  a.href = '/employees/resignations/' + resignationId + '/letter';
+  a.download = 'Relieving_Letter_' + empName.replace(/ /g,'_') + '.pdf';
+  a.target = '_blank';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+// ══════════════════════════════════════════════════════
+// FEATURE 6: EMPLOYMENT LETTER (from Employees list)
+// ══════════════════════════════════════════════════════
+function downloadEmploymentLetter(empId, empCode) {
+  var a = document.createElement('a');
+  a.href = '/employees/' + empId + '/letter/employment';
+  a.download = 'Employment_Letter_' + empCode + '.pdf';
+  a.target = '_blank';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+// ══════════════════════════════════════════════════════
+// FEATURE 7: CLICK EMPLOYEE ID → FULL PROFILE MODAL
+// ══════════════════════════════════════════════════════
+async function showEmpProfile(id) {
+  try {
+    var e = await api('/employees/' + id);
+    var rows = [
+      ['Employee ID', e.employee_id], ['Full Name', e.first_name + ' ' + e.last_name],
+      ['Email', e.email], ['Phone', e.phone || '-'],
+      ['Designation', e.designation || '-'], ['Department', e.department || '-'],
+      ['Employment Type', e.employment_type], ['Status', e.status || 'active'],
+      ['Date of Joining', e.date_of_joining || '-'], ['Date of Birth', e.date_of_birth || '-'],
+      ['Address', e.address || '-'], ['Bank Account', e.bank_account || '-'],
+      ['Bank Name', e.bank_name || '-'], ['IFSC Code', e.ifsc_code || '-'],
+      ['PF Number', e.pf_number || '-'], ['UAN Number', e.uan_number || '-']
+    ];
+    var initials = (e.first_name[0] || '') + (e.last_name[0] || '');
+    var gridRows = rows.map(function(r) {
+      return '<div style="padding:8px 0;border-bottom:1px solid #f1f5f9">' +
+        '<div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px">' + r[0] + '</div>' +
+        '<div style="font-size:13px;font-weight:500;color:#1e293b;margin-top:2px">' + r[1] + '</div>' +
+        '</div>';
+    }).join('');
+    showModal(
+      '<div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid #f1f5f9">' +
+        '<div style="width:56px;height:56px;background:#1e3a5f;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;flex-shrink:0">' + initials + '</div>' +
+        '<div>' +
+          '<div style="font-size:18px;font-weight:700;color:#1e293b">' + e.first_name + ' ' + e.last_name + '</div>' +
+          '<div style="font-size:12px;color:#64748b;margin-top:2px">' + (e.designation || 'Employee') + ' &bull; ' + (e.department || 'CloudHub') + '</div>' +
+          '<div style="font-size:12px;font-family:monospace;color:#2563eb;margin-top:2px">' + e.employee_id + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="max-height:50vh;overflow-y:auto;padding-right:4px">' + gridRows + '</div>' +
+      '<div style="display:flex;gap:8px;margin-top:16px">' +
+        '<button onclick="downloadEmploymentLetter(' + e.id + ',\'' + e.employee_id + '\')" class="btn btn-p" style="font-size:12px">📄 Employment Letter</button>' +
+        '<button onclick="closeModal()" class="btn btn-n">Close</button>' +
+      '</div>'
+    );
+  } catch (err) { alert('Failed to load profile: ' + (err.detail || 'Error')); }
+}
+
+// ══════════════════════════════════════════════════════
+// EDIT EMPLOYEE (moved here for clean structure)
+// ══════════════════════════════════════════════════════
+async function doEditEmp(id) {
+  try {
+    var e = await api('/employees/' + id);
+    var selOpt = function(val, opts) {
+      return opts.map(function(o) {
+        return '<option value="' + o + '"' + (val === o ? ' selected' : '') + '>' +
+          o.charAt(0).toUpperCase() + o.slice(1) + '</option>';
+      }).join('');
+    };
+    showModal(
+      '<h3 style="font-size:16px;font-weight:600;margin:0 0 16px">Edit: ' + e.first_name + ' ' + e.last_name + '</h3>' +
+      '<div id="editAlert"></div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-height:60vh;overflow-y:auto;padding-right:4px">' +
+        '<div><label class="lbl">First Name</label><input id="ed_fn" class="inp" value="' + (e.first_name || '') + '"></div>' +
+        '<div><label class="lbl">Last Name</label><input id="ed_ln" class="inp" value="' + (e.last_name || '') + '"></div>' +
+        '<div><label class="lbl">Phone</label><input id="ed_ph" class="inp" value="' + (e.phone || '') + '"></div>' +
+        '<div><label class="lbl">Designation</label><input id="ed_des" class="inp" value="' + (e.designation || '') + '"></div>' +
+        '<div><label class="lbl">Department</label><input id="ed_dep" class="inp" value="' + (e.department || '') + '"></div>' +
+        '<div><label class="lbl">Employment Type</label>' +
+          '<select id="ed_et" class="inp">' + selOpt(e.employment_type, ['permanent','contractor','intern','consultant']) + '</select>' +
+        '</div>' +
+        '<div><label class="lbl">Date of Joining</label><input id="ed_doj" type="date" class="inp" value="' + (e.date_of_joining || '') + '"></div>' +
+        '<div><label class="lbl">Date of Birth</label><input id="ed_dob" type="date" class="inp" value="' + (e.date_of_birth || '') + '"></div>' +
+        '<div style="grid-column:span 2"><label class="lbl">Address</label><textarea id="ed_addr" class="inp" rows="2">' + (e.address || '') + '</textarea></div>' +
+        '<div><label class="lbl">Bank Account</label><input id="ed_ba" class="inp" value="' + (e.bank_account || '') + '"></div>' +
+        '<div><label class="lbl">Bank Name</label><input id="ed_bn" class="inp" value="' + (e.bank_name || '') + '"></div>' +
+        '<div><label class="lbl">IFSC Code</label><input id="ed_ic" class="inp" value="' + (e.ifsc_code || '') + '"></div>' +
+        '<div><label class="lbl">PF Number</label><input id="ed_pf" class="inp" value="' + (e.pf_number || '') + '"></div>' +
+        '<div><label class="lbl">UAN Number</label><input id="ed_uan" class="inp" value="' + (e.uan_number || '') + '"></div>' +
+      '</div>' +
+      '<div style="display:flex;gap:8px;margin-top:16px">' +
+        '<button onclick="saveEditEmp(' + e.id + ')" class="btn btn-p">Save Changes</button>' +
+        '<button onclick="closeModal()" class="btn btn-n">Cancel</button>' +
+      '</div>'
+    );
+  } catch (err) { alert('Failed to load: ' + (err.detail || 'Error')); }
+}
+
+async function saveEditEmp(id) {
+  var data = {};
+  var fm = [['ed_fn','first_name'],['ed_ln','last_name'],['ed_ph','phone'],['ed_des','designation'],
+    ['ed_dep','department'],['ed_et','employment_type'],['ed_doj','date_of_joining'],
+    ['ed_dob','date_of_birth'],['ed_addr','address'],['ed_ba','bank_account'],
+    ['ed_bn','bank_name'],['ed_ic','ifsc_code'],['ed_pf','pf_number'],['ed_uan','uan_number']];
+  fm.forEach(function(p) {
+    var el = document.getElementById(p[0]);
+    if (el && el.value !== '') data[p[1]] = el.value;
+  });
+  try {
+    await api('/employees/' + id, 'PUT', data);
+    alert2('editAlert', 'Employee updated successfully!', 's');
+    setTimeout(function() { closeModal(); showEmployees(); }, 1200);
+  } catch (err) { alert2('editAlert', 'Failed: ' + (err.detail || 'Error')); }
+}
+
+// ══════════════════════════════════════════════════════
+// DELETED EMPLOYEES + REINSTATE
+// ══════════════════════════════════════════════════════
+async function showDeletedEmps() {
+  setActive('showDeletedEmps');
+  setPage(h1('Deleted Employees') +
+    '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#92400e">' +
+    'Soft-deleted employees. Data is fully preserved. Click <strong>Reinstate</strong> to restore access.' +
+    '</div><p style="color:#94a3b8">Loading...</p>');
+  try {
+    var emps = await api('/employees/inactive');
+    if (!emps.length) {
+      setPage(h1('Deleted Employees') +
+        '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#92400e">' +
+        'Soft-deleted employees. Data is fully preserved.</div>' +
+        '<div class="card" style="text-align:center;padding:48px;color:#94a3b8"><div style="font-size:40px;margin-bottom:12px">🗄️</div>' +
+        '<div style="font-size:15px;font-weight:500">No deleted employees</div></div>');
+      return;
+    }
+    var rows = emps.map(function(e) {
+      return '<tr style="opacity:0.8">' +
+        '<td><div style="font-weight:500">' + e.first_name + ' ' + e.last_name + '</div>' +
+        '<div style="font-size:12px;color:#94a3b8">' + e.email + '</div></td>' +
+        '<td style="font-family:monospace;font-size:12px;color:#64748b">' + e.employee_id + '</td>' +
+        '<td style="color:#94a3b8">' + (e.designation || '-') + '</td>' +
+        '<td style="color:#94a3b8">' + (e.department || '-') + '</td>' +
+        '<td><span class="badge badge-' + (e.status || 'terminated') + '">' + (e.status || 'inactive') + '</span></td>' +
+        '<td style="white-space:nowrap">' +
+          '<button onclick="doReinstate(' + e.id + ',\'' + e.first_name + ' ' + e.last_name + '\')" class="btn btn-s" style="padding:3px 10px;font-size:12px;margin-right:4px">Reinstate</button>' +
+        '</td>' +
+        '</tr>';
+    }).join('');
+    setPage(h1('Deleted Employees (' + emps.length + ')') +
+      '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#92400e">' +
+      'Click <strong>Reinstate</strong> to restore employee access.</div>' +
+      tblWrap(['Employee','ID','Designation','Department','Status','Action'].map(th).join(''), rows));
+  } catch (err) {
+    setPage(h1('Deleted Employees') + '<p style="color:#ef4444">Failed: ' + (err.detail || 'Error') + '</p>');
   }
+}
+
+function doReinstate(id, name) {
+  showModal(
+    '<h3 style="font-size:16px;font-weight:600;margin:0 0 12px">Reinstate Employee</h3>' +
+    '<p style="font-size:13px;color:#475569;margin:0 0 20px">Reinstate <strong>' + name + '</strong>? This restores their login and marks them active.</p>' +
+    '<div id="reinstateAlert"></div>' +
+    '<div style="display:flex;gap:8px">' +
+      '<button onclick="confirmReinstate(' + id + ')" class="btn btn-s">Confirm Reinstate</button>' +
+      '<button onclick="closeModal()" class="btn btn-n">Cancel</button>' +
+    '</div>'
+  );
+}
+
+async function confirmReinstate(id) {
+  try {
+    var r = await api('/employees/' + id + '/reinstate', 'POST');
+    alert2('reinstateAlert', r.message || 'Reinstated!', 's');
+    setTimeout(function() { closeModal(); showDeletedEmps(); }, 1200);
+  } catch (err) { alert2('reinstateAlert', 'Failed: ' + (err.detail || 'Error')); }
 }
 
 </script>
