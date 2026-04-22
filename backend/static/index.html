@@ -294,7 +294,8 @@ function showOnboard(){
       ${fld('f_ph','Phone')}${fld('f_des','Designation')}
       ${fld('f_dep','Department')}
       <div><label class="lbl">Employment Type</label><select id="f_et" class="inp"><option value="permanent">Permanent (CH-EMP)</option><option value="contractor">Contractor (CH-CON)</option><option value="intern">Intern (CH-INT)</option></select></div>
-      ${fld('f_doj','Date of Joining','date')}
+      ${fld('f_doj','Date of Joining','date')}${fld('f_dob','Date of Birth','date')}
+      <div style="grid-column:span 2">${fld('f_addr','Address')}</div>
       ${fld('f_ba','Bank Account')}${fld('f_bn','Bank Name')}
       ${fld('f_ic','IFSC Code')}${fld('f_pf','PF Number')}${fld('f_uan','UAN Number')}
       <div style="grid-column:span 2"><button type="submit" class="btn btn-p">Create Employee</button></div>
@@ -304,7 +305,7 @@ function showOnboard(){
 async function submitOnboard(e){
   e.preventDefault();
   const d={first_name:$('f_fn').value,last_name:$('f_ln').value,email:$('f_em').value,password:$('f_pw').value};
-  ['f_ph','f_des','f_dep','f_doj','f_ba','f_bn','f_ic','f_pf','f_uan'].forEach((id,i)=>{const v=$(id)?.value;if(v)d[['phone','designation','department','date_of_joining','bank_account','bank_name','ifsc_code','pf_number','uan_number'][i]]=v;});
+  ['f_ph','f_des','f_dep','f_doj','f_dob','f_addr','f_ba','f_bn','f_ic','f_pf','f_uan'].forEach((id,i)=>{const v=$(id)?.value;if(v)d[['phone','designation','department','date_of_joining','date_of_birth','address','bank_account','bank_name','ifsc_code','pf_number','uan_number'][i]]=v;});
   d.employment_type=$('f_et').value;
   try{const r=await api('/employees/','POST',d);alert2('onbAlert','✅ Created! ID: '+r.employee_id,'s');e.target.reset();}
   catch(err){alert2('onbAlert','❌ '+(err.detail||'Failed'));}
@@ -834,27 +835,43 @@ function togglePwd(inputId, btnId) {
 // ══════════════════════════════════════════════════════
 // FEATURE 5: RELIEVING LETTER (from Resignations)
 // ══════════════════════════════════════════════════════
-function downloadRelievingLetter(resignationId, empName) {
-  var a = document.createElement('a');
-  a.href = '/employees/resignations/' + resignationId + '/letter';
-  a.download = 'Relieving_Letter_' + empName.replace(/ /g,'_') + '.pdf';
-  a.target = '_blank';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+async function downloadRelievingLetter(resignationId, empName) {
+  try {
+    var resp = await fetch('/employees/resignations/' + resignationId + '/letter', {
+      headers: { 'Authorization': 'Bearer ' + tok }
+    });
+    if (!resp.ok) { alert('Failed to generate letter: ' + resp.status); return; }
+    var blob = await resp.blob();
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'Relieving_Letter_' + (empName || 'Employee').replace(/ /g,'_') + '.pdf';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+  } catch(err) { alert('Error: ' + (err.message || 'Download failed')); }
 }
 
 // ══════════════════════════════════════════════════════
 // FEATURE 6: EMPLOYMENT LETTER (from Employees list)
 // ══════════════════════════════════════════════════════
-function downloadEmploymentLetter(empId, empCode) {
-  var a = document.createElement('a');
-  a.href = '/employees/' + empId + '/letter/employment';
-  a.download = 'Employment_Letter_' + empCode + '.pdf';
-  a.target = '_blank';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+async function downloadEmploymentLetter(empId, empCode) {
+  try {
+    var resp = await fetch('/employees/' + empId + '/letter/employment', {
+      headers: { 'Authorization': 'Bearer ' + tok }
+    });
+    if (!resp.ok) { alert('Failed to generate letter: ' + resp.status); return; }
+    var blob = await resp.blob();
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'Employment_Letter_' + empCode + '.pdf';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+  } catch(err) { alert('Error: ' + (err.message || 'Download failed')); }
 }
 
 // ══════════════════════════════════════════════════════
