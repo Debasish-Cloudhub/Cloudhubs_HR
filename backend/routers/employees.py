@@ -71,8 +71,10 @@ def _generate_letter_pdf(title: str, body_lines: list, emp, footer_note: str = "
                                textColor=colors.HexColor('#1e3a5f'), spaceAfter=4)
     sub_style = ParagraphStyle('S', fontName='Helvetica', fontSize=9,
                                textColor=colors.grey, spaceAfter=2)
-    story.append(Paragraph("CloudHub Technologies Pvt. Ltd.", hdr_style))
-    story.append(Paragraph("Hitech City, Hyderabad – 500081 | hr@cloudhub.in | +91-40-12345678", sub_style))
+    story.append(Paragraph("KLAUDHUB TECHSOLUTIONS PRIVATE LIMITED", hdr_style))
+    story.append(Paragraph("(Cloudhubs)", ParagraphStyle("Sub2", fontName="Helvetica-Bold", fontSize=11, textColor=colors.HexColor("#1e3a5f"), spaceAfter=2)))
+    story.append(Paragraph("Registered Office: Flat 904, Manjeera Majestic Homes Soc 85356, KPHB,", sub_style))
+    story.append(Paragraph("Tirumalagiri, Hyderabad – 500085, Telangana | hr@cloudhub.in", sub_style))
     story.append(HRFlowable(width="100%", thickness=2, color=colors.HexColor('#1e3a5f'), spaceAfter=12))
 
     # Date + Ref
@@ -106,8 +108,9 @@ def _generate_letter_pdf(title: str, body_lines: list, emp, footer_note: str = "
     story.append(Paragraph("Yours sincerely,", styles['Normal']))
     story.append(Spacer(1, 1.2*cm))
     story.append(Paragraph("<b>HR Department</b>", styles['Normal']))
-    story.append(Paragraph("CloudHub Technologies Pvt. Ltd.", styles['Normal']))
-    story.append(Paragraph("Hitech City, Hyderabad – 500081", styles['Normal']))
+    story.append(Paragraph("KLAUDHUB TECHSOLUTIONS PRIVATE LIMITED (Cloudhubs)", styles['Normal']))
+    story.append(Paragraph("Flat 904, Manjeera Majestic Homes Soc 85356, KPHB,", styles['Normal']))
+    story.append(Paragraph("Tirumalagiri, Hyderabad – 500085, Telangana", styles['Normal']))
 
     if footer_note:
         story.append(Spacer(1, 1*cm))
@@ -278,7 +281,7 @@ def employment_letter(employee_id: int, db: Session = Depends(get_db), admin: Us
     doj = str(emp.date_of_joining) if emp.date_of_joining else "N/A"
     body = [
         f"This is to certify that <b>{emp.first_name} {emp.last_name}</b> (Employee ID: "
-        f"<b>{emp.employee_id}</b>) is currently employed with CloudHub Technologies Pvt. Ltd. "
+        f"<b>{emp.employee_id}</b>) is currently employed with KLAUDHUB TECHSOLUTIONS PRIVATE LIMITED (Cloudhubs) "
         f"as a <b>{emp.designation or 'Employee'}</b> in the <b>{emp.department or 'CloudHub'}</b> department.",
         f"The employee has been associated with our organization since <b>{doj}</b> and is "
         f"a permanent employee on our rolls as of the date of this letter.",
@@ -303,7 +306,7 @@ def relieving_letter(resignation_id: int, db: Session = Depends(get_db), admin: 
     lwd = str(rec.last_working_date) if rec.last_working_date else "N/A"
     body = [
         f"This is to certify that <b>{emp.first_name} {emp.last_name}</b> (Employee ID: "
-        f"<b>{emp.employee_id}</b>) was employed with CloudHub Technologies Pvt. Ltd. as "
+        f"<b>{emp.employee_id}</b>) was employed with KLAUDHUB TECHSOLUTIONS PRIVATE LIMITED (Cloudhubs) as "
         f"<b>{emp.designation or 'Employee'}</b> in the <b>{emp.department or 'CloudHub'}</b> department "
         f"from <b>{doj}</b> to <b>{lwd}</b>.",
         "During the tenure of employment, the employee demonstrated professionalism, "
