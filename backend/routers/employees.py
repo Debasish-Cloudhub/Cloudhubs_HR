@@ -289,7 +289,7 @@ def employment_letter(employee_id: int, db: Session = Depends(get_db), admin: Us
         "opening, address proof, or any other bonafide purpose.",
         "We wish the employee all the best in their endeavours."
     ]
-    pdf = _generate_letter_pdf("Employment Verification Letter", body, emp,
+    pdf = _generate_letter_pdf("Employment Letter", body, emp,
                                "This is a computer-generated letter and does not require a physical signature.")
     fname = f"Employment_Letter_{emp.employee_id}.pdf"
     return Response(content=pdf, media_type="application/pdf",
