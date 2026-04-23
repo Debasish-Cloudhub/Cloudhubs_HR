@@ -1040,7 +1040,7 @@ async function confirmReinstate(id) {
 // ══════════════════════════════════════════════════════
 // PAYSLIP PDF DOWNLOAD (fetch+blob with auth)
 // ══════════════════════════════════════════════════════
-async function downloadPayslip(recordId, label) {
+window.downloadPayslip = async function(recordId, label) {
   try {
     var resp = await fetch('/payroll/slip/' + recordId, {
       headers: { 'Authorization': 'Bearer ' + tok }
@@ -1065,7 +1065,7 @@ async function downloadPayslip(recordId, label) {
 // ══════════════════════════════════════════════════════
 // GENERATE ALL PAYSLIPS FROM DATE OF JOINING
 // ══════════════════════════════════════════════════════
-async function genAllPayslips() {
+window.genAllPayslips = async function() {
   var empId = document.getElementById('pEmp') ? document.getElementById('pEmp').value : '';
   if (!empId) { alert2('payAlert', 'Select an employee first'); return; }
   alert2('payAlert', '⏳ Generating payslips from date of joining...', 's');
@@ -1134,16 +1134,16 @@ var TRAININGS = [
   }
 ];
 
-function getTrainingStatus() {
+window.getTrainingStatus = function() {
   var stored = localStorage.getItem('training_status_' + (window._empEmail || 'default'));
   return stored ? JSON.parse(stored) : {};
 }
 
-function saveTrainingStatus(status) {
+window.saveTrainingStatus = function(status) {
   localStorage.setItem('training_status_' + (window._empEmail || 'default'), JSON.stringify(status));
 }
 
-function markTraining(id, completed) {
+window.markTraining = function(id, completed) {
   var status = getTrainingStatus();
   if (completed) {
     status[id] = { completed: true, date: new Date().toLocaleDateString('en-IN') };
@@ -1154,7 +1154,7 @@ function markTraining(id, completed) {
   showTraining();
 }
 
-async function showTraining() {
+window.showTraining = async function() {
   setActive('showTraining');
   var status = getTrainingStatus();
   var total = TRAININGS.length;
