@@ -39,13 +39,12 @@ EARN_HDR  = colors.HexColor('#1b5e20')
 DED_HDR   = colors.HexColor('#b71c1c')
 
 def _clean_employment_type(val):
-        """Convert EmploymentTypeEnum.permanent to Permanent."""
     if not val:
-                return '-'
-            s = str(val)
+        return '-'
+    s = str(val)
     if '.' in s:
-                s = s.split('.')[-1]
-            return s.replace('_', ' ').title()
+        s = s.split('.')[-1]
+    return s.replace('_', ' ').title()
 
 def _fmt(v):
         return f'Rs. {float(v):,.2f}' if v else 'Rs. 0.00'
