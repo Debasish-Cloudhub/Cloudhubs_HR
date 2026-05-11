@@ -9,16 +9,25 @@ class RoleEnum(str, enum.Enum):
     manager = "manager"
     employee = "employee"
 
+    def __str__(self):
+        return self.value
+
 class EmploymentTypeEnum(str, enum.Enum):
     permanent = "permanent"
     contractor = "contractor"
     intern = "intern"
     consultant = "consultant"
 
+    def __str__(self):
+        return self.value
+
 class TimesheetStatusEnum(str, enum.Enum):
     pending = "pending"
     approved = "approved"
     rejected = "rejected"
+
+    def __str__(self):
+        return self.value
 
 class LeaveTypeEnum(str, enum.Enum):
     paid = "paid"
@@ -27,15 +36,24 @@ class LeaveTypeEnum(str, enum.Enum):
     sabbatical = "sabbatical"
     lop = "lop"
 
+    def __str__(self):
+        return self.value
+
 class LeaveStatusEnum(str, enum.Enum):
     pending = "pending"
     approved = "approved"
     rejected = "rejected"
 
+    def __str__(self):
+        return self.value
+
 class EmployeeStatusEnum(str, enum.Enum):
     active = "active"
     terminated = "terminated"
     resigned = "resigned"
+
+    def __str__(self):
+        return self.value
 
 class User(Base):
     __tablename__ = "users"

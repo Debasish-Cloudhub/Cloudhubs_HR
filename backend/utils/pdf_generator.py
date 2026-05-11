@@ -41,13 +41,11 @@ DED_HDR   = colors.HexColor('#b71c1c')
 def _clean_employment_type(val):
     if not val:
         return '-'
-    s = str(val)
-    if '.' in s:
-        s = s.split('.')[-1]
-    return s.replace('_', ' ').title()
+    return str(val).replace('_', ' ').title()
 
 def _fmt(v):
-        return f'Rs. {float(v):,.2f}' if v else 'Rs. 0.00'
+    if v is None: return 'INR 0.00'
+    return f"INR {float(v):,.2f}"
 
 def generate_salary_slip(employee, salary_record):
         buffer = io.BytesIO()
@@ -153,8 +151,8 @@ def generate_salary_slip(employee, salary_record):
 
     wh = ps('wh', bold=True, color=colors.white, size=9)
     ed_data = [[
-                Paragraph('EARNINGS', wh), Paragraph('Amount (Rs.)', wh),
-                Paragraph('DEDUCTIONS', wh), Paragraph('Amount (Rs.)', wh),
+                Paragraph('EARNINGS', wh), Paragraph('Amount (INR)', wh),
+                Paragraph('DEDUCTIONS', wh), Paragraph('Amount (INR)', wh),
     ]]
     for (el, ev), (dl, dv) in zip(earn_p, ded_p):
                 ed_data.append([
