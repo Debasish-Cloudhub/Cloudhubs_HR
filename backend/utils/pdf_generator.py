@@ -24,7 +24,7 @@ else:
     F_BLD = 'Helvetica-Bold'
 
 COMPANY_NAME  = "KLAUDHUB TECHSOLUTIONS PRIVATE LIMITED"
-COMPANY_ALIAS = "(Cloudhubs)"
+COMPANY_ALIAS = "(CloudHub)"
 COMPANY_ADDR1 = "Registered Office: Flat 904, Manjeera Majestic Homes Soc 85356,"
 COMPANY_ADDR2 = "KPHB, Tirumalagiri, Hyderabad - 500085, Telangana"
 COMPANY_EMAIL = "hr@cloudhubs.in"
