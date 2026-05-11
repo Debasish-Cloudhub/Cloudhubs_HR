@@ -8,7 +8,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 import io
 from datetime import datetime
 
-# -- Font setup: DejaVu if available, else Helvetica --
+# -- Font setup --
 import os as _os
 _dv = '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
 if _os.path.exists(_dv):
@@ -16,13 +16,12 @@ if _os.path.exists(_dv):
     pdfmetrics.registerFont(TTFont('DV-B', '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'))
     pdfmetrics.registerFont(TTFont('DV-I', '/usr/share/fonts/truetype/dejavu/DejaVuSans-Oblique.ttf'))
     pdfmetrics.registerFont(TTFont('DV-BI','/usr/share/fonts/truetype/dejavu/DejaVuSans-BoldOblique.ttf'))
+    F_REG = 'DV'
+    F_BLD = 'DV-B'
 else:
-    for _n, _r in [('DV','Helvetica'),('DV-B','Helvetica-Bold'),
-                  ('DV-I','Helvetica-Oblique'),('DV-BI','Helvetica-BoldOblique')]:
-        try:
-            pdfmetrics.registerFont(pdfmetrics.Font(_n, _r, 'WinAnsiEncoding'))
-        except:
-            pass
+    # Use standard built-in fonts
+    F_REG = 'Helvetica'
+    F_BLD = 'Helvetica-Bold'
 
 COMPANY_NAME  = "KLAUDHUB TECHSOLUTIONS PRIVATE LIMITED"
 COMPANY_ALIAS = "(Cloudhubs)"
@@ -58,10 +57,10 @@ def generate_salary_slip(employee, salary_record):
     )
     story = []
 
-    def ps(name, font='DV', size=9, color=colors.black, bold=False,
+    def ps(name, font=F_REG, size=9, color=colors.black, bold=False,
                        align=0, space_after=2, leading=None):
         return ParagraphStyle(name,
-                              fontName='DV-B' if bold else font,
+                              fontName=F_BLD if bold else font,
                               fontSize=size,
                               textColor=color,
                               alignment=align,
