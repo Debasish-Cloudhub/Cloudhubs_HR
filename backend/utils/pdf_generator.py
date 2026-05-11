@@ -172,7 +172,7 @@ def generate_salary_slip(employee, salary_record):
         ('BACKGROUND',(0,0),(1,0),EARN_HDR), ('BACKGROUND',(2,0),(3,0),DED_HDR),
         ('TEXTCOLOR',(0,0),(-1,0),colors.white),
         ('BACKGROUND',(0,n-1),(1,n-1),EARN_BG), ('BACKGROUND',(2,n-1),(3,n-1),DED_BG),
-        ('FONTNAME',(0,n-1),(-1,n-1),'DV-B'),
+        ('FONTNAME',(0,n-1),(-1,n-1),F_BLD),
         ('GRID',(0,0),(-1,-1),0.4,BORDER), ('PADDING',(0,0),(-1,-1),5),
         ('ROWBACKGROUNDS',(0,1),(-1,n-2),[colors.white, colors.HexColor('#f9fafb')]),
     ]))
