@@ -38,7 +38,8 @@ def generate_payslip(data: SalaryGenerateRequest, db: Session = Depends(get_db),
         SalaryRecord.month == data.month,
         SalaryRecord.year == data.year
     ).first()
-    if existing: return existing
+    if existing:
+        raise HTTPException(status_code=400, detail="Payslip already exists for this month/year. Please choose a different period or delete the existing record.")
     gross = comp.basic + comp.hra + comp.allowances + comp.bonus
     deductions = comp.pf_deduction + comp.professional_tax + comp.income_tax
     rec = SalaryRecord(
@@ -123,3 +124,13 @@ def download_slip(record_id: int, db: Session = Depends(get_db), current_user: U
     fname = f"Payslip_{emp.employee_id}_{rec.month:02d}_{rec.year}.pdf"
     return Response(content=pdf, media_type="application/pdf",
                     headers={"Content-Disposition": f"attachment; filename={fname}"})
+
+@router.delete("/slip/{record_id}")
+def delete_slip(record_id: int, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    rec = db.query(SalaryRecord).filter(SalaryRecord.id == record_id).first()
+    if not rec:
+        raise HTTPException(status_code=404, detail="Payslip record not found")
+    db.delete(rec)
+    db.commit()
+    return {"message": "Payslip deleted successfully"}
+

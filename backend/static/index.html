@@ -432,7 +432,7 @@ async function showPayroll(){
           <td>₹${Number(r.gross_salary).toLocaleString('en-IN')}</td>
           <td style="color:#dc2626">-₹${Number(r.total_deductions).toLocaleString('en-IN')}</td>
           <td style="font-weight:700;color:#059669">₹${Number(r.net_salary).toLocaleString('en-IN')}</td>
-          <td><button onclick="downloadPayslip('${r.id}','${r.year}_${r.month}')" class="btn btn-n" style="padding:3px 10px;font-size:12px">⬇️ PDF</button></td>
+          <td><button onclick="downloadPayslip('${r.id}','${r.year}_${r.month}')" class="btn btn-n" style="padding:3px 10px;font-size:12px">⬇️ PDF</button><button onclick="deletePayslip(${r.id})" style="margin-left:6px;padding:3px 8px;font-size:12px;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:6px;cursor:pointer" title="Delete Payslip">🗑️</button></td>
         </tr>`).join(''):noRows(7,'No payslips generated yet. Configure salary components above and click Generate.')
       ));
   }catch(e){setPage(h1('Payroll')+'<p style="color:#ef4444">Failed to load</p>');}
@@ -1061,6 +1061,26 @@ window.downloadPayslip = async function(recordId, label) {
     setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
   } catch(err) { alert('Download error: ' + (err.message || 'Unknown error')); }
 }
+
+window.deletePayslip = async function(id) {
+  if (!confirm('Are you sure you want to delete this payslip? It can be regenerated if needed.')) return;
+  try {
+    var resp = await fetch('/payroll/slip/' + id, {
+      method: 'DELETE',
+      headers: { 'Authorization': 'Bearer ' + tok }
+    });
+    if (resp.ok) {
+      alert2('payAlert', '✅ Payslip deleted successfully!', 's');
+      showPayroll();
+    } else {
+      var err = await resp.json().catch(function(){ return {}; });
+      alert('Failed to delete: ' + (err.detail || resp.status));
+    }
+  } catch(e) {
+    alert('Error: ' + (e.message || 'Unknown error'));
+  }
+}
+
 
 // ══════════════════════════════════════════════════════
 // GENERATE ALL PAYSLIPS FROM DATE OF JOINING
