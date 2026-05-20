@@ -21,15 +21,7 @@ A complete, production-ready HR Management System for CloudHub built with FastAP
 
 ---
 
-## 🔐 Demo Credentials
 
-| Role | Email | Password |
-|---|---|---|
-| **HR Admin** | admin@cloudhub.in | Admin@123 |
-| **Employee** | john.doe@cloudhub.in | Employee@123 |
-| **Manager** | manager@cloudhub.in | Manager@123 |
-
----
 
 ## 🚀 Quick Start (Docker — Recommended)
 
