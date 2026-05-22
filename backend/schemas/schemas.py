@@ -172,3 +172,65 @@ class MiscDeductionOut(BaseModel):
     created_at: datetime
     class Config:
         from_attributes = True
+
+
+class AppraisalCreate(BaseModel):
+    employee_id: int
+    reviewer_id: Optional[int] = None
+    period: str
+    comments: Optional[str] = None
+
+class AppraisalUpdate(BaseModel):
+    status: Optional[str] = None
+    overall_rating: Optional[float] = None
+    comments: Optional[str] = None
+    reviewer_id: Optional[int] = None
+
+class AppraisalOut(BaseModel):
+    id: int
+    employee_id: int
+    reviewer_id: Optional[int] = None
+    period: str
+    status: str
+    overall_rating: Optional[float] = None
+    comments: Optional[str] = None
+    created_at: datetime
+    class Config:
+        from_attributes = True
+
+class AppraisalGoalCreate(BaseModel):
+    title: str
+    description: Optional[str] = None
+    target: Optional[str] = None
+    achievement: Optional[str] = None
+    rating: Optional[float] = None
+
+class AppraisalGoalOut(BaseModel):
+    id: int
+    appraisal_id: int
+    title: str
+    description: Optional[str] = None
+    target: Optional[str] = None
+    achievement: Optional[str] = None
+    rating: Optional[float] = None
+    created_at: datetime
+    class Config:
+        from_attributes = True
+
+class AppraisalFeedbackCreate(BaseModel):
+    strengths: Optional[str] = None
+    improvements: Optional[str] = None
+    overall_comment: Optional[str] = None
+    rating: Optional[float] = None
+
+class AppraisalFeedbackOut(BaseModel):
+    id: int
+    appraisal_id: int
+    reviewer_id: int
+    strengths: Optional[str] = None
+    improvements: Optional[str] = None
+    overall_comment: Optional[str] = None
+    rating: Optional[float] = None
+    created_at: datetime
+    class Config:
+        from_attributes = True
