@@ -151,3 +151,24 @@ class DocumentOut(BaseModel):
     created_at: datetime
     class Config:
         from_attributes = True
+
+
+class MiscDeductionCreate(BaseModel):
+    employee_id: int
+    label: str
+    amount: float
+    month: int
+    year: int
+    remarks: Optional[str] = None
+
+class MiscDeductionOut(BaseModel):
+    id: int
+    employee_id: int
+    label: str
+    amount: float
+    month: int
+    year: int
+    remarks: Optional[str] = None
+    created_at: datetime
+    class Config:
+        from_attributes = True

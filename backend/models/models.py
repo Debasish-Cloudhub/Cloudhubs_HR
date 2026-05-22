@@ -96,6 +96,7 @@ class Employee(Base):
     salary_records = relationship("SalaryRecord", back_populates="employee")
     leave_requests = relationship("LeaveRequest", back_populates="employee", foreign_keys="LeaveRequest.employee_id")
     leave_balances = relationship("LeaveBalance", back_populates="employee")
+    misc_deductions = relationship("MiscDeduction", back_populates="employee")
 
 class Timesheet(Base):
     __tablename__ = "timesheets"
@@ -219,3 +220,16 @@ class ResignationRecord(Base):
     status = Column(String, default="pending")
     reviewed_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class MiscDeduction(Base):
+    __tablename__ = "misc_deductions"
+    id = Column(Integer, primary_key=True, index=True)
+    employee_id = Column(Integer, ForeignKey("employees.id"), nullable=False)
+    label = Column(String, nullable=False)
+    amount = Column(Float, nullable=False)
+    month = Column(Integer, nullable=False)
+    year = Column(Integer, nullable=False)
+    remarks = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    employee = relationship("Employee", back_populates="misc_deductions")

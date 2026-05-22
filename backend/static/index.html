@@ -150,26 +150,27 @@ function setActive(fn){
 function buildNav(){
   const a=role==='admin', m=role==='manager', e=role==='employee';
   const n=(a||m)?[
-    ['🏠 Dashboard','showAdminDash'],
-    ['👥 Employees','showEmployees'],
-    ...(a?[['➕ Onboarding','showOnboard'],
-    ['🗄️ Deleted Employees','showDeletedEmps'],['🔐 Create Admin','showCreateAdmin'],['📋 Resignations','showResignations']]:[] ),
-    ['🕐 Timesheets','showTimesheets'],
-    ['🌴 Leave Requests','showLeaveReq'],
-    ['💰 Payroll','showPayroll'],
-    ['📅 Holidays & Leaves','showHolidaysLeaves'],
-    ['📄 Documents','showDocs'],
+    ['ð  Dashboard','showAdminDash'],
+    ['ð¥ Employees','showEmployees'],
+    ...(a?[['â Onboarding','showOnboard'],
+    ['ðï¸ Deleted Employees','showDeletedEmps'],['ð Create Admin','showCreateAdmin'],['ð Resignations','showResignations']]:[] ),
+    ['ð Timesheets','showTimesheets'],
+    ['ð´ Leave Requests','showLeaveReq'],
+    ['ð° Payroll','showPayroll'],
+    ['ð Holidays & Leaves','showHolidaysLeaves'],
+    ['ð Documents','showDocs'],
+    ['💸 Misc Deductions','showMiscDeductions'],
   ]:[
-    ['🏠 My Dashboard','showEmpDash'],
-    ['🕐 My Timesheets','showMyTimesheets'],
-    ['🌴 Apply Leave','showApplyLeave'],
-    ['📊 Leave Balance','showLeaveBalance'],
-    ['💰 My Payslips','showPayslips'],
-    ['📅 Holidays','showHolidaysLeaves'],
-    ['📄 Documents','showDocs'],
-    ['👤 My Profile','showProfile'],
-    ['🎓 My Training','showTraining'],
-    ['🚪 Resign','showResign'],
+    ['ð  My Dashboard','showEmpDash'],
+    ['ð My Timesheets','showMyTimesheets'],
+    ['ð´ Apply Leave','showApplyLeave'],
+    ['ð Leave Balance','showLeaveBalance'],
+    ['ð° My Payslips','showPayslips'],
+    ['ð Holidays','showHolidaysLeaves'],
+    ['ð Documents','showDocs'],
+    ['ð¤ My Profile','showProfile'],
+    ['ð My Training','showTraining'],
+    ['ðª Resign','showResign'],
   ];
   $('nav').innerHTML=n.map(([l,f])=>navBtn(l,f)).join('');
 }
@@ -182,7 +183,7 @@ function tblWrap(head,body){return `<div class="card" style="padding:0;overflow:
 function th(t){return `<th>${t}</th>`;}
 function noRows(cols,msg='No data'){return `<tr><td colspan="${cols}" style="text-align:center;color:#94a3b8;padding:40px">${msg}</td></tr>`;}
 
-// ── ADMIN DASHBOARD ──
+// ââ ADMIN DASHBOARD ââ
 async function showAdminDash(){
   setActive('showAdminDash');
   setPage(h1(role==='manager'?'Manager Dashboard':'Admin Dashboard')+'<p style="color:#94a3b8">Loading...</p>');
@@ -191,11 +192,11 @@ async function showAdminDash(){
     const pl=Array.isArray(lv)?lv.filter(l=>l.status==='pending').length:0;
     setPage(h1(role==='manager'?'Manager Dashboard':'Admin Dashboard')+
       `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px">
-        ${sc('Total Employees',s.total_employees,'#2563eb','👥')}
-        ${sc('Pending Timesheets',s.pending_timesheets,'#f59e0b','⏳')}
-        ${sc('Approved Timesheets',s.approved_timesheets,'#10b981','✅')}
-        ${sc('Pending Leaves',pl,'#8b5cf6','🌴')}</div>`+
-      (s.upcoming_holidays?.length?`<div class="card"><h3 style="font-size:14px;font-weight:600;color:#374151;margin:0 0 12px">📅 Upcoming Holidays</h3>${s.upcoming_holidays.map(h=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:13px"><span style="font-weight:500">${h.name}</span><span style="color:#64748b">${h.date}</span></div>`).join('')}</div>`:'')+
+        ${sc('Total Employees',s.total_employees,'#2563eb','ð¥')}
+        ${sc('Pending Timesheets',s.pending_timesheets,'#f59e0b','â³')}
+        ${sc('Approved Timesheets',s.approved_timesheets,'#10b981','â')}
+        ${sc('Pending Leaves',pl,'#8b5cf6','ð´')}</div>`+
+      (s.upcoming_holidays?.length?`<div class="card"><h3 style="font-size:14px;font-weight:600;color:#374151;margin:0 0 12px">ð Upcoming Holidays</h3>${s.upcoming_holidays.map(h=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:13px"><span style="font-weight:500">${h.name}</span><span style="color:#64748b">${h.date}</span></div>`).join('')}</div>`:'')+
       `<div style="margin-top:16px;padding:12px 16px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;font-size:13px;color:#1e40af">
         <strong>Quick actions:</strong> Use the sidebar to manage employees, timesheets, leaves, payroll, and more.
       </div>`
@@ -203,7 +204,7 @@ async function showAdminDash(){
   }catch(e){setPage(h1('Dashboard')+'<p style="color:#ef4444">Failed to load</p>');}
 }
 
-// ── EMPLOYEES ──
+// ââ EMPLOYEES ââ
 async function showEmployees(){
   setActive('showEmployees');
   setPage('<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px"><h1 style="font-size:22px;font-weight:700;color:#1e293b;margin:0">Employees</h1><button onclick="exportEmployeesCSV()" class="btn btn-n" style="font-size:13px">&#11015;&#65039; Export CSV</button></div>'+'<p style="color:#94a3b8">Loading...</p>');
@@ -265,7 +266,7 @@ function doTermModal(id,name){
 async function confirmTerm(id){
   const r=$('tReason').value, d=$('tDate').value;
   if(!r||!d){alert2('termAlert','Fill all fields');return;}
-  try{const res=await api('/employees/'+id+'/terminate','POST',{reason:r,termination_date:d});closeModal();alert('✅ '+res.message);showEmployees();}
+  try{const res=await api('/employees/'+id+'/terminate','POST',{reason:r,termination_date:d});closeModal();alert('â '+res.message);showEmployees();}
   catch(e){alert2('termAlert','Failed: '+(e.detail||'Error'));}
 }
 
@@ -281,18 +282,18 @@ async function doAssignMgrModal(empId){
 }
 async function confirmAssignMgr(empId){
   const mid=$('mgrSel').value; if(!mid){alert2('mgrAlert','Select a manager');return;}
-  try{const r=await api('/employees/'+empId+'/assign-manager','POST',{manager_employee_id:parseInt(mid)});closeModal();alert('✅ '+r.message);}
+  try{const r=await api('/employees/'+empId+'/assign-manager','POST',{manager_employee_id:parseInt(mid)});closeModal();alert('â '+r.message);}
   catch(e){alert2('mgrAlert','Failed: '+(e.detail||'Error'));}
 }
 
-// ── ONBOARDING ──
+// ââ ONBOARDING ââ
 function showOnboard(){
   setActive('showOnboard');
   setPage(h1('Employee Onboarding')+`<div class="card" style="max-width:720px">
     <div id="onbAlert"></div>
     <form onsubmit="submitOnboard(event)" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
       ${fld('f_fn','First Name','text',true)}${fld('f_ln','Last Name','text',true)}
-      ${fld('f_em','Email','email',true)}<div><label class="lbl">Password *</label><div style="position:relative"><input id="f_pw" type="password" class="inp" required style="padding-right:40px"><button type="button" onclick="togglePwd('f_pw','onb_eye')" id="onb_eye" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px">👁</button></div></div>
+      ${fld('f_em','Email','email',true)}<div><label class="lbl">Password *</label><div style="position:relative"><input id="f_pw" type="password" class="inp" required style="padding-right:40px"><button type="button" onclick="togglePwd('f_pw','onb_eye')" id="onb_eye" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px">ð</button></div></div>
       ${fld('f_ph','Phone')}${fld('f_des','Designation')}
       ${fld('f_dep','Department')}
       <div><label class="lbl">Employment Type</label><select id="f_et" class="inp"><option value="permanent">Permanent (CH-EMP)</option><option value="contractor">Contractor (CH-CON)</option><option value="intern">Intern (CH-INT)</option></select></div>
@@ -309,11 +310,11 @@ async function submitOnboard(e){
   const d={first_name:$('f_fn').value,last_name:$('f_ln').value,email:$('f_em').value,password:$('f_pw').value};
   ['f_ph','f_des','f_dep','f_doj','f_dob','f_addr','f_ba','f_bn','f_ic','f_pf','f_uan'].forEach((id,i)=>{const v=$(id)?.value;if(v)d[['phone','designation','department','date_of_joining','date_of_birth','address','bank_account','bank_name','ifsc_code','pf_number','uan_number'][i]]=v;});
   d.employment_type=$('f_et').value;
-  try{const r=await api('/employees/','POST',d);alert2('onbAlert','✅ Created! ID: '+r.employee_id,'s');e.target.reset();}
-  catch(err){alert2('onbAlert','❌ '+(err.detail||'Failed'));}
+  try{const r=await api('/employees/','POST',d);alert2('onbAlert','â Created! ID: '+r.employee_id,'s');e.target.reset();}
+  catch(err){alert2('onbAlert','â '+(err.detail||'Failed'));}
 }
 
-// ── CREATE ADMIN ──
+// ââ CREATE ADMIN ââ
 function showCreateAdmin(){
   setActive('showCreateAdmin');
   setPage(h1('Create Admin User')+`<div class="card" style="max-width:480px">
@@ -327,11 +328,11 @@ function showCreateAdmin(){
 }
 async function submitCreateAdmin(e){
   e.preventDefault();
-  try{const r=await api('/employees/admin/create','POST',{first_name:$('ca_fn').value,last_name:$('ca_ln').value,email:$('ca_em').value,password:$('ca_pw').value});alert2('caAlert','✅ '+r.message,'s');e.target.reset();}
-  catch(err){alert2('caAlert','❌ '+(err.detail||'Failed'));}
+  try{const r=await api('/employees/admin/create','POST',{first_name:$('ca_fn').value,last_name:$('ca_ln').value,email:$('ca_em').value,password:$('ca_pw').value});alert2('caAlert','â '+r.message,'s');e.target.reset();}
+  catch(err){alert2('caAlert','â '+(err.detail||'Failed'));}
 }
 
-// ── TIMESHEETS (admin/manager) ──
+// ââ TIMESHEETS (admin/manager) ââ
 async function showTimesheets(){
   setActive('showTimesheets');
   setPage(h1('Timesheets')+'<p style="color:#94a3b8">Loading...</p>');
@@ -353,7 +354,7 @@ async function approveTS(id,status){
   try{await api('/timesheets/'+id+'/approve','PUT',{status});showTimesheets();}catch(e){alert('Failed');}
 }
 
-// ── LEAVE REQUESTS (admin/manager) ──
+// ââ LEAVE REQUESTS (admin/manager) ââ
 async function showLeaveReq(){
   setActive('showLeaveReq');
   setPage(h1('Leave Requests')+'<p style="color:#94a3b8">Loading...</p>');
@@ -377,16 +378,16 @@ async function reviewLeave(id,status){
   try{await api('/leaves/'+id+'/review','PUT',{status});showLeaveReq();}catch(e){alert('Failed');}
 }
 
-// ── PAYROLL ──
+// ââ PAYROLL ââ
 async function showPayroll(){
   setActive('showPayroll');
   setPage(h1('Payroll')+'<p style="color:#94a3b8">Loading...</p>');
   try{
     const [emps,recs]=await Promise.all([api('/employees/'),api('/payroll/records')]);
     setPage(h1('Payroll Management')+
-      // ── SALARY CONFIGURATION ──
+      // ââ SALARY CONFIGURATION ââ
       `<div class="card" style="margin-bottom:20px">
-        <h3 style="font-size:14px;font-weight:600;margin:0 0 4px">⚙️ Salary Configuration</h3>
+        <h3 style="font-size:14px;font-weight:600;margin:0 0 4px">âï¸ Salary Configuration</h3>
         <p style="font-size:12px;color:#94a3b8;margin:0 0 14px">Set salary components before generating payslips</p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
           <div style="grid-column:span 2">
@@ -396,47 +397,57 @@ async function showPayroll(){
               ${emps.map(e=>'<option value="'+e.id+'">'+e.first_name+' '+e.last_name+' ('+e.employee_id+')</option>').join('')}
             </select>
           </div>
-          <div><label class="lbl">Basic Salary (₹)</label><input id="sc_basic" type="number" class="inp" placeholder="e.g. 50000" min="0"></div>
-          <div><label class="lbl">HRA (₹)</label><input id="sc_hra" type="number" class="inp" placeholder="e.g. 20000" min="0"></div>
-          <div><label class="lbl">Allowances (₹)</label><input id="sc_allow" type="number" class="inp" placeholder="e.g. 10000" min="0"></div>
-          <div><label class="lbl">Bonus (₹)</label><input id="sc_bonus" type="number" class="inp" placeholder="e.g. 5000" min="0"></div>
-          <div><label class="lbl">PF Deduction (₹)</label><input id="sc_pf" type="number" class="inp" placeholder="e.g. 6000" min="0"></div>
-          <div><label class="lbl">Professional Tax (₹)</label><input id="sc_pt" type="number" class="inp" placeholder="e.g. 200" min="0"></div>
-          <div><label class="lbl">Income Tax (₹)</label><input id="sc_it" type="number" class="inp" placeholder="e.g. 2000" min="0"></div>
+          <div><label class="lbl">Basic Salary (â¹)</label><input id="sc_basic" type="number" class="inp" placeholder="e.g. 50000" min="0"></div>
+          <div><label class="lbl">HRA (â¹)</label><input id="sc_hra" type="number" class="inp" placeholder="e.g. 20000" min="0"></div>
+          <div><label class="lbl">Allowances (â¹)</label><input id="sc_allow" type="number" class="inp" placeholder="e.g. 10000" min="0"></div>
+          <div><label class="lbl">Bonus (â¹)</label><input id="sc_bonus" type="number" class="inp" placeholder="e.g. 5000" min="0"></div>
+          <div><label class="lbl">PF Deduction (â¹)</label><input id="sc_pf" type="number" class="inp" placeholder="e.g. 6000" min="0"></div>
+          <div><label class="lbl">Professional Tax (â¹)</label><input id="sc_pt" type="number" class="inp" placeholder="e.g. 200" min="0"></div>
+          <div><label class="lbl">Income Tax (â¹)</label><input id="sc_it" type="number" class="inp" placeholder="e.g. 2000" min="0"></div>
           <div><label class="lbl">Effective From</label><input id="sc_date" type="date" class="inp"></div>
         </div>
         <div id="scAlert" style="margin-bottom:10px"></div>
         <div style="display:flex;gap:10px;align-items:center">
-          <button onclick="saveSalaryComp()" class="btn btn-p">💾 Save Salary Config</button>
+          <button onclick="saveSalaryComp()" class="btn btn-p">ð¾ Save Salary Config</button>
           <span style="font-size:12px;color:#94a3b8">Changes apply from next payslip generation</span>
         </div>
       </div>`+
-      // ── GENERATE PAYSLIP ──
+      // ââ GENERATE PAYSLIP ââ
       `<div class="card" style="margin-bottom:20px">
-        <h3 style="font-size:14px;font-weight:600;margin:0 0 14px">📄 Generate Payslip</h3>
+        <h3 style="font-size:14px;font-weight:600;margin:0 0 14px">ð Generate Payslip</h3>
         <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
           <div><label class="lbl">Employee</label><select id="pEmp" class="inp" style="min-width:180px"><option value="">Select...</option>${emps.map(e=>'<option value="'+e.id+'">'+e.first_name+' '+e.last_name+'</option>').join('')}</select></div>
           <div><label class="lbl">Month</label><select id="pMo" class="inp">${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map((m,i)=>'<option value="'+(i+1)+'">'+m+'</option>').join('')}</select></div>
           <div><label class="lbl">Year</label><input id="pYr" type="number" value="${new Date().getFullYear()}" class="inp" style="width:90px"></div>
           <div id="payAlert" style="flex:1"></div>
-          <button onclick="genPayslip()" class="btn btn-s" style="margin-right:8px">Generate Payslip</button><button onclick="genAllPayslips()" class="btn btn-p">📅 Generate All (from Joining)</button>
+          <button onclick="genPayslip()" class="btn btn-s" style="margin-right:8px">Generate Payslip</button><button onclick="genAllPayslips()" class="btn btn-p">ð Generate All (from Joining)</button>
         </div>
       </div>`+
-      // ── PAYSLIP RECORDS ──
+      // ââ PAYSLIP RECORDS ââ
       tblWrap(
         ['Employee','Period','Basic','Gross','Deductions','Net Pay','PDF'].map(th).join(''),
         recs.length?recs.map(r=>`<tr>
           <td style="font-size:12px;font-family:monospace;color:#2563eb">#${r.employee_id}</td>
           <td>${new Date(r.year,r.month-1).toLocaleString('en',{month:'short',year:'numeric'})}</td>
-          <td>₹${Number(r.basic).toLocaleString('en-IN')}</td>
-          <td>₹${Number(r.gross_salary).toLocaleString('en-IN')}</td>
-          <td style="color:#dc2626">-₹${Number(r.total_deductions).toLocaleString('en-IN')}</td>
-          <td style="font-weight:700;color:#059669">₹${Number(r.net_salary).toLocaleString('en-IN')}</td>
-          <td><button onclick="downloadPayslip('${r.id}','${r.year}_${r.month}')" class="btn btn-n" style="padding:3px 10px;font-size:12px">⬇️ PDF</button><button onclick="deletePayslip(${r.id})" style="margin-left:6px;padding:3px 8px;font-size:12px;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:6px;cursor:pointer" title="Delete Payslip">🗑️</button></td>
+          <td>â¹${Number(r.basic).toLocaleString('en-IN')}</td>
+          <td>â¹${Number(r.gross_salary).toLocaleString('en-IN')}</td>
+          <td style="color:#dc2626">-â¹${Number(r.total_deductions).toLocaleString('en-IN')}</td>
+          <td style="font-weight:700;color:#059669">â¹${Number(r.net_salary).toLocaleString('en-IN')}</td>
+          <td><button onclick="downloadPayslip('${r.id}','${r.year}_${r.month}')" class="btn btn-n" style="padding:3px 10px;font-size:12px">â¬ï¸ PDF</button><button onclick="deletePayslip(${r.id})" style="margin-left:6px;padding:3px 8px;font-size:12px;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:6px;cursor:pointer" title="Delete Payslip">ðï¸</button></td>
         </tr>`).join(''):noRows(7,'No payslips generated yet. Configure salary components above and click Generate.')
       ));
   }catch(e){setPage(h1('Payroll')+'<p style="color:#ef4444">Failed to load</p>');}
 }
+
+function showMiscDeductions() {
+  document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+  document.getElementById('misc-deductions').style.display = 'block';
+  const role = localStorage.getItem('role');
+  const adminPanel = document.getElementById('miscDeductionAdminPanel');
+  if (adminPanel) adminPanel.style.display = role === 'admin' ? 'block' : 'none';
+  populateMiscEmpDropdowns();
+}
+
 
 async function loadSalaryComp(empId){
   if(!empId) return;
@@ -450,13 +461,13 @@ async function loadSalaryComp(empId){
     $('sc_pt').value = c.professional_tax || '';
     $('sc_it').value = c.income_tax || '';
     $('sc_date').value = c.effective_from || '';
-    alert2('scAlert','✅ Loaded existing salary configuration','s');
+    alert2('scAlert','â Loaded existing salary configuration','s');
   }catch(e){
     // 404 = not configured yet, clear fields
     $('sc_basic').value=''; $('sc_hra').value=''; $('sc_allow').value='';
     $('sc_bonus').value=''; $('sc_pf').value=''; $('sc_pt').value='';
     $('sc_it').value=''; $('sc_date').value='';
-    if(e.detail && e.detail.includes('404')) alert2('scAlert','No salary configured yet for this employee — fill in the fields and save','s');
+    if(e.detail && e.detail.includes('404')) alert2('scAlert','No salary configured yet for this employee â fill in the fields and save','s');
   }
 }
 
@@ -476,18 +487,18 @@ async function saveSalaryComp(){
   const d=$('sc_date').value; if(d) data.effective_from=d;
   try{
     await api('/payroll/components','POST',data);
-    alert2('scAlert','✅ Salary configuration saved successfully!','s');
-  }catch(err){alert2('scAlert','❌ '+(err.detail||'Failed to save'));}
+    alert2('scAlert','â Salary configuration saved successfully!','s');
+  }catch(err){alert2('scAlert','â '+(err.detail||'Failed to save'));}
 }
 
 async function genPayslip(){
   const emp=$('pEmp').value;
   if(!emp){alert2('payAlert','Select employee');return;}
-  try{await api('/payroll/generate','POST',{employee_id:parseInt(emp),month:parseInt($('pMo').value),year:parseInt($('pYr').value)});alert2('payAlert','✅ Payslip generated!','s');setTimeout(showPayroll,1200);}
-  catch(err){alert2('payAlert','❌ '+(err.detail||'Configure salary components first'));}
+  try{await api('/payroll/generate','POST',{employee_id:parseInt(emp),month:parseInt($('pMo').value),year:parseInt($('pYr').value)});alert2('payAlert','â Payslip generated!','s');setTimeout(showPayroll,1200);}
+  catch(err){alert2('payAlert','â '+(err.detail||'Configure salary components first'));}
 }
 
-// ── HOLIDAYS & LEAVES ──
+// ââ HOLIDAYS & LEAVES ââ
 async function showHolidaysLeaves(){
   setActive('showHolidaysLeaves');
   setPage(h1('Holidays & Leaves')+'<p style="color:#94a3b8">Loading...</p>');
@@ -533,19 +544,19 @@ async function delHoliday(id){
   try{await api('/holidays/'+id,'DELETE');showHolidaysLeaves();}catch(e){alert('Failed');}
 }
 
-// ── DOCUMENTS ──
+// ââ DOCUMENTS ââ
 async function showDocs(){
   setActive('showDocs');
   setPage(h1('HR Documents')+'<p style="color:#94a3b8">Loading...</p>');
   try{
     const d=await api('/documents/');
     setPage(h1('HR Documents')+(d.length?
-      `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px">${d.map(doc=>`<div class="card"><div style="font-weight:600;font-size:14px;color:#1e293b;margin-bottom:6px">📄 ${doc.title}</div><div style="font-size:12px;color:#94a3b8">${doc.file_name}</div><div style="font-size:11px;color:#94a3b8;margin-top:4px">${new Date(doc.created_at).toLocaleDateString('en-IN')}</div></div>`).join('')}</div>`:
+      `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px">${d.map(doc=>`<div class="card"><div style="font-weight:600;font-size:14px;color:#1e293b;margin-bottom:6px">ð ${doc.title}</div><div style="font-size:12px;color:#94a3b8">${doc.file_name}</div><div style="font-size:11px;color:#94a3b8;margin-top:4px">${new Date(doc.created_at).toLocaleDateString('en-IN')}</div></div>`).join('')}</div>`:
       '<div class="card" style="text-align:center;padding:48px;color:#94a3b8">No documents available</div>'));
   }catch(e){setPage(h1('Documents')+'<p style="color:#ef4444">Failed</p>');}
 }
 
-// ── RESIGNATIONS ──
+// ââ RESIGNATIONS ââ
 async function showResignations(){
   setActive('showResignations');
   setPage(h1('Resignation Requests')+'<p style="color:#94a3b8">Loading...</p>');
@@ -560,7 +571,7 @@ async function showResignations(){
         '<td>'+(x.last_working_date||'-')+'</td>' +
         '<td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px">'+(x.reason||'-')+'</td>' +
         '<td><span class="badge badge-pending">'+(x.status||'pending')+'</span></td>' +
-        '<td><button onclick="downloadRelievingLetter('+x.id+',\''+(x.emp_name||'Employee').replace(/'/g,'')+'\')" class="btn btn-p" style="padding:3px 10px;font-size:12px">📜 Letter</button></td>' +
+        '<td><button onclick="downloadRelievingLetter('+x.id+',\''+(x.emp_name||'Employee').replace(/'/g,'')+'\')" class="btn btn-p" style="padding:3px 10px;font-size:12px">ð Letter</button></td>' +
         '</tr>';
     });
     setPage(h1('Resignation Requests')+tblWrap(
@@ -570,7 +581,7 @@ async function showResignations(){
   }catch(e){setPage(h1('Resignations')+'<p style="color:#ef4444">Failed</p>');}
 }
 
-// ── EMPLOYEE DASHBOARD ──
+// ââ EMPLOYEE DASHBOARD ââ
 async function showEmpDash(){
   setActive('showEmpDash');
   setPage(h1('My Dashboard')+'<p style="color:#94a3b8">Loading...</p>');
@@ -579,10 +590,10 @@ async function showEmpDash(){
     myEmpId=p.id;
     setPage(h1('Welcome, '+p.first_name+'!')+
       `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px">
-        ${sc('Employee ID',p.employee_id,'#2563eb','🆔')}
-        ${sc('Approved',ts.filter(t=>t.status==='approved').length,'#10b981','✅')}
-        ${sc('Pending TS',ts.filter(t=>t.status==='pending').length,'#f59e0b','⏳')}
-        ${sc('Pending Leaves',Array.isArray(lv)?lv.filter(l=>l.status==='pending').length:0,'#8b5cf6','🌴')}
+        ${sc('Employee ID',p.employee_id,'#2563eb','ð')}
+        ${sc('Approved',ts.filter(t=>t.status==='approved').length,'#10b981','â')}
+        ${sc('Pending TS',ts.filter(t=>t.status==='pending').length,'#f59e0b','â³')}
+        ${sc('Pending Leaves',Array.isArray(lv)?lv.filter(l=>l.status==='pending').length:0,'#8b5cf6','ð´')}
       </div>`+
       `<div class="card"><h3 style="font-size:14px;font-weight:600;margin:0 0 14px">My Details</h3>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
@@ -592,7 +603,7 @@ async function showEmpDash(){
   }catch(e){setPage(h1('Dashboard')+'<p style="color:#ef4444">Failed</p>');}
 }
 
-// ── MY TIMESHEETS ──
+// ââ MY TIMESHEETS ââ
 async function showMyTimesheets(){
   setActive('showMyTimesheets');
   const today=new Date().toISOString().split('T')[0];
@@ -618,11 +629,11 @@ async function showMyTimesheets(){
 }
 async function submitTS(){
   const d={date:$('tsD').value,hours_worked:parseFloat($('tsH').value||8),task_description:$('tsT').value,project:$('tsP').value};
-  try{await api('/timesheets/submit','POST',d);alert2('tsAlert','✅ Submitted!','s');setTimeout(showMyTimesheets,1000);}
-  catch(err){alert2('tsAlert','❌ '+(err.detail||'Failed'));}
+  try{await api('/timesheets/submit','POST',d);alert2('tsAlert','â Submitted!','s');setTimeout(showMyTimesheets,1000);}
+  catch(err){alert2('tsAlert','â '+(err.detail||'Failed'));}
 }
 
-// ── APPLY LEAVE ──
+// ââ APPLY LEAVE ââ
 function showApplyLeave(){
   setActive('showApplyLeave');
   setPage(h1('Apply Leave')+`<div class="card" style="max-width:540px">
@@ -631,11 +642,11 @@ function showApplyLeave(){
       <div><label class="lbl">Leave Type *</label>
         <select id="lvType" class="inp" required>
           <option value="">Select type...</option>
-          <option value="paid">🏖️ Paid Leave (PL)</option>
-          <option value="sick">🤒 Sick Leave (SL)</option>
-          <option value="earned">⭐ Earned Leave (EL)</option>
-          <option value="sabbatical">📚 Sabbatical Leave</option>
-          <option value="lop">💼 Leave Without Pay (LOP)</option>
+          <option value="paid">ðï¸ Paid Leave (PL)</option>
+          <option value="sick">ð¤ Sick Leave (SL)</option>
+          <option value="earned">â­ Earned Leave (EL)</option>
+          <option value="sabbatical">ð Sabbatical Leave</option>
+          <option value="lop">ð¼ Leave Without Pay (LOP)</option>
         </select>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
@@ -649,11 +660,11 @@ function showApplyLeave(){
 async function submitLeave(e){
   e.preventDefault();
   try{await api('/leaves/request','POST',{leave_type:$('lvType').value,start_date:$('lvFrom').value,end_date:$('lvTo').value,reason:$('lvReason').value});
-    alert2('lvAlert','✅ Leave request submitted successfully!','s');e.target.reset();}
-  catch(err){alert2('lvAlert','❌ '+(err.detail||'Failed'));}
+    alert2('lvAlert','â Leave request submitted successfully!','s');e.target.reset();}
+  catch(err){alert2('lvAlert','â '+(err.detail||'Failed'));}
 }
 
-// ── LEAVE BALANCE ──
+// ââ LEAVE BALANCE ââ
 async function showLeaveBalance(){
   setActive('showLeaveBalance');
   setPage(h1('Leave Balance')+'<p style="color:#94a3b8">Loading...</p>');
@@ -683,7 +694,7 @@ async function showLeaveBalance(){
   }catch(e){setPage(h1('Leave Balance')+'<p style="color:#ef4444">Failed</p>');}
 }
 
-// ── PAYSLIPS ──
+// ââ PAYSLIPS ââ
 async function showPayslips(){
   setActive('showPayslips');
   setPage(h1('My Payslips')+'<p style="color:#94a3b8">Loading...</p>');
@@ -693,17 +704,17 @@ async function showPayslips(){
       `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px">${r.map(x=>`<div class="card">
         <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:14px">
           <span style="font-weight:600;color:#1e293b">${new Date(x.year,x.month-1).toLocaleString('en',{month:'long',year:'numeric'})}</span>
-          <button onclick="downloadPayslip('${x.id}','${x.year}_${x.month}')" class="btn btn-n" style="padding:4px 10px;font-size:12px">⬇️ PDF</button>
+          <button onclick="downloadPayslip('${x.id}','${x.year}_${x.month}')" class="btn btn-n" style="padding:4px 10px;font-size:12px">â¬ï¸ PDF</button>
         </div>
         <div style="font-size:13px">
-          ${[['Gross','₹'+Number(x.gross_salary).toLocaleString('en-IN'),null],['Deductions','-₹'+Number(x.total_deductions).toLocaleString('en-IN'),'#dc2626'],['Net Pay','₹'+Number(x.net_salary).toLocaleString('en-IN'),'#059669']].map(([k,v,c])=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f1f5f9"><span style="color:#64748b">${k}</span><span style="font-weight:${c?'700':'400'}${c?';color:'+c:''}">${v}</span></div>`).join('')}
+          ${[['Gross','â¹'+Number(x.gross_salary).toLocaleString('en-IN'),null],['Deductions','-â¹'+Number(x.total_deductions).toLocaleString('en-IN'),'#dc2626'],['Net Pay','â¹'+Number(x.net_salary).toLocaleString('en-IN'),'#059669']].map(([k,v,c])=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f1f5f9"><span style="color:#64748b">${k}</span><span style="font-weight:${c?'700':'400'}${c?';color:'+c:''}">${v}</span></div>`).join('')}
         </div>
       </div>`).join('')}</div>`:
       '<div class="card" style="text-align:center;padding:48px;color:#94a3b8">No payslips generated yet</div>'));
   }catch(e){setPage(h1('Payslips')+'<p style="color:#ef4444">Failed</p>');}
 }
 
-// ── PROFILE ──
+// ââ PROFILE ââ
 async function showProfile(){
   setActive('showProfile');
   setPage(h1('My Profile')+'<p style="color:#94a3b8">Loading...</p>');
@@ -714,7 +725,7 @@ async function showProfile(){
         <div style="width:64px;height:64px;background:#1e3a5f;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;flex-shrink:0">${p.first_name[0]+p.last_name[0]}</div>
         <div>
           <h2 style="font-size:18px;font-weight:700;color:#1e293b;margin:0">${p.first_name} ${p.last_name}</h2>
-          <p style="color:#64748b;font-size:13px;margin:2px 0">${p.designation||'Employee'} · ${p.department||'CloudHub'}</p>
+          <p style="color:#64748b;font-size:13px;margin:2px 0">${p.designation||'Employee'} Â· ${p.department||'CloudHub'}</p>
           <p style="font-family:monospace;font-size:12px;color:#2563eb;margin:2px 0">${p.employee_id}</p>
         </div>
       </div>
@@ -725,13 +736,13 @@ async function showProfile(){
   }catch(e){setPage(h1('Profile')+'<p style="color:#ef4444">Failed</p>');}
 }
 
-// ── RESIGN ──
+// ââ RESIGN ââ
 function showResign(){
   setActive('showResign');
   const today=new Date().toISOString().split('T')[0];
   setPage(h1('Submit Resignation')+`<div class="card" style="max-width:520px">
     <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px;margin-bottom:20px;font-size:13px;color:#991b1b">
-      ⚠️ Please ensure you have discussed this with your manager before submitting.
+      â ï¸ Please ensure you have discussed this with your manager before submitting.
     </div>
     <div id="resAlert"></div>
     <form onsubmit="submitResign(event)" style="display:grid;gap:14px">
@@ -745,15 +756,15 @@ function showResign(){
 async function submitResign(e){
   e.preventDefault();
   try{const r=await api('/employees/me/resign','POST',{notice_date:$('resDate').value,last_working_date:$('resLWD').value||null,reason:$('resReason').value});
-    alert2('resAlert','✅ Resignation submitted. HR will contact you soon.','s');$('resReason').value='';}
-  catch(err){alert2('resAlert','❌ '+(err.detail||'Failed'));}
+    alert2('resAlert','â Resignation submitted. HR will contact you soon.','s');$('resReason').value='';}
+  catch(err){alert2('resAlert','â '+(err.detail||'Failed'));}
 }
 
 
 
-// ══════════════════════════════════════════════════════
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // FEATURE 1+2: PASSWORD RESET (Admin sets employee password)
-// ══════════════════════════════════════════════════════
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function doResetPassword(id, name) {
   showModal(
     '<h3 style="font-size:16px;font-weight:600;margin:0 0 4px">Reset Password</h3>' +
@@ -763,14 +774,14 @@ function doResetPassword(id, name) {
       '<label class="lbl">New Password</label>' +
       '<div style="position:relative">' +
         '<input id="rp_pass" type="password" class="inp" placeholder="Min 6 characters" style="padding-right:40px">' +
-        '<button onclick="togglePwd(\'rp_pass\',\'rp_eye\')" id="rp_eye" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px">👁</button>' +
+        '<button onclick="togglePwd(\'rp_pass\',\'rp_eye\')" id="rp_eye" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px">ð</button>' +
       '</div>' +
     '</div>' +
     '<div style="margin-bottom:16px">' +
       '<label class="lbl">Confirm Password</label>' +
       '<div style="position:relative">' +
         '<input id="rp_conf" type="password" class="inp" placeholder="Repeat password" style="padding-right:40px">' +
-        '<button onclick="togglePwd(\'rp_conf\',\'rp_eye2\')" id="rp_eye2" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px">👁</button>' +
+        '<button onclick="togglePwd(\'rp_conf\',\'rp_eye2\')" id="rp_eye2" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px">ð</button>' +
       '</div>' +
     '</div>' +
     '<div style="display:flex;gap:8px">' +
@@ -792,9 +803,9 @@ async function confirmResetPassword(id) {
   } catch (err) { alert2('rpAlert', 'Failed: ' + (err.detail || 'Error')); }
 }
 
-// ══════════════════════════════════════════════════════
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // FEATURE 3: EXPORT EMPLOYEES CSV
-// ══════════════════════════════════════════════════════
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function exportEmployeesCSV() {
   try {
     var emps = await api('/employees/');
@@ -823,20 +834,20 @@ async function exportEmployeesCSV() {
   } catch (err) { alert('Export failed: ' + (err.detail || 'Error')); }
 }
 
-// ══════════════════════════════════════════════════════
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // FEATURE 4: EYE TOGGLE (show/hide password)
-// ══════════════════════════════════════════════════════
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function togglePwd(inputId, btnId) {
   var inp = document.getElementById(inputId);
   var btn = document.getElementById(btnId);
   if (!inp) return;
-  if (inp.type === 'password') { inp.type = 'text'; if (btn) btn.textContent = '🙈'; }
-  else { inp.type = 'password'; if (btn) btn.textContent = '👁'; }
+  if (inp.type === 'password') { inp.type = 'text'; if (btn) btn.textContent = 'ð'; }
+  else { inp.type = 'password'; if (btn) btn.textContent = 'ð'; }
 }
 
-// ══════════════════════════════════════════════════════
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // FEATURE 5: RELIEVING LETTER (from Resignations)
-// ══════════════════════════════════════════════════════
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function downloadRelievingLetter(resignationId, empName) {
   try {
     var resp = await fetch('/employees/resignations/' + resignationId + '/letter', {
@@ -855,9 +866,9 @@ async function downloadRelievingLetter(resignationId, empName) {
   } catch(err) { alert('Error: ' + (err.message || 'Download failed')); }
 }
 
-// ══════════════════════════════════════════════════════
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // FEATURE 6: EMPLOYMENT LETTER (from Employees list)
-// ══════════════════════════════════════════════════════
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function downloadEmploymentLetter(empId, empCode) {
   try {
     var resp = await fetch('/employees/' + empId + '/letter/employment', {
@@ -876,9 +887,9 @@ async function downloadEmploymentLetter(empId, empCode) {
   } catch(err) { alert('Error: ' + (err.message || 'Download failed')); }
 }
 
-// ══════════════════════════════════════════════════════
-// FEATURE 7: CLICK EMPLOYEE ID → FULL PROFILE MODAL
-// ══════════════════════════════════════════════════════
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// FEATURE 7: CLICK EMPLOYEE ID â FULL PROFILE MODAL
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function showEmpProfile(id) {
   try {
     var e = await api('/employees/' + id);
@@ -910,16 +921,16 @@ async function showEmpProfile(id) {
       '</div>' +
       '<div style="max-height:50vh;overflow-y:auto;padding-right:4px">' + gridRows + '</div>' +
       '<div style="display:flex;gap:8px;margin-top:16px">' +
-        '<button onclick="downloadEmploymentLetter(' + e.id + ',\'' + e.employee_id + '\')" class="btn btn-p" style="font-size:12px">📄 Employment Letter</button>' +
+        '<button onclick="downloadEmploymentLetter(' + e.id + ',\'' + e.employee_id + '\')" class="btn btn-p" style="font-size:12px">ð Employment Letter</button>' +
         '<button onclick="closeModal()" class="btn btn-n">Close</button>' +
       '</div>'
     );
   } catch (err) { alert('Failed to load profile: ' + (err.detail || 'Error')); }
 }
 
-// ══════════════════════════════════════════════════════
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // EDIT EMPLOYEE (moved here for clean structure)
-// ══════════════════════════════════════════════════════
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function doEditEmp(id) {
   try {
     var e = await api('/employees/' + id);
@@ -975,9 +986,9 @@ async function saveEditEmp(id) {
   } catch (err) { alert2('editAlert', 'Failed: ' + (err.detail || 'Error')); }
 }
 
-// ══════════════════════════════════════════════════════
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // DELETED EMPLOYEES + REINSTATE
-// ══════════════════════════════════════════════════════
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function showDeletedEmps() {
   setActive('showDeletedEmps');
   setPage(h1('Deleted Employees') +
@@ -990,7 +1001,7 @@ async function showDeletedEmps() {
       setPage(h1('Deleted Employees') +
         '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#92400e">' +
         'Soft-deleted employees. Data is fully preserved.</div>' +
-        '<div class="card" style="text-align:center;padding:48px;color:#94a3b8"><div style="font-size:40px;margin-bottom:12px">🗄️</div>' +
+        '<div class="card" style="text-align:center;padding:48px;color:#94a3b8"><div style="font-size:40px;margin-bottom:12px">ðï¸</div>' +
         '<div style="font-size:15px;font-weight:500">No deleted employees</div></div>');
       return;
     }
@@ -1037,9 +1048,9 @@ async function confirmReinstate(id) {
 }
 
 
-// ══════════════════════════════════════════════════════
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // PAYSLIP PDF DOWNLOAD (fetch+blob with auth)
-// ══════════════════════════════════════════════════════
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 window.downloadPayslip = async function(recordId, label) {
   try {
     var resp = await fetch('/payroll/slip/' + recordId, {
@@ -1070,7 +1081,7 @@ window.deletePayslip = async function(id) {
       headers: { 'Authorization': 'Bearer ' + tok }
     });
     if (resp.ok) {
-      alert2('payAlert', '✅ Payslip deleted successfully!', 's');
+      alert2('payAlert', 'â Payslip deleted successfully!', 's');
       showPayroll();
     } else {
       var err = await resp.json().catch(function(){ return {}; });
@@ -1082,25 +1093,25 @@ window.deletePayslip = async function(id) {
 }
 
 
-// ══════════════════════════════════════════════════════
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // GENERATE ALL PAYSLIPS FROM DATE OF JOINING
-// ══════════════════════════════════════════════════════
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 window.genAllPayslips = async function() {
   var empId = document.getElementById('pEmp') ? document.getElementById('pEmp').value : '';
   if (!empId) { alert2('payAlert', 'Select an employee first'); return; }
-  alert2('payAlert', '⏳ Generating payslips from date of joining...', 's');
+  alert2('payAlert', 'â³ Generating payslips from date of joining...', 's');
   try {
     var r = await api('/payroll/generate-all/' + empId, 'POST');
-    alert2('payAlert', '✅ ' + r.message, 's');
+    alert2('payAlert', 'â ' + r.message, 's');
     setTimeout(showPayroll, 1500);
   } catch(err) {
-    alert2('payAlert', '❌ ' + (err.detail || 'Failed. Set salary components first.'));
+    alert2('payAlert', 'â ' + (err.detail || 'Failed. Set salary components first.'));
   }
 }
 
-// ══════════════════════════════════════════════════════
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // TRAINING MODULE
-// ══════════════════════════════════════════════════════
+// ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 var TRAININGS = [
   {
     id: 1, title: 'Code of Ethics & Business Conduct',
@@ -1202,14 +1213,14 @@ window.showTraining = async function() {
           '<div style="font-size:12px;color:#64748b;margin-bottom:6px">' + t.desc + '</div>' +
           '<div style="display:flex;gap:12px;font-size:11px">' +
             '<span style="background:' + col + '20;color:' + col + ';padding:2px 8px;border-radius:999px;font-weight:600">' + cat + '</span>' +
-            '<span style="color:#94a3b8">⏱ ' + t.duration + '</span>' +
-            (isDone ? '<span style="color:#059669;font-weight:600">✅ Completed on ' + s.date + '</span>' : '<span style="color:#f59e0b">⏳ Pending</span>') +
+            '<span style="color:#94a3b8">â± ' + t.duration + '</span>' +
+            (isDone ? '<span style="color:#059669;font-weight:600">â Completed on ' + s.date + '</span>' : '<span style="color:#f59e0b">â³ Pending</span>') +
           '</div>' +
         '</div>' +
         '<div style="flex-shrink:0">' +
           (isDone
-            ? '<button onclick="markTraining(' + t.id + ',false)" class="btn btn-n" style="font-size:12px;padding:4px 12px">↩ Undo</button>'
-            : '<button onclick="markTraining(' + t.id + ',true)" class="btn btn-s" style="font-size:12px;padding:4px 12px">✓ Mark Done</button>'
+            ? '<button onclick="markTraining(' + t.id + ',false)" class="btn btn-n" style="font-size:12px;padding:4px 12px">â© Undo</button>'
+            : '<button onclick="markTraining(' + t.id + ',true)" class="btn btn-s" style="font-size:12px;padding:4px 12px">â Mark Done</button>'
           ) +
         '</div>' +
       '</div>' +
@@ -1221,7 +1232,7 @@ window.showTraining = async function() {
 
   setPage(
     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">' +
-      '<h1 style="font-size:22px;font-weight:700;color:#1e293b;margin:0">🎓 My Training</h1>' +
+      '<h1 style="font-size:22px;font-weight:700;color:#1e293b;margin:0">ð My Training</h1>' +
       '<div style="text-align:right">' +
         '<div style="font-size:13px;color:#64748b">' + done + ' of ' + total + ' completed</div>' +
         '<div style="font-size:11px;color:#94a3b8">(' + pct + '%)</div>' +
@@ -1243,6 +1254,70 @@ window.showTraining = async function() {
   );
 }
 
+
+
+// ===== MISC DEDUCTIONS =====
+async function addMiscDeduction() {
+  const emp_id = document.getElementById('miscEmpId').value;
+  const label = document.getElementById('miscLabel').value.trim();
+  const amount = parseFloat(document.getElementById('miscAmount').value);
+  const month = parseInt(document.getElementById('miscMonth').value);
+  const year = parseInt(document.getElementById('miscYear').value);
+  const remarks = document.getElementById('miscRemarks').value.trim();
+  if (!emp_id || !label || !amount || !month || !year) { alert('Please fill all required fields'); return; }
+  const res = await fetch('/misc-deductions/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+    body: JSON.stringify({ employee_id: parseInt(emp_id), label, amount, month, year, remarks: remarks || null })
+  });
+  if (res.ok) { alert('Deduction added successfully!'); loadMiscDeductions(); }
+  else { const e = await res.json(); alert('Error: ' + (e.detail || 'Unknown error')); }
+}
+
+async function loadMiscDeductions() {
+  const emp_id = document.getElementById('miscViewEmpId').value;
+  if (!emp_id) { alert('Please select an employee'); return; }
+  const res = await fetch('/misc-deductions/' + emp_id, {
+    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+  });
+  if (!res.ok) { alert('Failed to load deductions'); return; }
+  const data = await res.json();
+  const container = document.getElementById('miscDeductionsList');
+  if (!data.length) { container.innerHTML = '<p style="color:#666">No miscellaneous deductions found.</p>'; return; }
+  const role = localStorage.getItem('role');
+  container.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:13px">' +
+    '<thead><tr style="background:#f1f5f9"><th style="padding:8px;text-align:left">Label</th><th>Amount</th><th>Month/Year</th><th>Remarks</th>' + (role==='admin'?'<th>Action</th>':'') + '</tr></thead>' +
+    '<tbody>' + data.map(d => '<tr style="border-bottom:1px solid #e2e8f0">' +
+      '<td style="padding:8px">' + d.label + '</td>' +
+      '<td style="padding:8px;text-align:center">₹' + d.amount.toLocaleString() + '</td>' +
+      '<td style="padding:8px;text-align:center">' + d.month + '/' + d.year + '</td>' +
+      '<td style="padding:8px">' + (d.remarks || '-') + '</td>' +
+      (role==='admin' ? '<td style="padding:8px;text-align:center"><button onclick="deleteMiscDeduction(' + d.id + ')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px">Delete</button></td>' : '') +
+      '</tr>').join('') + '</tbody></table>';
+}
+
+async function deleteMiscDeduction(id) {
+  if (!confirm('Delete this deduction?')) return;
+  const res = await fetch('/misc-deductions/' + id, {
+    method: 'DELETE',
+    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+  });
+  if (res.ok) { alert('Deleted!'); document.getElementById('miscViewEmpId').dispatchEvent(new Event('change')); loadMiscDeductions(); }
+  else { alert('Failed to delete'); }
+}
+
+async function populateMiscEmpDropdowns() {
+  const token = localStorage.getItem('token');
+  const res = await fetch('/employees/', { headers: { 'Authorization': 'Bearer ' + token } });
+  if (!res.ok) return;
+  const emps = await res.json();
+  const opts = emps.map(e => '<option value="' + e.id + '">' + e.first_name + ' ' + e.last_name + '</option>').join('');
+  ['miscEmpId','miscViewEmpId'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = '<option value="">Select Employee</option>' + opts;
+  });
+}
+// ===== END MISC DEDUCTIONS =====
+
+
 </script>
-</body>
-</html>
