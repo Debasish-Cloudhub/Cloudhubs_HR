@@ -97,6 +97,7 @@ class Employee(Base):
     leave_requests = relationship("LeaveRequest", back_populates="employee", foreign_keys="LeaveRequest.employee_id")
     leave_balances = relationship("LeaveBalance", back_populates="employee")
     misc_deductions = relationship("MiscDeduction", back_populates="employee")
+    appraisals = relationship("Appraisal", back_populates="employee")
 
 class Timesheet(Base):
     __tablename__ = "timesheets"
@@ -233,3 +234,50 @@ class MiscDeduction(Base):
     remarks = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     employee = relationship("Employee", back_populates="misc_deductions")
+
+
+class AppraisalStatusEnum(str, enum.Enum):
+    draft = "draft"
+    in_review = "in_review"
+    completed = "completed"
+
+    def __str__(self):
+        return self.value
+
+class Appraisal(Base):
+    __tablename__ = "appraisals"
+    id = Column(Integer, primary_key=True, index=True)
+    employee_id = Column(Integer, ForeignKey("employees.id"), nullable=False)
+    reviewer_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    period = Column(String, nullable=False)
+    status = Column(SAEnum(AppraisalStatusEnum), default=AppraisalStatusEnum.draft)
+    overall_rating = Column(Float, nullable=True)
+    comments = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    employee = relationship("Employee", back_populates="appraisals")
+    goals = relationship("AppraisalGoal", back_populates="appraisal", cascade="all, delete-orphan")
+    feedback = relationship("AppraisalFeedback", back_populates="appraisal", cascade="all, delete-orphan")
+
+class AppraisalGoal(Base):
+    __tablename__ = "appraisal_goals"
+    id = Column(Integer, primary_key=True, index=True)
+    appraisal_id = Column(Integer, ForeignKey("appraisals.id"), nullable=False)
+    title = Column(String, nullable=False)
+    description = Column(Text, nullable=True)
+    target = Column(String, nullable=True)
+    achievement = Column(String, nullable=True)
+    rating = Column(Float, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    appraisal = relationship("Appraisal", back_populates="goals")
+
+class AppraisalFeedback(Base):
+    __tablename__ = "appraisal_feedback"
+    id = Column(Integer, primary_key=True, index=True)
+    appraisal_id = Column(Integer, ForeignKey("appraisals.id"), nullable=False)
+    reviewer_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    strengths = Column(Text, nullable=True)
+    improvements = Column(Text, nullable=True)
+    overall_comment = Column(Text, nullable=True)
+    rating = Column(Float, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    appraisal = relationship("Appraisal", back_populates="feedback")
