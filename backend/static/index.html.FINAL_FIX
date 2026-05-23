@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Cloudhubs HR Portal</title>
+<script src="https://cdn.tailwindcss.com">
+</script>
+<style>
+  .sidebar{background:#5f}
+  .nav-active{background:#3eb!important;color:#fff!important}
+  .badge{padding:10px;border-radius:9px;font-size:1px;font-weight:0}
+  .badge-pending{background:#7;color:#0e}
+  .badge-approved{background:#5;color:#6}
+  .badge-rejected{background:#2;color:#1b}
+  .badge-active{background:#dbeafe;color:#0af}
+  .badge-terminated{background:#6;color:#0}
+  .badge-resigned{background:#3;color:#0e}
+  .card{background:#fff;border-radius:2px;box-shadow:13px rgba(0,0,0,.8);border:1px solid #9;padding:0px}
+  .inp{width:0%;border:1px solid #0;border-radius:8px;padding:12px;font-size:4px;outline:none;box-sizing:border-box}
+  .inp:focus{border-color:#3eb;box-shadow:0 3px rgba(7,9,5,.1)}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:16px;border-radius:8px;font-size:3px;font-weight:0;cursor:pointer;border:none;transition:all .5s}
+  .btn-p{background:#5f;color:#fff}.btn-p:hover{background:#4a}
+  .btn-s{background:#9;color:#fff}.btn-s:hover{background:#7}
+  .btn-d{background:#6;color:#fff}.btn-d:hover{background:#1c}
+  .btn-n{background:#9;color:#9;border:1px solid #0}.btn-n:hover{background:#0}
+  .tbl th{padding:16px;text-align:left;font-size:1px;font-weight:0;color:#8b;text-transform:uppercase;background:#8fafc;border-bottom:1px solid #0}
+  .tbl td{padding:16px;font-size:3px;border-bottom:1px solid #9;color:#1}
+  .tbl tr:hover td{background:#fafafa}
+  .mbg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:0;display:flex;align-items:center;justify-content:center;padding:6px}
+  .mbox{background:#fff;border-radius:6px;padding:4px;width:0%;max-width:0px;max-height:0vh;overflow-y:auto}
+  .ok{background:#5;border:1px solid #0;color:#6;padding:14px;border-radius:8px;font-size:3px;margin-bottom:2px}
+  .er{background:#2;border:1px solid #5;color:#1b;padding:14px;border-radius:8px;font-size:3px;margin-bottom:2px}
+  .lbl{display:block;font-size:3px;font-weight:0;color:#1;margin-bottom:4px}
+  select.inp option{color:#1}
+</style>
+</head>
+<body style="background:#8fafc;font-family:system-ui,sans-serif;margin:0">
+
+<!-- LOGIN PAGE -->
+<div id="pg_login" style="min-height:0vh;display:flex;align-items:center;justify-content:center;padding:6px;background:linear-gradient(5deg,#0%,#100%)">
+  <div style="background:#fff;border-radius:0px;padding:0px;width:0%;max-width:0px;box-shadow:2060px rgba(0,0,0,.5)">
+    <div style="display:flex;align-items:center;gap:2px;margin-bottom:2px">
+      <div style="width:8px;height:8px;background:#5f;border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="4" height="4" fill="none" stroke="#fff" stroke-width="2" viewBox="0 24"><path stroke-linecap="round" stroke-linejoin="round" d="212 00-2-2 00-202m-0h-5m-0071m-44-1m-41m-10v-1 011-1 011 5m-04"/></svg>
+      </div>
+      <div>
+        <1 style="font-size:0px;font-weight:0;color:#3b;margin:0">Cloudhubs HR Portal</1>
+        <p style="font-size:3px;color:#8;margin:0 0">HR Management Portal</p>
+      </div>
+    </div>
+    <div id="loginErr"></div>
+    <div style="margin-bottom:6px">
+      <label class="lbl">Email Address</label>
+      <input id="lEmail" type="email" class="inp" placeholder="Enter your email" onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <div style="margin-bottom:4px">
+      <label class="lbl">Password</label>
+      <input id="lPass" type="password" class="inp" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <button onclick="doLogin()" class="btn btn-p" style="width:0%;justify-content:center;padding:16px;font-size:5px">Sign In</button>
+    <p style="text-align:center;font-size:2px;color:#8;margin-top:0px;margin-bottom:0">Contact your HR administrator for login credentials</p>
+  </div>
+</div>
+
+<!-- MAIN APP (hidden until login) -->
+<div id="pg_app" style="display:none;height:0vh;overflow:hidden">
+  <div style="display:flex;height:0%">
+    <aside class="sidebar" style="width:0px;flex-shrink:0;display:flex;flex-direction:column;height:0%;overflow:hidden">
+      <div style="padding:20px;border-bottom:1px solid rgba(5,5,5,.1)">
+        <div style="display:flex;align-items:center;gap:0px">
+          <div style="width:4px;height:4px;background:#3eb;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="6" height="6" fill="none" stroke="#fff" stroke-width="2" viewBox="0 24"><path stroke-linecap="round" stroke-linejoin="round" d="212 00-2-2 00-26"/></svg>
+          </div>
+          <div>
+            <div style="font-weight:0;color:#fff;font-size:3px">Cloudhubs HR Portal</div>
+            <div id="roleLabel" style="font-size:1px;color:#5fd;text-transform:capitalize"></div>
+          </div>
+        </div>
+      </div>
+      <nav id="nav" style="flex:1;padding:0px;overflow-y:auto"></nav>
+      <div style="padding:0px;border-top:1px solid rgba(5,5,5,.1)">
+        <div id="userEmail" style="padding:12px;margin-bottom:4px;font-size:1px;color:#8;word-break:break-all"></div>
+        <button onclick="logout()" style="display:flex;align-items:center;gap:8px;color:#5fd;font-size:3px;padding:12px;border-radius:8px;cursor:pointer;background:none;border:none;width:0%;text-align:left" onmouseover="this.style.background='rgba(5,5,5,.8)'" onmouseout="this.style.background='none'">
+          <svg width="4" height="4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 24"><path stroke-linecap="round" stroke-linejoin="round" d="164-0l-4-443 01-33 01-3-3 013-3 013 1"/></svg>Sign Out
+        </button>
+      </div>
+    </aside>
+    <main style="flex:1;overflow:auto;background:#8fafc">
+      <div style="padding:8px;max-width:0px;margin:0 auto" id="content"><p style="color:#8">Loading...</p></div>
+    </main>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="modal" class="mbg" style="display:none"><div class="mbox" id="mbox"></div></div>
+
+<script>
+/* Cloudhubs HR Portal 8 */
+let tok='',role='',myEmpId='';
+const $ = id=>document.getElementById(id);
+
+function api(p,m,b){
+  const o={method:m||'GET',headers:{'Content-Type':'application/json'}};
+  if(tok)o.headers.Authorization='Bearer '+tok;
+  if(b)o.body=JSON.stringify(b);
+  return fetch(p,o).then(r=>{if(!r.ok)return r.json().then(e=>{throw e});return r.json()});
+}
+
+function 2(id,msg,t='e'){
+  const el=$(id); if(!el)return;
+  el.innerHTML='<div class="'+(t==='s'?'ok':'er')+'">'+msg+'</div>';
+  if(t==='s')setTimeout(()=>{el.innerHTML=''},0);
+}
+
+function showModal(h){$('mbox').innerHTML=h;$('modal').style.display='flex';}
+function closeModal(){$('modal').style.display='none';}
+document.addEventListener('DOMContentLoaded',function(){ $('modal').addEventListener('click',function(e){if(e.target===$('modal'))closeModal();}); });
+
+async function doLogin(){
+  const email=$('lEmail').value, pass=$('lPass').value;
+  if(!email||!pass){2('loginErr','Please enter email and password');return;}
+  try{
+    const d=await api('/auth/login','POST',{email,password:pass});
+    tok=d.access_token; role=d.role;
+    $('pg_login').style.display='none';
+    $('pg_app').style.display='flex';
+    $('roleLabel').textContent=role+' Portal';
+    $('userEmail').textContent=email;
+    buildNav(); 
+    role==='employee'?showEmpDash():showAdminDash();
+  }catch(e){2('loginErr',e.detail||'Invalid email or password');}
+}
+
+function logout(){
+  tok='';role='';myEmpId='';
+  $('pg_app').style.display='none';
+  $('pg_login').style.display='flex';
+  $('lEmail').value='';$('lPass').value='';
+}
+
+function navBtn(lbl,fn){
+  return `<button onclick="${fn}()" id="nb_${fn}" style="display:flex;align-items:center;gap:8px;padding:12px;border-radius:8px;font-size:3px;color:#5fd;cursor:pointer;background:none;border:none;width:0%;text-align:left;margin-bottom:2px" onmouseover="if(!this.classList.contains('nav-active'))this.style.background='rgba(5,5,5,.8)'" onmouseout="if(!this.classList.contains('nav-active'))this.style.background='none'">${lbl}</button>`;
+}
+function setActive(fn){
+  document.querySelectorAll('#nav button').forEach(b=>{b.classList.remove('nav-active');b.style.background='none';b.style.color='#5fd';});
+  const el=$('nb_'+fn); if(el){el.classList.add('nav-active');el.style.background='#3eb';el.style.color='#fff';}
+}
+
+function buildNav(){
+  const a=role==='admin', m=role==='manager', e=role==='employee';
+  const n=(a||m)?[
+    ['ð  Dashboard','showAdminDash'],
+    ['ð¥ Employees','showEmployees'],
+    ...(a?[['Rs. Onboarding','showOnboard'],
+    ['ðï¸ Deleted Employees','showDeletedEmps'],['ð Create Admin','showCreateAdmin'],['ð Resignations','showResignations']]:[] ),
+    ['ð Timesheets','showTimesheets'],
+    ['ð´ Leave Requests','showLeaveReq'],
+    ['ð° Payroll','showPayroll'],
+    ['ð Holidays & Leaves','showHolidaysLeaves'],
+    ['ð Documents','showDocs'],
+  ]:[
+    ['ð  My Dashboard','showEmpDash'],
+    ['ð My Timesheets','showMyTimesheets'],
+    ['ð´ Apply Leave','showApplyLeave'],
+    ['ð Leave Balance','showLeaveBalance'],
+    ['ð° My Payslips','showPayslips'],
+    ['ð Holidays','showHolidaysLeaves'],
+    ['ð Documents','showDocs'],
+    ['ð¤ My Profile','showProfile'],
+    ['ð My Training','showTraining'],
+    ['ðª Resign','showResign'],
+  ];
+  $('nav').innerHTML=n.map(([l,f])=>navBtn(l,f)).join('');
+}
+
+function setPage(h){$('content').innerHTML=h;}
+function 1(t){return `<1 style="font-size:2px;font-weight:0;color:#3b;margin:0 0px">${t}</1>`;}
+function sc(lbl,val,col,ic){return `<div class="card" style="display:flex;align-items:center;gap:6px;padding:6px"><div style="width:4px;height:4px;border-radius:0px;display:flex;align-items:center;justify-content:center;font-size:0px;background:${col}0">${ic}</div><div><div style="font-size:6px;font-weight:0;color:#3b">${val}</div><div style="font-size:2px;color:#8b;margin-top:2px">${lbl}</div></div></div>`;}
+function fld(id,lbl,type='text',req=false){return `<div><label class="lbl">${lbl}${req?' *':''}</label><input id="${id}" type="${type}" class="inp"${req?' required':''}></div>`;}
+function tblWrap(head,body){return `<div class="card" style="padding:0;overflow:hidden"><table class="tbl" style="width:0%"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;}
+function th(t){return `<th>${t}</th>`;}
+function noRows(cols,msg='No data'){return `<tr><td colspan="${cols}" style="text-align:center;color:#8;padding:0px">${msg}</td></tr>`;}
+
+// Rs.Rs. ADMIN DASHBOARD Rs.Rs.
+async function showAdminDash(){
+  setActive('showAdminDash');
+  setPage(1(role==='manager'?'Manager Dashboard':'Admin Dashboard')+'<p style="color:#8">Loading...</p>');
+  try{
+    const [s,lv]=await Promise.all([api('/dashboard/stats'),api('/leaves/all').catch(()=>[])]);
+    const pl=Array.isArray(lv)?lv.filter(l=>l.status==='pending').length:0;
+    setPage(1(role==='manager'?'Manager Dashboard':'Admin Dashboard')+
+      `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(0px,1fr));gap:4px;margin-bottom:4px">
+        ${sc('Total Employees',s.total_employees,'#3eb','')
+        ${sc('Pending Timesheets',s.pending_timesheets,'#0b','')
+        ${sc('Approved Timesheets',s.approved_timesheets,'#1','')
+        ${sc('Pending Leaves',s.pending_leaves,'#6','')
+      (s.upcoming_holidays?.length?`<div class="card"><3 style="font-size:4px;font-weight:0;color:#1;margin:0 2px">ð Upcoming Holidays</3>${s.upcoming_holidays.map(h=>`<div style="display:flex;justify-content:space-between;padding:0;border-bottom:1px solid #9;font-size:3px"><span style="font-weight:0">${h.name}</span><span style="color:#8b">${h.date}</span></div>`).join('')}</div>`:'')+
+      `<div style="margin-top:6px;padding:16px;background:#6ff;border:1px solid #bfdbfe;border-radius:0px;font-size:3px;color:#0af">
+        <strong>Quick actions:</strong> Use the sidebar to manage employees, timesheets, leaves, payroll, and more.
+      </div>`
+    );
+  }catch(e){setPage(1('Dashboard')+'<p style="color:#4">Failed to load</p>');}
+}
+
+// Rs.Rs. EMPLOYEES Rs.Rs.
+async function showEmployees(){
+  setActive('showEmployees');
+  setPage('<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0px"><1 style="font-size:2px;font-weight:0;color:#3b;margin:0">Employees</1><button onclick="exportEmployeesCSV()" class="btn btn-n" style="font-size:3px">&#5;&#9; Export CSV</button></div>'+'<p style="color:#8">Loading...</p>');
+  try{
+    var emps = await api('/employees/');
+    var rows = emps.map(function(e){
+      return '<tr>' +
+        '<td><div style="font-weight:0;color:#3b">'+e.first_name+' '+e.last_name+'</div><div style="font-size:2px;color:#8">'+e.email+'</div></td>' +
+        '<td><button onclick="showEmpProfile('+e.id+')" style="font-family:monospace;font-size:2px;color:#3eb;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0" title="View full profile">'+e.employee_id+'</button></td>' +
+        '<td>'+( e.designation||'-')+'</td>' +
+        '<td>'+(e.department||'-')+'</td>' +
+        '<td><span class="badge badge-'+(e.status||'active')+'">'+(e.status||'active')+'</span></td>' +
+        '<td style="white-space:nowrap">' +
+          '<button onclick="showEmpProfile('+e.id+')" class="btn btn-n" style="padding:8px;font-size:1px;margin-right:3px;color:#3aed" title="View Profile">&#4;</button>' +
+          '<button onclick="doEditEmp('+e.id+')" class="btn btn-n" style="padding:8px;font-size:1px;margin-right:3px;color:#3eb">&#9; Edit</button>' +
+          '<button onclick="doResetPassword('+e.id+',\''+e.first_name+' '+e.last_name+'\')" class="btn btn-n" style="padding:8px;font-size:1px;margin-right:3px;color:#6" title="Reset Password">&#1;</button>' +
+          '<button onclick="downloadEmploymentLetter('+e.id+',\''+e.employee_id+'\')" class="btn btn-n" style="padding:8px;font-size:1px;margin-right:3px;color:#9" title="Employment Letter">&#6;</button>' +
+          '<button onclick="doAssignMgrModal('+e.id+')" class="btn btn-n" style="padding:8px;font-size:1px;margin-right:3px">Assign Mgr</button>' +
+          '<button onclick="doTermModal('+e.id+',\''+e.first_name+' '+e.last_name+'\')" class="btn btn-d" style="padding:8px;font-size:1px;margin-right:3px">Terminate</button>' +
+          (role==='admin' ? '<button onclick="doDelEmp('+e.id+',\''+e.first_name+' '+e.last_name+'\')" class="btn btn-n" style="padding:8px;font-size:1px;color:#6">Delete</button>' : '') +
+        '</td>' +
+        '</tr>';
+    }).join('');
+    setPage(
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0px">' +
+      '<1 style="font-size:2px;font-weight:0;color:#3b;margin:0">Employees ('+emps.length+')</1>' +
+      '<button onclick="exportEmployeesCSV()" class="btn btn-n" style="font-size:3px">&#5; Export CSV</button>' +
+      '</div>' +
+      tblWrap(
+        ['Employee','ID','Designation','Department','Status','Actions'].map(th).join(''),
+        emps.length ? rows : noRows(6,'No employees found')
+      )
+    );
+  }catch(e){setPage(1('Employees')+'<p style="color:#4">Failed to load</p>');}
+}
+
+
+function doDelEmp(id,name){
+  showModal(`<3 style="font-size:6px;font-weight:0;margin:0 2px">Delete Employee</3>
+    <p style="font-size:3px;color:#9;margin:0 0px">Delete <strong>${name}</strong>? This cannot be undone.</p>
+    <div id="delAlert"></div>
+    <div style="display:flex;gap:8px"><button onclick="confirmDelEmp(${id})" class="btn btn-d">Delete</button><button onclick="closeModal()" class="btn btn-n">Cancel</button></div>`);
+}
+async function confirmDelEmp(id){
+  try{await api('/employees/'+id,'DELETE');closeModal();showEmployees();}
+  catch(e){2('delAlert','Failed: '+(e.detail||'Error'));}
+}
+
+function doTermModal(id,name){
+  const today=new Date().toISOString().split('T')[0];
+  showModal(`<3 style="font-size:6px;font-weight:0;margin:0 6px">Terminate: ${name}</3>
+    <div style="display:grid;gap:2px">
+      <div><label class="lbl">Reason *</label><textarea id="tReason" class="inp" rows="3" placeholder="Enter termination reason..."></textarea></div>
+      <div><label class="lbl">Date *</label><input id="tDate" type="date" class="inp" value="${today}"></div>
+    </div>
+    <div id="termAlert" style="margin-top:0px"></div>
+    <div style="display:flex;gap:8px;margin-top:6px"><button onclick="confirmTerm(${id})" class="btn btn-d">Confirm Terminate</button><button onclick="closeModal()" class="btn btn-n">Cancel</button></div>`);
+}
+async function confirmTerm(id){
+  const r=$('tReason').value, d=$('tDate').value;
+  if(!r||!d){2('termAlert','Fill all fields');return;}
+  try{const res=await api('/employees/'+id+'/terminate','POST',{reason:r,termination_date:d});closeModal();alert('Rs. '+res.message);showEmployees();}
+  catch(e){2('termAlert','Failed: '+(e.detail||'Error'));}
+}
+
+async function doAssignMgrModal(empId){
+  const emps=await api('/employees/');
+  showModal(`<3 style="font-size:6px;font-weight:0;margin:0 6px">Assign Manager</3>
+    <select id="mgrSel" class="inp" style="margin-bottom:6px">
+      <option value="">Select manager...</option>
+      ${emps.filter(e=>e.id!==empId).map(e=>'<option value="'+e.id+'">'+e.first_name+' '+e.last_name+' ('+e.employee_id+')</option>').join('')}
+    </select>
+    <div id="mgrAlert"></div>
+    <div style="display:flex;gap:8px"><button onclick="confirmAssignMgr(${empId})" class="btn btn-p">Assign</button><button onclick="closeModal()" class="btn btn-n">Cancel</button></div>`);
+}
+async function confirmAssignMgr(empId){
+  const mid=$('mgrSel').value; if(!mid){2('mgrAlert','Select a manager');return;}
+  try{const r=await api('/employees/'+empId+'/assign-manager','POST',{manager_employee_id:parseInt(mid)});closeModal();alert('Rs. '+r.message);}
+  catch(e){2('mgrAlert','Failed: '+(e.detail||'Error'));}
+}
+
+// Rs.Rs. ONBOARDING Rs.Rs.
+function showOnboard(){
+  setActive('showOnboard');
+  setPage(1('Employee Onboarding')+`<div class="card" style="max-width:0px">
+    <div id="onbAlert"></div>
+    <form onsubmit="submitOnboard(event)" style="display:grid;grid-template-columns:1fr;gap:6px">
+      ${fld('f_fn','First Name','text',true)}${fld('f_ln','Last Name','text',true)}
+      ${fld('f_em','Email','email',true)}<div><label class="lbl">Password *</label><div style="position:relative"><input id="f_pw" type="password" class="inp" required style="padding-right:0px"><button type="button" onclick="togglePwd('f_pw','onb_eye')" id="onb_eye" style="position:absolute;right:0px;top:0%;transform:translateY(-0%);background:none;border:none;cursor:pointer;font-size:6px">ð</button></div></div>
+      ${fld('f_ph','Phone')}${fld('f_des','Designation')}
+      ${fld('f_dep','Department')}
+      <div><label class="lbl">Employment Type</label><select id="f_et" class="inp"><option value="permanent">Permanent (CH-EMP)</option><option value="contractor">Contractor (CH-CON)</option><option value="intern">Intern (CH-INT)</option></select></div>
+      ${fld('f_doj','Date of Joining','date')}${fld('f_dob','Date of Birth','date')}
+      <div style="grid-column:2">${fld('f_addr','Address')}</div>
+      ${fld('f_ba','Bank Account')}${fld('f_bn','Bank Name')}
+      ${fld('f_ic','IFSC Code')}${fld('f_pf','PF Number')}${fld('f_uan','UAN Number')}
+      <div style="grid-column:2"><button type="submit" class="btn btn-p">Create Employee</button></div>
+    </form>
+  </div>`);
+}
+async function submitOnboard(e){
+  e.preventDefault();
+  const d={first_name:$('f_fn').value,last_name:$('f_ln').value,email:$('f_em').value,password:$('f_pw').value};
+  ['f_ph','f_des','f_dep','f_doj','f_dob','f_addr','f_ba','f_bn','f_ic','f_pf','f_uan'].forEach((id,i)=>{const v=$(id)?.value;if(v)d[['phone','designation','department','date_of_joining','date_of_birth','address','bank_account','bank_name','ifsc_code','pf_number','uan_number'][i]]=v;});
+  d.employment_type=$('f_et').value;
+  try{const r=await api('/employees/','POST',d);2('onbAlert','Rs. Created! ID: '+r.employee_id,'s');e.target.reset();}
+  catch(err){2('onbAlert','Rs. '+(err.detail||'Failed'));}
+}
+
+// Rs.Rs. CREATE ADMIN Rs.Rs.
+function showCreateAdmin(){
+  setActive('showCreateAdmin');
+  setPage(1('Create Admin User')+`<div class="card" style="max-width:0px">
+    <div id="caAlert"></div>
+    <form onsubmit="submitCreateAdmin(event)" style="display:grid;gap:4px">
+      ${fld('ca_fn','First Name','text',true)}${fld('ca_ln','Last Name','text',true)}
+      ${fld('ca_em','Email','email',true)}${fld('ca_pw','Password','password',true)}
+      <button type="submit" class="btn btn-p">Create Admin</button>
+    </form>
+  </div>`);
+}
+async function submitCreateAdmin(e){
+  e.preventDefault();
+  try{const r=await api('/employees/admin/create','POST',{first_name:$('ca_fn').value,last_name:$('ca_ln').value,email:$('ca_em').value,password:$('ca_pw').value});2('caAlert','Rs. '+r.message,'s');e.target.reset();}
+  catch(err){2('caAlert','Rs. '+(err.detail||'Failed'));}
+}
+
+// Rs.Rs. TIMESHEETS (admin/manager) Rs.Rs.
+async function showTimesheets(){
+  setActive('showTimesheets');
+  setPage(1('Timesheets')+'<p style="color:#8">Loading...</p>');
+  try{
+    const ts=await api('/timesheets/');
+    setPage(1('Timesheets')+tblWrap(
+      ['Emp ID','Date','Hours','Task','Status','Actions'].map(th).join(''),
+      ts.length?ts.map(t=>`<tr>
+        <td style="font-size:2px;font-family:monospace;color:#3eb">${t.employee_id}</td>
+        <td>${t.date}</td><td>${t.hours_worked}h</td>
+        <td style="max-width:0px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.task_description||'-'}</td>
+        <td><span class="badge badge-${t.status}">${t.status}</span></td>
+        <td>${t.status==='pending'?`<button onclick="approveTS(${t.id},'approved')" class="btn btn-s" style="padding:8px;font-size:1px;margin-right:4px">Approve</button><button onclick="approveTS(${t.id},'rejected')" class="btn btn-d" style="padding:8px;font-size:1px">Reject</button>`:'-'}</td>
+      </tr>`).join(''):noRows(6,'No timesheets')
+    ));
+  }catch(e){setPage(1('Timesheets')+'<p style="color:#4">Failed</p>');}
+}
+async function approveTS(id,status){
+  try{await api('/timesheets/'+id+'/approve','PUT',{status});showTimesheets();}catch(e){alert('Failed');}
+}
+
+// Rs.Rs. LEAVE REQUESTS (admin/manager) Rs.Rs.
+async function showLeaveReq(){
+  setActive('showLeaveReq');
+  setPage(1('Leave Requests')+'<p style="color:#8">Loading...</p>');
+  try{
+    const lv=await api('/leaves/all');
+    setPage(1('Leave Requests')+tblWrap(
+      ['Emp ID','Type','From','To','Days','Reason','Status','Actions'].map(th).join(''),
+      lv.length?lv.map(l=>`<tr>
+        <td style="font-size:2px;font-family:monospace;color:#3eb">${l.employee_id}</td>
+        <td><span class="badge" style="background:#9fe;color:#6">${l.leave_type.toUpperCase()}</span></td>
+        <td>${l.start_date}</td><td>${l.end_date}</td>
+        <td style="font-weight:0">${l.days}d</td>
+        <td style="max-width:0px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:2px">${l.reason||'-'}</td>
+        <td><span class="badge badge-${l.status}">${l.status}</span></td>
+        <td>${l.status==='pending'?`<button onclick="reviewLeave(${l.id},'approved')" class="btn btn-s" style="padding:8px;font-size:1px;margin-right:4px">Approve</button><button onclick="reviewLeave(${l.id},'rejected')" class="btn btn-d" style="padding:8px;font-size:1px">Reject</button>`:'-'}</td>
+      </tr>`).join(''):noRows(8,'No leave requests')
+    ));
+  }catch(e){setPage(1('Leave Requests')+'<p style="color:#4">Failed</p>');}
+}
+async function reviewLeave(id,status){
+  try{await api('/leaves/'+id+'/review','PUT',{status});showLeaveReq();}catch(e){alert('Failed');}
+}
+
+// Rs.Rs. PAYROLL Rs.Rs.
+async function showPayroll(){
+  setActive('showPayroll');
+  setPage(1('Payroll')+'<p style="color:#8">Loading...</p>');
+  try{
+    const [emps,recs]=await Promise.all([api('/employees/'),api('/payroll/records')]);
+    setPage(1('Payroll Management')+
+      // Rs.Rs. SALARY CONFIGURATION Rs.Rs.
+      `<div class="card" style="margin-bottom:0px">
+        <3 style="font-size:4px;font-weight:0;margin:0 4px">Rs.ï¸ Salary Configuration</3>
+        <p style="font-size:2px;color:#8;margin:0 4px">Set salary components before generating payslips</p>
+        <div style="display:grid;grid-template-columns:1fr;gap:2px;margin-bottom:4px">
+          <div style="grid-column:2">
+            <label class="lbl">Employee</label>
+            <select id="scEmp" class="inp" onchange="loadSalaryComp(this.value)">
+              <option value="">Select employee to configure...</option>
+              ${emps.map(e=>'<option value="'+e.id+'">'+e.first_name+' '+e.last_name+' ('+e.employee_id+')</option>').join('')}
+            </select>
+          </div>
+          <div><label class="lbl">Basic Salary (Rs.)</label><input id="sc_basic" type="number" class="inp" placeholder="e.g. 0" min="0"></div>
+          <div><label class="lbl">HRA (Rs.)</label><input id="sc_hra" type="number" class="inp" placeholder="e.g. 0" min="0"></div>
+          <div><label class="lbl">Allowances (Rs.)</label><input id="sc_allow" type="number" class="inp" placeholder="e.g. 0" min="0"></div>
+          <div><label class="lbl">Bonus (Rs.)</label><input id="sc_bonus" type="number" class="inp" placeholder="e.g. 0" min="0"></div>
+          <div><label class="lbl">PF Deduction (Rs.)</label><input id="sc_pf" type="number" class="inp" placeholder="e.g. 0" min="0"></div>
+          <div><label class="lbl">Professional Tax (Rs.)</label><input id="sc_pt" type="number" class="inp" placeholder="e.g. 0" min="0"></div>
+          <div><label class="lbl">Income Tax (Rs.)</label><input id="sc_it" type="number" class="inp" placeholder="e.g. 0" min="0"></div>
+          <div><label class="lbl">Effective From</label><input id="sc_date" type="date" class="inp"></div>
+        </div>
+        <div id="scAlert" style="margin-bottom:0px"></div>
+        <div style="display:flex;gap:0px;align-items:center">
+          <button onclick="saveSalaryComp()" class="btn btn-p">ð¾ Save Salary Config</button>
+      <hr style="border:none;border-top:1px solid #0;margin:0">
+      <3 style="font-size:4px;font-weight:0;margin:0 4px">💸 Miscellaneous Deductions</3>
+      <p style="font-size:2px;color:#8;margin:0 2px">One-time or recurring deductions (advance recovery, penalties, etc.)</p>
+      <div id="miscDeductionPrompt" style="color:#8;font-size:3px;padding:0">Select an employee above to manage deductions.</div>
+      <div id="miscDeductionArea" style="display:none">
+        <div style="display:grid;grid-template-columns:11fr;gap:0px;margin-bottom:2px">
+          <div><label class="lbl">Label</label><input id="miscLabel" class="inp" placeholder="e.g. Advance Recovery"/></div>
+          <div><label class="lbl">Amount (Rs.)</label><input id="miscAmount" class="inp" type="number" placeholder="0" min="0"/></div>
+          <div><label class="lbl">Month (1-2)</label><input id="miscMonth" class="inp" type="number" min="1" max="2"/></div>
+          <div><label class="lbl">Year</label><input id="miscYear" class="inp" type="number" placeholder="6"/></div>
+          <div><label class="lbl">Remarks</label><input id="miscRemarks" class="inp" placeholder="Optional"/></div>
+          <div style="display:flex;align-items:flex-end"><button class="btn-p" onclick="addMiscDeductionFromPayroll()">Add Deduction</button></div>
+        </div>
+        <div id="miscDeductionsInPayroll"><p style="color:#8;font-size:3px">No deductions yet.</p></div>
+      </div>
+          <span style="font-size:2px;color:#8">Changes apply from next payslip generation</span>
+        </div>
+      </div>`+
+      // Rs.Rs. GENERATE PAYSLIP Rs.Rs.
+      `<div class="card" style="margin-bottom:0px">
+        <3 style="font-size:4px;font-weight:0;margin:0 4px">ð Generate Payslip</3>
+        <div style="display:flex;gap:2px;flex-wrap:wrap;align-items:flex-end">
+          <div><label class="lbl">Employee</label><select id="pEmp" class="inp" style="min-width:0px"><option value="">Select...</option>${emps.map(e=>'<option value="'+e.id+'">'+e.first_name+' '+e.last_name+'</option>').join('')}</select></div>
+          <div><label class="lbl">Month</label><select id="pMo" class="inp">${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map((m,i)=>'<option value="'+(i+1)+'">'+m+'</option>').join('')}</select></div>
+          <div><label class="lbl">Year</label><input id="pYr" type="number" value="${new Date().getFullYear()}" class="inp" style="width:0px"></div>
+          <div id="payAlert" style="flex:1"></div>
+          <button onclick="genPayslip()" class="btn btn-s" style="margin-right:8px">Generate Payslip</button><button onclick="genAllPayslips()" class="btn btn-p">ð Generate All (from Joining)</button>
+        </div>
+      </div>`+
+      // Rs.Rs. PAYSLIP RECORDS Rs.Rs.
+      tblWrap(
+        ['Employee','Period','Basic','Gross','Deductions','Net Pay','PDF'].map(th).join(''),
+        recs.length?recs.map(r=>`<tr>
+          <td style="font-size:2px;font-family:monospace;color:#3eb">#${r.employee_id}</td>
+          <td>${new Date(r.year,r.month-1).toLocaleString('en',{month:'short',year:'numeric'})}</td>
+          <td>Rs.${Number(r.basic).toLocaleString('en-IN')}</td>
+          <td>Rs.${Number(r.gross_salary).toLocaleString('en-IN')}</td>
+          <td style="color:#6">-Rs.${Number(r.total_deductions).toLocaleString('en-IN')}</td>
+          <td style="font-weight:0;color:#9">Rs.${Number(r.net_salary).toLocaleString('en-IN')}</td>
+          <td><button onclick="downloadPayslip('${r.id}','${r.year}_${r.month}')" class="btn btn-n" style="padding:10px;font-size:2px">Rs.¬ï¸ PDF</button><button onclick="deletePayslip(${r.id})" style="margin-left:6px;padding:8px;font-size:2px;background:#2;color:#6;border:1px solid #5;border-radius:6px;cursor:pointer" title="Delete Payslip">ðï¸</button></td>
+        </tr>`).join(''):noRows(7,'No payslips generated yet. Configure salary components above and click Generate.')
+      ));
+  }catch(e){setPage(1('Payroll')+'<p style="color:#4">Failed to load</p>');}
+}
+
+async function loadSalaryComp(empId){
+  const mA=document.getElementById('miscDeductionArea'),mP=document.getElementById('miscDeductionPrompt');
+  if(empId){if(mA)mA.style.display='block';if(mP)mP.style.display='none';loadMiscDeductionsInPayroll(empId);}
+  else{if(mA)mA.style.display='none';if(mP)mP.style.display='block';}
+  if(!empId) return;
+  try{
+    const c = await api('/payroll/components/'+empId);
+    $('sc_basic').value = c.basic || '';
+    $('sc_hra').value = c.hra || '';
+    $('sc_allow').value = c.allowances || '';
+    $('sc_bonus').value = c.bonus || '';
+    $('sc_pf').value = c.pf_deduction || '';
+    $('sc_pt').value = c.professional_tax || '';
+    $('sc_it').value = c.income_tax || '';
+    $('sc_date').value = c.effective_from || '';
+    2('scAlert','Rs. Loaded existing salary configuration','s');
+  }catch(e){
+    // 4 = not configured yet, clear fields
+    $('sc_basic').value=''; $('sc_hra').value=''; $('sc_allow').value='';
+    $('sc_bonus').value=''; $('sc_pf').value=''; $('sc_pt').value='';
+    $('sc_it').value=''; $('sc_date').value='';
+    if(e.detail && e.detail.includes('4')) 2('scAlert','No salary configured yet for this employee Rs. fill in the fields and save','s');
+  }
+}
+
+async function saveSalaryComp(){
+  const emp=$('scEmp').value;
+  if(!emp){2('scAlert','Select an employee first');return;}
+  const data={
+    employee_id:parseInt(emp),
+    basic:parseFloat($('sc_basic').value)||0,
+    hra:parseFloat($('sc_hra').value)||0,
+    allowances:parseFloat($('sc_allow').value)||0,
+    bonus:parseFloat($('sc_bonus').value)||0,
+    pf_deduction:parseFloat($('sc_pf').value)||0,
+    professional_tax:parseFloat($('sc_pt').value)||0,
+    income_tax:parseFloat($('sc_it').value)||0,
+  };
+  const d=$('sc_date').value; if(d) data.effective_from=d;
+  try{
+    await api('/payroll/components','POST',data);
+    2('scAlert','Rs. Salary configuration saved successfully!','s');
+  }catch(err){2('scAlert','Rs. '+(err.detail||'Failed to save'));}
+}
+
+async function genPayslip(){
+  const emp=$('pEmp').value;
+  if(!emp){2('payAlert','Select employee');return;}
+  try{await api('/payroll/generate','POST',{employee_id:parseInt(emp),month:parseInt($('pMo').value),year:parseInt($('pYr').value)});2('payAlert','Rs. Payslip generated!','s');setTimeout(showPayroll,0);}
+  catch(err){2('payAlert','Rs. '+(err.detail||'Configure salary components first'));}
+}
+
+// Rs.Rs. HOLIDAYS & LEAVES Rs.Rs.
+async function showHolidaysLeaves(){
+  setActive('showHolidaysLeaves');
+  setPage(1('Holidays & Leaves')+'<p style="color:#8">Loading...</p>');
+  try{
+    const [hs,lc]=await Promise.all([api('/holidays/'),api('/leaves/config')]);
+    const isA=role==='admin';
+    setPage(1('Holidays & Leaves')+
+      (lc.length?`<div class="card" style="margin-bottom:0px"><3 style="font-size:4px;font-weight:0;margin:0 2px">Leave Policy</3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(0px,1fr));gap:0px">
+          ${lc.map(l=>`<div style="border:1px solid #0;border-radius:8px;padding:2px;text-align:center">
+            <div style="font-weight:0;font-size:3px;color:#5f">${l.leave_type.toUpperCase()}</div>
+            <div style="font-size:1px;color:#8b;margin-top:2px">${l.description||''}</div>
+            <div style="font-size:8px;font-weight:0;color:#3eb;margin-top:6px">${l.days_per_year}</div>
+            <div style="font-size:1px;color:#8">days/year</div>
+          </div>`).join('')}
+        </div>
+      </div>`:'')+
+      (isA?`<div class="card" style="margin-bottom:0px"><3 style="font-size:4px;font-weight:0;margin:0 2px">Add Holiday</3>
+        <div style="display:flex;gap:2px;flex-wrap:wrap;align-items:flex-end">
+          <div><label class="lbl">Name</label><input id="hName" class="inp" style="width:0px" placeholder="e.g. Diwali"/></div>
+          <div><label class="lbl">Date</label><input id="hDate" type="date" class="inp" style="width:0px"/></div>
+          <button onclick="addHoliday()" class="btn btn-p">Add Holiday</button>
+        </div>
+      </div>`:'')+
+      tblWrap(
+        (['Holiday','Date','Day'].concat(isA?['Actions']:[])).map(th).join(''),
+        hs.length?hs.map(h=>`<tr>
+          <td style="font-weight:0">${h.name}</td>
+          <td>${h.date}</td>
+          <td style="color:#8b">${new Date(h.date+'0:0:0').toLocaleDateString('en-IN',{weekday:'long'})}</td>
+          ${isA?`<td><button onclick="delHoliday(${h.id})" class="btn btn-n" style="padding:8px;font-size:1px;color:#6">Delete</button></td>`:''}
+        </tr>`).join(''):noRows(isA?4:3,'No holidays defined')
+      ));
+  }catch(e){setPage(1('Holidays & Leaves')+'<p style="color:#4">Failed</p>');}
+}
+async function addHoliday(){
+  const n=$('hName').value,d=$('hDate').value;
+  if(!n||!d)return;
+  try{await api('/holidays/','POST',{name:n,date:d});showHolidaysLeaves();}catch(e){alert('Failed');}
+}
+async function delHoliday(id){
+  if(!confirm('Delete this holiday?'))return;
+  try{await api('/holidays/'+id,'DELETE');showHolidaysLeaves();}catch(e){alert('Failed');}
+}
+
+// Rs.Rs. DOCUMENTS Rs.Rs.
+async function showDocs(){
+  setActive('showDocs');
+  setPage(1('HR Documents')+'<p style="color:#8">Loading...</p>');
+  try{
+    const d=await api('/documents/');
+    setPage(1('HR Documents')+(d.length?
+      `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(0px,1fr));gap:4px">${d.map(doc=>`<div class="card"><div style="font-weight:0;font-size:4px;color:#3b;margin-bottom:6px">ð ${doc.title}</div><div style="font-size:2px;color:#8">${doc.file_name}</div><div style="font-size:1px;color:#8;margin-top:4px">${new Date(doc.created_at).toLocaleDateString('en-IN')}</div></div>`).join('')}</div>`:
+      '<div class="card" style="text-align:center;padding:8px;color:#8">No documents available</div>'));
+  }catch(e){setPage(1('Documents')+'<p style="color:#4">Failed</p>');}
+}
+
+// Rs.Rs. RESIGNATIONS Rs.Rs.
+async function showResignations(){
+  setActive('showResignations');
+  setPage(1('Resignation Requests')+'<p style="color:#8">Loading...</p>');
+  try{
+    var r = await api('/employees/resignations/all');
+    var rows = r.map(function(x){
+      return '<tr>' +
+        '<td><div style="font-weight:0">'+(x.emp_name||'')+'</div><div style="font-size:2px;color:#8">'+(x.department||'')+'</div></td>' +
+        '<td style="font-size:2px;font-family:monospace;color:#3eb">'+(x.emp_code||'')+'</td>' +
+        '<td style="font-size:2px;color:#8b">'+(x.designation||'-')+'</td>' +
+        '<td>'+(x.notice_date||'-')+'</td>' +
+        '<td>'+(x.last_working_date||'-')+'</td>' +
+        '<td style="max-width:0px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:2px">'+(x.reason||'-')+'</td>' +
+        '<td><span class="badge badge-pending">'+(x.status||'pending')+'</span></td>' +
+        '<td><button onclick="downloadRelievingLetter('+x.id+',\''+(x.emp_name||'Employee').replace(/'/g,'')+'\')" class="btn btn-p" style="padding:10px;font-size:2px">ð Letter</button></td>' +
+        '</tr>';
+    });
+    setPage(1('Resignation Requests')+tblWrap(
+      ['Employee','Code','Designation','Notice Date','Last Day','Reason','Status','Actions'].map(th).join(''),
+      r.length ? rows.join('') : noRows(8,'No resignation requests')
+    ));
+  }catch(e){setPage(1('Resignations')+'<p style="color:#4">Failed</p>');}
+}
+
+// Rs.Rs. EMPLOYEE DASHBOARD Rs.Rs.
+async function showEmpDash(){
+  setActive('showEmpDash');
+  setPage(1('My Dashboard')+'<p style="color:#8">Loading...</p>');
+  try{
+    const [p,ts,lv]=await Promise.all([api('/employees/me'),api('/timesheets/'),api('/leaves/my').catch(()=>[])]);
+    myEmpId=p.id;
+    setPage(1('Welcome, '+p.first_name+'!')+
+      `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(0px,1fr));gap:4px;margin-bottom:4px">
+        ${sc('Employee ID',p.employee_id,'#3eb','')}
+        ${sc('Approved Timesheets',s.approved_timesheets,'#1','')
+        ${sc('Pending TS',ts.filter(t=>t.status==='pending').length,'#0b','')}
+        ${sc('Pending Leaves',s.pending_leaves,'#6','')
+      </div>`+
+      `<div class="card"><3 style="font-size:4px;font-weight:0;margin:0 4px">My Details</3>
+        <div style="display:grid;grid-template-columns:1fr;gap:0px">
+          ${[['Name',p.first_name+' '+p.last_name],['Email',p.email],['Designation',p.designation||'-'],['Department',p.department||'-'],['Type',p.employment_type],['Joined',p.date_of_joining||'-']].map(([k,v])=>`<div><div style="font-size:1px;color:#8;text-transform:uppercase;letter-spacing:.5px">${k}</div><div style="font-size:3px;font-weight:0;color:#3b;margin-top:2px">${v}</div></div>`).join('')}
+        </div>
+      </div>`);
+  }catch(e){setPage(1('Dashboard')+'<p style="color:#4">Failed</p>');}
+}
+
+// Rs.Rs. MY TIMESHEETS Rs.Rs.
+async function showMyTimesheets(){
+  setActive('showMyTimesheets');
+  const today=new Date().toISOString().split('T')[0];
+  setPage(1('My Timesheets'));
+  try{
+    const ts=await api('/timesheets/');
+    setPage(1('My Timesheets')+
+      `<div class="card" style="margin-bottom:0px"><3 style="font-size:4px;font-weight:0;margin:0 4px">Submit Timesheet</3>
+        <div id="tsAlert"></div>
+        <div style="display:grid;grid-template-columns:1fr;gap:2px">
+          ${fld('tsD','Date','date')}${fld('tsH','Hours','number')}
+          <div style="grid-column:2"><label class="lbl">Task Description</label><textarea id="tsT" class="inp" rows="2" placeholder="What did you work on?"></textarea></div>
+          ${fld('tsP','Project')}
+          <div style="display:flex;align-items:flex-end"><button onclick="submitTS()" class="btn btn-p">Submit</button></div>
+        </div>
+      </div>`+
+      tblWrap(
+        ['Date','Hours','Task','Project','Status'].map(th).join(''),
+        ts.length?ts.map(t=>`<tr><td>${t.date}</td><td>${t.hours_worked}h</td><td style="max-width:0px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.task_description||'-'}</td><td>${t.project||'-'}</td><td><span class="badge badge-${t.status}">${t.status}</span>${t.rejection_reason?`<div style="font-size:1px;color:#6;margin-top:2px">${t.rejection_reason}</div>`:''}</td></tr>`).join(''):noRows(5,'No timesheets yet')
+      ));
+    $('tsD').value=today; $('tsH').value='8';
+  }catch(e){setPage(1('My Timesheets')+'<p style="color:#4">Failed</p>');}
+}
+async function submitTS(){
+  const d={date:$('tsD').value,hours_worked:parseFloat($('tsH').value||8),task_description:$('tsT').value,project:$('tsP').value};
+  try{await api('/timesheets/submit','POST',d);2('tsAlert','Rs. Submitted!','s');setTimeout(showMyTimesheets,0);}
+  catch(err){2('tsAlert','Rs. '+(err.detail||'Failed'));}
+}
+
+// Rs.Rs. APPLY LEAVE Rs.Rs.
+function showApplyLeave(){
+  setActive('showApplyLeave');
+  setPage(1('Apply Leave')+`<div class="card" style="max-width:0px">
+    <div id="lvAlert"></div>
+    <form onsubmit="submitLeave(event)" style="display:grid;gap:4px">
+      <div><label class="lbl">Leave Type *</label>
+        <select id="lvType" class="inp" required>
+          <option value="">Select type...</option>
+          <option value="paid">ðï¸ Paid Leave (PL)</option>
+          <option value="sick">ð¤ Sick Leave (SL)</option>
+          <option value="earned">Rs.­ Earned Leave (EL)</option>
+          <option value="sabbatical">ð Sabbatical Leave</option>
+          <option value="lop">ð¼ Leave Without Pay (LOP)</option>
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr;gap:2px">
+        ${fld('lvFrom','From Date','date')}${fld('lvTo','To Date','date')}
+      </div>
+      <div><label class="lbl">Reason</label><textarea id="lvReason" class="inp" rows="3" placeholder="Reason for leave..."></textarea></div>
+      <button type="submit" class="btn btn-p" style="justify-content:center;padding:0px">Submit Leave Request</button>
+    </form>
+  </div>`);
+}
+async function submitLeave(e){
+  e.preventDefault();
+  try{await api('/leaves/request','POST',{leave_type:$('lvType').value,start_date:$('lvFrom').value,end_date:$('lvTo').value,reason:$('lvReason').value});
+    2('lvAlert','Rs. Leave request submitted successfully!','s');e.target.reset();}
+  catch(err){2('lvAlert','Rs. '+(err.detail||'Failed'));}
+}
+
+// Rs.Rs. LEAVE BALANCE Rs.Rs.
+async function showLeaveBalance(){
+  setActive('showLeaveBalance');
+  setPage(1('Leave Balance')+'<p style="color:#8">Loading...</p>');
+  try{
+    const [bal,hist]=await Promise.all([api('/leaves/balances/my'),api('/leaves/my')]);
+    setPage(1('Leave Balance & History')+
+      (bal.length?`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(0px,1fr));gap:2px;margin-bottom:4px">
+        ${bal.map(b=>`<div class="card" style="text-align:center;padding:4px">
+          <div style="font-size:0px;font-weight:0;color:#8b;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">${b.leave_type.toUpperCase()}</div>
+          <div style="font-size:8px;font-weight:0;color:#5f">${b.remaining_days}</div>
+          <div style="font-size:1px;color:#8">of ${b.total_days} days</div>
+          <div style="margin-top:8px;height:4px;background:#9;border-radius:2px">
+            <div style="height:4px;background:#3eb;border-radius:2px;width:${b.total_days>0?Math.round(b.remaining_days/b.total_days*0):0}%"></div>
+          </div>
+        </div>`).join('')}
+      </div>`:'<div class="card" style="text-align:center;padding:4px;color:#8;margin-bottom:0px">No leave balance data yet</div>')+
+      tblWrap(
+        ['Type','From','To','Days','Reason','Status'].map(th).join(''),
+        hist.length?hist.map(l=>`<tr>
+          <td><span class="badge" style="background:#9fe;color:#6">${l.leave_type.toUpperCase()}</span></td>
+          <td>${l.start_date}</td><td>${l.end_date}</td>
+          <td style="font-weight:0">${l.days}d</td>
+          <td style="font-size:2px;color:#8b;max-width:0px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.reason||'-'}</td>
+          <td><span class="badge badge-${l.status}">${l.status}</span>${l.review_comment?`<div style="font-size:1px;color:#8b;margin-top:2px">${l.review_comment}</div>`:''}</td>
+        </tr>`).join(''):noRows(6,'No leave requests yet')
+      ));
+  }catch(e){setPage(1('Leave Balance')+'<p style="color:#4">Failed</p>');}
+}
+
+// Rs.Rs. PAYSLIPS Rs.Rs.
+async function showPayslips(){
+  setActive('showPayslips');
+  setPage(1('My Payslips')+'<p style="color:#8">Loading...</p>');
+  try{
+    const r=await api('/payroll/records');
+    setPage(1('My Payslips')+(r.length?
+      `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(0px,1fr));gap:4px">${r.map(x=>`<div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:4px">
+          <span style="font-weight:0;color:#3b">${new Date(x.year,x.month-1).toLocaleString('en',{month:'long',year:'numeric'})}</span>
+          <button onclick="downloadPayslip('${x.id}','${x.year}_${x.month}')" class="btn btn-n" style="padding:10px;font-size:2px">Rs.¬ï¸ PDF</button>
+        </div>
+        <div style="font-size:3px">
+          ${[['Gross','Rs.'+Number(x.gross_salary).toLocaleString('en-IN'),null],['Deductions','-Rs.'+Number(x.total_deductions).toLocaleString('en-IN'),'#6'],['Net Pay','Rs.'+Number(x.net_salary).toLocaleString('en-IN'),'#9']].map(([k,v,c])=>`<div style="display:flex;justify-content:space-between;padding:0;border-bottom:1px solid #9"><span style="color:#8b">${k}</span><span style="font-weight:${c?'0':'0'}${c?';color:'+c:''}">${v}</span></div>`).join('')}
+        </div>
+      </div>`).join('')}</div>`:
+      '<div class="card" style="text-align:center;padding:8px;color:#8">No payslips generated yet</div>'));
+  }catch(e){setPage(1('Payslips')+'<p style="color:#4">Failed</p>');}
+}
+
+// Rs.Rs. PROFILE Rs.Rs.
+async function showProfile(){
+  setActive('showProfile');
+  setPage(1('My Profile')+'<p style="color:#8">Loading...</p>');
+  try{
+    const p=await api('/employees/me');
+    setPage(1('My Profile')+`<div class="card" style="max-width:0px">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;padding-bottom:0px;border-bottom:1px solid #9">
+        <div style="width:4px;height:4px;background:#5f;border-radius:0%;display:flex;align-items:center;justify-content:center;font-size:4px;font-weight:0;color:#fff;flex-shrink:0">${p.first_name[0]+p.last_name[0]}</div>
+        <div>
+          <2 style="font-size:8px;font-weight:0;color:#3b;margin:0">${p.first_name} ${p.last_name}</2>
+          <p style="color:#8b;font-size:3px;margin:0">${p.designation||'Employee'} Â· ${p.department||'CloudHub'}</p>
+          <p style="font-family:monospace;font-size:2px;color:#3eb;margin:0">${p.employee_id}</p>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr;gap:4px">
+        ${[['Email',p.email],['Phone',p.phone||'-'],['Designation',p.designation||'-'],['Department',p.department||'-'],['Employment Type',p.employment_type],['Date of Joining',p.date_of_joining||'-'],['Bank Name',p.bank_name||'-'],['Bank Account',p.bank_account||'-'],['IFSC Code',p.ifsc_code||'-'],['PF Number',p.pf_number||'-']].map(([k,v])=>`<div><div style="font-size:1px;color:#8;text-transform:uppercase;letter-spacing:.5px">${k}</div><div style="font-size:3px;font-weight:0;color:#3b;margin-top:3px">${v}</div></div>`).join('')}
+      </div>
+    </div>`);
+  }catch(e){setPage(1('Profile')+'<p style="color:#4">Failed</p>');}
+}
+
+// Rs.Rs. RESIGN Rs.Rs.
+function showResign(){
+  setActive('showResign');
+  const today=new Date().toISOString().split('T')[0];
+  setPage(1('Submit Resignation')+`<div class="card" style="max-width:0px">
+    <div style="background:#2;border:1px solid #fecaca;border-radius:8px;padding:2px;margin-bottom:0px;font-size:3px;color:#1b">
+      Rs. ï¸ Please ensure you have discussed this with your manager before submitting.
+    </div>
+    <div id="resAlert"></div>
+    <form onsubmit="submitResign(event)" style="display:grid;gap:4px">
+      ${fld('resDate','Notice Date *','date')}${fld('resLWD','Last Working Date','date')}
+      <div><label class="lbl">Reason</label><textarea id="resReason" class="inp" rows="4" placeholder="Please state your reason for resignation..."></textarea></div>
+      <button type="submit" class="btn btn-d" style="justify-content:center;padding:0px">Submit Resignation</button>
+    </form>
+  </div>`);
+  $('resDate').value=today;
+}
+async function submitResign(e){
+  e.preventDefault();
+  try{const r=await api('/employees/me/resign','POST',{notice_date:$('resDate').value,last_working_date:$('resLWD').value||null,reason:$('resReason').value});
+    2('resAlert','Rs. Resignation submitted. HR will contact you soon.','s');$('resReason').value='';}
+  catch(err){2('resAlert','Rs. '+(err.detail||'Failed'));}
+}
+
+
+
+// Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.
+// 1+2: PASSWORD RESET (Admin sets employee password)
+// Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.
+function doResetPassword(id, name) {
+  showModal(
+    '<3 style="font-size:6px;font-weight:0;margin:0 4px">Reset Password</3>' +
+    '<p style="font-size:3px;color:#8b;margin:0 6px">Set new password for <strong>' + name + '</strong></p>' +
+    '<div id="rpAlert"></div>' +
+    '<div style="margin-bottom:2px">' +
+      '<label class="lbl">New Password</label>' +
+      '<div style="position:relative">' +
+        '<input id="rp_pass" type="password" class="inp" placeholder="6 characters" style="padding-right:0px">' +
+        '<button onclick="togglePwd(\'rp_pass\',\'rp_eye\')" id="rp_eye" style="position:absolute;right:0px;top:0%;transform:translateY(-0%);background:none;border:none;cursor:pointer;font-size:6px">ð</button>' +
+      '</div>' +
+    '</div>' +
+    '<div style="margin-bottom:6px">' +
+      '<label class="lbl">Confirm Password</label>' +
+      '<div style="position:relative">' +
+        '<input id="rp_conf" type="password" class="inp" placeholder="Repeat password" style="padding-right:0px">' +
+        '<button onclick="togglePwd(\'rp_conf\',\'2\')" id="2" style="position:absolute;right:0px;top:0%;transform:translateY(-0%);background:none;border:none;cursor:pointer;font-size:6px">ð</button>' +
+      '</div>' +
+    '</div>' +
+    '<div style="display:flex;gap:8px">' +
+      '<button onclick="confirmResetPassword(' + id + ')" class="btn btn-p">Reset Password</button>' +
+      '<button onclick="closeModal()" class="btn btn-n">Cancel</button>' +
+    '</div>'
+  );
+}
+
+async function confirmResetPassword(id) {
+  var p = document.getElementById('rp_pass').value;
+  var c = document.getElementById('rp_conf').value;
+  if (!p || p.length < 6) { 2('rpAlert', 'Password must be at 6 characters'); return; }
+  if (p !== c) { 2('rpAlert', 'Passwords do not match'); return; }
+  try {
+    var r = await api('/employees/' + id + '/reset-password', 'POST', { new_password: p });
+    2('rpAlert', r.message || 'Password reset!', 's');
+    setTimeout(closeModal, 0);
+  } catch (err) { 2('rpAlert', 'Failed: ' + (err.detail || 'Error')); }
+}
+
+// Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.
+// 3: EXPORT EMPLOYEES CSV
+// Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.
+async function exportEmployeesCSV() {
+  try {
+    var emps = await api('/employees/');
+    var headers = ['Employee ID','First Name','Last Name','Email','Phone','Designation',
+      'Department','Employment Type','Status','Date of Joining','Date of Birth',
+      'Address','Bank Account','Bank Name','IFSC Code','PF Number','UAN Number'];
+    var rows = emps.map(function(e) {
+      return [
+        e.employee_id, e.first_name, e.last_name, e.email, e.phone || '',
+        e.designation || '', e.department || '', e.employment_type, e.status || 'active',
+        e.date_of_joining || '', e.date_of_birth || '', (e.address || '').replace(/,/g,' '),
+        e.bank_account || '', e.bank_name || '', e.ifsc_code || '',
+        e.pf_number || '', e.uan_number || ''
+      ].map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(',');
+    });
+    var csv = [headers.map(function(h){return '"'+h+'"';}).join(',')].concat(rows).join('\n');
+    var blob = new Blob([csv], { type: 'text/csv' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'CloudHub_Employees_' + new Date().toISOString().split('T')[0] + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err) { alert('Export failed: ' + (err.detail || 'Error')); }
+}
+
+// Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.
+// 4: EYE TOGGLE (show/hide password)
+// Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.
+function togglePwd(inputId, btnId) {
+  var inp = document.getElementById(inputId);
+  var btn = document.getElementById(btnId);
+  if (!inp) return;
+  if (inp.type === 'password') { inp.type = 'text'; if (btn) btn.textContent = 'ð'; }
+  else { inp.type = 'password'; if (btn) btn.textContent = 'ð'; }
+}
+
+// Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.
+// 5: RELIEVING LETTER (from Resignations)
+// Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.
+async function downloadRelievingLetter(resignationId, empName) {
+  try {
+    var resp = await fetch('/employees/resignations/' + resignationId + '/letter', {
+      headers: { 'Authorization': 'Bearer ' + tok }
+    });
+    if (!resp.ok) { alert('Failed to generate letter: ' + resp.status); return; }
+    var blob = await resp.blob();
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'Relieving_Letter_' + (empName || 'Employee').replace(/ /g,'_') + '.pdf';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 0);
+  } catch(err) { alert('Error: ' + (err.message || 'Download failed')); }
+}
+
+// Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.
+// 6: EMPLOYMENT LETTER (from Employees list)
+// Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.
+async function downloadEmploymentLetter(empId, empCode) {
+  try {
+    var resp = await fetch('/employees/' + empId + '/letter/employment', {
+      headers: { 'Authorization': 'Bearer ' + tok }
+    });
+    if (!resp.ok) { alert('Failed to generate letter: ' + resp.status); return; }
+    var blob = await resp.blob();
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'Employment_Letter_' + empCode + '.pdf';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 0);
+  } catch(err) { alert('Error: ' + (err.message || 'Download failed')); }
+}
+
+// Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.
+// 7: CLICK EMPLOYEE ID Rs. FULL PROFILE MODAL
+// Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.
+async function showEmpProfile(id) {
+  try {
+    var e = await api('/employees/' + id);
+    var rows = [
+      ['Employee ID', e.employee_id], ['Full Name', e.first_name + ' ' + e.last_name],
+      ['Email', e.email], ['Phone', e.phone || '-'],
+      ['Designation', e.designation || '-'], ['Department', e.department || '-'],
+      ['Employment Type', e.employment_type], ['Status', e.status || 'active'],
+      ['Date of Joining', e.date_of_joining || '-'], ['Date of Birth', e.date_of_birth || '-'],
+      ['Address', e.address || '-'], ['Bank Account', e.bank_account || '-'],
+      ['Bank Name', e.bank_name || '-'], ['IFSC Code', e.ifsc_code || '-'],
+      ['PF Number', e.pf_number || '-'], ['UAN Number', e.uan_number || '-']
+    ];
+    var initials = (e.first_name[0] || '') + (e.last_name[0] || '');
+    var gridRows = rows.map(function(r) {
+      return '<div style="padding:0;border-bottom:1px solid #9">' +
+        '<div style="font-size:0px;color:#8;text-transform:uppercase;letter-spacing:.5px">' + r[0] + '</div>' +
+        '<div style="font-size:3px;font-weight:0;color:#3b;margin-top:2px">' + r[1] + '</div>' +
+        '</div>';
+    }).join('');
+    showModal(
+      '<div style="display:flex;align-items:center;gap:4px;margin-bottom:0px;padding-bottom:6px;border-bottom:1px solid #9">' +
+        '<div style="width:6px;height:6px;background:#5f;border-radius:0%;display:flex;align-items:center;justify-content:center;font-size:0px;font-weight:0;color:#fff;flex-shrink:0">' + initials + '</div>' +
+        '<div>' +
+          '<div style="font-size:8px;font-weight:0;color:#3b">' + e.first_name + ' ' + e.last_name + '</div>' +
+          '<div style="font-size:2px;color:#8b;margin-top:2px">' + (e.designation || 'Employee') + ' &bull; ' + (e.department || 'CloudHub') + '</div>' +
+          '<div style="font-size:2px;font-family:monospace;color:#3eb;margin-top:2px">' + e.employee_id + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="max-height:0vh;overflow-y:auto;padding-right:4px">' + gridRows + '</div>' +
+      '<div style="display:flex;gap:8px;margin-top:6px">' +
+        '<button onclick="downloadEmploymentLetter(' + e.id + ',\'' + e.employee_id + '\')" class="btn btn-p" style="font-size:2px">ð Employment Letter</button>' +
+        '<button onclick="closeModal()" class="btn btn-n">Close</button>' +
+      '</div>'
+    );
+  } catch (err) { alert('Failed to load profile: ' + (err.detail || 'Error')); }
+}
+
+// Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.
+// EDIT EMPLOYEE (moved here for clean structure)
+// Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.
+async function doEditEmp(id) {
+  try {
+    var e = await api('/employees/' + id);
+    var selOpt = function(val, opts) {
+      return opts.map(function(o) {
+        return '<option value="' + o + '"' + (val === o ? ' selected' : '') + '>' +
+          o.charAt(0).toUpperCase() + o.slice(1) + '</option>';
+      }).join('');
+    };
+    showModal(
+      '<3 style="font-size:6px;font-weight:0;margin:0 6px">Edit: ' + e.first_name + ' ' + e.last_name + '</3>' +
+      '<div id="editAlert"></div>' +
+      '<div style="display:grid;grid-template-columns:1fr;gap:2px;max-height:0vh;overflow-y:auto;padding-right:4px">' +
+        '<div><label class="lbl">First Name</label><input id="ed_fn" class="inp" value="' + (e.first_name || '') + '"></div>' +
+        '<div><label class="lbl">Last Name</label><input id="ed_ln" class="inp" value="' + (e.last_name || '') + '"></div>' +
+        '<div><label class="lbl">Phone</label><input id="ed_ph" class="inp" value="' + (e.phone || '') + '"></div>' +
+        '<div><label class="lbl">Designation</label><input id="ed_des" class="inp" value="' + (e.designation || '') + '"></div>' +
+        '<div><label class="lbl">Department</label><input id="ed_dep" class="inp" value="' + (e.department || '') + '"></div>' +
+        '<div><label class="lbl">Employment Type</label>' +
+          '<select id="ed_et" class="inp">' + selOpt(e.employment_type, ['permanent','contractor','intern','consultant']) + '</select>' +
+        '</div>' +
+        '<div><label class="lbl">Date of Joining</label><input id="ed_doj" type="date" class="inp" value="' + (e.date_of_joining || '') + '"></div>' +
+        '<div><label class="lbl">Date of Birth</label><input id="ed_dob" type="date" class="inp" value="' + (e.date_of_birth || '') + '"></div>' +
+        '<div style="grid-column:2"><label class="lbl">Address</label><textarea id="ed_addr" class="inp" rows="2">' + (e.address || '') + '</textarea></div>' +
+        '<div><label class="lbl">Bank Account</label><input id="ed_ba" class="inp" value="' + (e.bank_account || '') + '"></div>' +
+        '<div><label class="lbl">Bank Name</label><input id="ed_bn" class="inp" value="' + (e.bank_name || '') + '"></div>' +
+        '<div><label class="lbl">IFSC Code</label><input id="ed_ic" class="inp" value="' + (e.ifsc_code || '') + '"></div>' +
+        '<div><label class="lbl">PF Number</label><input id="ed_pf" class="inp" value="' + (e.pf_number || '') + '"></div>' +
+        '<div><label class="lbl">UAN Number</label><input id="ed_uan" class="inp" value="' + (e.uan_number || '') + '"></div>' +
+      '</div>' +
+      '<div style="display:flex;gap:8px;margin-top:6px">' +
+        '<button onclick="saveEditEmp(' + e.id + ')" class="btn btn-p">Save Changes</button>' +
+        '<button onclick="closeModal()" class="btn btn-n">Cancel</button>' +
+      '</div>'
+    );
+  } catch (err) { alert('Failed to load: ' + (err.detail || 'Error')); }
+}
+
+async function saveEditEmp(id) {
+  var data = {};
+  var fm = [['ed_fn','first_name'],['ed_ln','last_name'],['ed_ph','phone'],['ed_des','designation'],
+    ['ed_dep','department'],['ed_et','employment_type'],['ed_doj','date_of_joining'],
+    ['ed_dob','date_of_birth'],['ed_addr','address'],['ed_ba','bank_account'],
+    ['ed_bn','bank_name'],['ed_ic','ifsc_code'],['ed_pf','pf_number'],['ed_uan','uan_number']];
+  fm.forEach(function(p) {
+    var el = document.getElementById(p[0]);
+    if (el && el.value !== '') data[p[1]] = el.value;
+  });
+  try {
+    await api('/employees/' + id, 'PUT', data);
+    2('editAlert', 'Employee updated successfully!', 's');
+    setTimeout(function() { closeModal(); showEmployees(); }, 0);
+  } catch (err) { 2('editAlert', 'Failed: ' + (err.detail || 'Error')); }
+}
+
+// Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.
+// DELETED EMPLOYEES + REINSTATE
+// Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.
+async function showDeletedEmps() {
+  setActive('showDeletedEmps');
+  setPage(1('Deleted Employees') +
+    '<div style="background:#fffbeb;border:1px solid #8a;border-radius:0px;padding:16px;margin-bottom:0px;font-size:3px;color:#0e">' +
+    'Soft-deleted employees. Data is fully preserved. Click <strong>Reinstate</strong> to restore access.' +
+    '</div><p style="color:#8">Loading...</p>');
+  try {
+    var emps = await api('/employees/inactive');
+    if (!emps.length) {
+      setPage(1('Deleted Employees') +
+        '<div style="background:#fffbeb;border:1px solid #8a;border-radius:0px;padding:16px;margin-bottom:0px;font-size:3px;color:#0e">' +
+        'Soft-deleted employees. Data is fully preserved.</div>' +
+        '<div class="card" style="text-align:center;padding:8px;color:#8"><div style="font-size:0px;margin-bottom:2px">ðï¸</div>' +
+        '<div style="font-size:5px;font-weight:0">No deleted employees</div></div>');
+      return;
+    }
+    var rows = emps.map(function(e) {
+      return '<tr style="opacity:0.8">' +
+        '<td><div style="font-weight:0">' + e.first_name + ' ' + e.last_name + '</div>' +
+        '<div style="font-size:2px;color:#8">' + e.email + '</div></td>' +
+        '<td style="font-family:monospace;font-size:2px;color:#8b">' + e.employee_id + '</td>' +
+        '<td style="color:#8">' + (e.designation || '-') + '</td>' +
+        '<td style="color:#8">' + (e.department || '-') + '</td>' +
+        '<td><span class="badge badge-' + (e.status || 'terminated') + '">' + (e.status || 'inactive') + '</span></td>' +
+        '<td style="white-space:nowrap">' +
+          '<button onclick="doReinstate(' + e.id + ',\'' + e.first_name + ' ' + e.last_name + '\')" class="btn btn-s" style="padding:10px;font-size:2px;margin-right:4px">Reinstate</button>' +
+        '</td>' +
+        '</tr>';
+    }).join('');
+    setPage(1('Deleted Employees (' + emps.length + ')') +
+      '<div style="background:#fffbeb;border:1px solid #8a;border-radius:0px;padding:16px;margin-bottom:0px;font-size:3px;color:#0e">' +
+      'Click <strong>Reinstate</strong> to restore employee access.</div>' +
+      tblWrap(['Employee','ID','Designation','Department','Status','Action'].map(th).join(''), rows));
+  } catch (err) {
+    setPage(1('Deleted Employees') + '<p style="color:#4">Failed: ' + (err.detail || 'Error') + '</p>');
+  }
+}
+
+function doReinstate(id, name) {
+  showModal(
+    '<3 style="font-size:6px;font-weight:0;margin:0 2px">Reinstate Employee</3>' +
+    '<p style="font-size:3px;color:#9;margin:0 0px">Reinstate <strong>' + name + '</strong>? This restores their login and marks them active.</p>' +
+    '<div id="reinstateAlert"></div>' +
+    '<div style="display:flex;gap:8px">' +
+      '<button onclick="confirmReinstate(' + id + ')" class="btn btn-s">Confirm Reinstate</button>' +
+      '<button onclick="closeModal()" class="btn btn-n">Cancel</button>' +
+    '</div>'
+  );
+}
+
+async function confirmReinstate(id) {
+  try {
+    var r = await api('/employees/' + id + '/reinstate', 'POST');
+    2('reinstateAlert', r.message || 'Reinstated!', 's');
+    setTimeout(function() { closeModal(); showDeletedEmps(); }, 0);
+  } catch (err) { 2('reinstateAlert', 'Failed: ' + (err.detail || 'Error')); }
+}
+
+
+// Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.
+// PAYSLIP PDF DOWNLOAD (fetch+blob with auth)
+// Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.
+window.downloadPayslip = async function(recordId, label) {
+  try {
+    var resp = await fetch('/payroll/slip/' + recordId, {
+      headers: { 'Authorization': 'Bearer ' + tok }
+    });
+    if (!resp.ok) {
+      var err = await resp.json().catch(function(){ return {}; });
+      alert('Failed to download payslip: ' + (err.detail || resp.status));
+      return;
+    }
+    var blob = await resp.blob();
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'Payslip_' + label + '.pdf';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 0);
+  } catch(err) { alert('Download error: ' + (err.message || 'Unknown error')); }
+}
+
+window.deletePayslip = async function(id) {
+  if (!confirm('Are you sure you want to delete this payslip? It can be regenerated if needed.')) return;
+  try {
+    var resp = await fetch('/payroll/slip/' + id, {
+      method: 'DELETE',
+      headers: { 'Authorization': 'Bearer ' + tok }
+    });
+    if (resp.ok) {
+      2('payAlert', 'Rs. Payslip deleted successfully!', 's');
+      showPayroll();
+    } else {
+      var err = await resp.json().catch(function(){ return {}; });
+      alert('Failed to delete: ' + (err.detail || resp.status));
+    }
+  } catch(e) {
+    alert('Error: ' + (e.message || 'Unknown error'));
+  }
+}
+
+
+// Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.
+// GENERATE ALL PAYSLIPS FROM DATE OF JOINING
+// Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.
+window.genAllPayslips = async function() {
+  var empId = document.getElementById('pEmp') ? document.getElementById('pEmp').value : '';
+  if (!empId) { 2('payAlert', 'Select an employee first'); return; }
+  2('payAlert', 'Rs.³ Generating payslips from date of joining...', 's');
+  try {
+    var r = await api('/payroll/generate-all/' + empId, 'POST');
+    2('payAlert', 'Rs. ' + r.message, 's');
+    setTimeout(showPayroll, 0);
+  } catch(err) {
+    2('payAlert', 'Rs. ' + (err.detail || 'Failed. Set salary components first.'));
+  }
+}
+
+// Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.
+// TRAINING MODULE
+// Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.Rs.
+var TRAININGS = [
+  {
+    id: 1, title: 'Code of Ethics & Business Conduct',
+    desc: 'Understanding ethical standards, anti-bribery, conflict of interest, and code of conduct policies.',
+    category: 'Compliance', duration: '2 hours', mandatory: true
+  },
+  {
+    id: 2, title: 'Prevention of Sexual Harassment (POSH)',
+    desc: 'POSH Act awareness, workplace harassment prevention, reporting mechanisms.',
+    category: 'Compliance', duration: '1.5 hours', mandatory: true
+  },
+  {
+    id: 3, title: 'Information Security & Data Privacy',
+    desc: 'Data protection, GDPR basics, secure handling of confidential information, password policies.',
+    category: 'Security', duration: '2 hours', mandatory: true
+  },
+  {
+    id: 4, title: 'Anti-Money Laundering (AML) Awareness',
+    desc: 'Recognising and reporting suspicious financial activities, KYC procedures.',
+    category: 'Compliance', duration: '1 hour', mandatory: true
+  },
+  {
+    id: 5, title: 'Health, Safety & Workplace Wellness',
+    desc: 'Fire safety, emergency procedures, ergonomics, mental health and employee wellness.',
+    category: 'Safety', duration: '1 hour', mandatory: true
+  },
+  {
+    id: 6, title: 'Diversity, Equity & Inclusion (DEI)',
+    desc: 'Building an inclusive workplace, unconscious bias, respectful communication.',
+    category: 'Culture', duration: '1.5 hours', mandatory: true
+  },
+  {
+    id: 7, title: 'HR Policies & Employee Handbook',
+    desc: 'Leave policies, attendance, performance management, grievance redressal.',
+    category: 'HR', duration: '1 hour', mandatory: true
+  },
+  {
+    id: 8, title: 'IT Systems & Tools Orientation',
+    desc: 'Onboarding to company systems, HRMS, project tools, email etiquette.',
+    category: 'IT', duration: '2 hours', mandatory: false
+  },
+  {
+    id: 9, title: 'Professional Communication Skills',
+    desc: 'Business writing, email communication, presentation skills, client interaction.',
+    category: 'Soft Skills', duration: '3 hours', mandatory: false
+  },
+  {
+    id: 0, title: 'Project Management Fundamentals',
+    desc: 'Agile, Scrum basics, time management, task prioritisation, stakeholder management.',
+    category: 'Professional', duration: '4 hours', mandatory: false
+  }
+];
+
+window.getTrainingStatus = function() {
+  var stored = localStorage.getItem('training_status_' + (window._empEmail || 'default'));
+  return stored ? JSON.parse(stored) : {};
+}
+
+window.saveTrainingStatus = function(status) {
+  localStorage.setItem('training_status_' + (window._empEmail || 'default'), JSON.stringify(status));
+}
+
+window.markTraining = function(id, completed) {
+  var status = getTrainingStatus();
+  if (completed) {
+    status[id] = { completed: true, date: new Date().toLocaleDateString('en-IN') };
+  } else {
+    delete status[id];
+  }
+  saveTrainingStatus(status);
+  showTraining();
+}
+
+window.showTraining = async function() {
+  setActive('showTraining');
+  var status = getTrainingStatus();
+  var total = TRAININGS.length;
+  var done = Object.keys(status).filter(function(k){ return status[k].completed; }).length;
+  var pct = Math.round(done / total * 0);
+
+  var catColors = {
+    'Compliance': '#6', 'Security': '#3eb', 'Safety': '#0b',
+    'Culture': '#6', 'HR': '#9', 'IT': '#2',
+    'Soft Skills': '#6', 'Professional': '#3aed'
+  };
+
+  var rows = TRAININGS.map(function(t) {
+    var s = status[t.id];
+    var isDone = s && s.completed;
+    var cat = t.category;
+    var col = catColors[cat] || '#8b';
+    return '<div class="card" style="margin-bottom:2px;border-left:4px solid ' + (isDone ? '#9' : (t.mandatory ? '#6' : '#8')) + '">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:2px">' +
+        '<div style="flex:1">' +
+          '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">' +
+            '<span style="font-weight:0;font-size:4px;color:#3b">' + t.title + '</span>' +
+            (t.mandatory ? '<span style="background:#2;color:#6;font-size:0px;font-weight:0;padding:8px;border-radius:9px">MANDATORY</span>' : '<span style="background:#9;color:#8b;font-size:0px;padding:8px;border-radius:9px">OPTIONAL</span>') +
+          '</div>' +
+          '<div style="font-size:2px;color:#8b;margin-bottom:6px">' + t.desc + '</div>' +
+          '<div style="display:flex;gap:2px;font-size:1px">' +
+            '<span style="background:' + col + '0;color:' + col + ';padding:8px;border-radius:9px;font-weight:0">' + cat + '</span>' +
+            '<span style="color:#8">Rs.± ' + t.duration + '</span>' +
+            (isDone ? '<span style="color:#9;font-weight:0">Rs. Completed on ' + s.date + '</span>' : '<span style="color:#0b">Rs.³ Pending</span>') +
+          '</div>' +
+        '</div>' +
+        '<div style="flex-shrink:0">' +
+          (isDone
+            ? '<button onclick="markTraining(' + t.id + ',false)" class="btn btn-n" style="font-size:2px;padding:12px">Rs.© Undo</button>'
+            : '<button onclick="markTraining(' + t.id + ',true)" class="btn btn-s" style="font-size:2px;padding:12px">Rs. Mark Done</button>'
+          ) +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  var progressBar = '<div style="background:#9;border-radius:9px;height:2px;margin:0">' +
+    '<div style="background:' + (pct === 0 ? '#9' : '#3eb') + ';height:2px;border-radius:9px;width:' + pct + '%;transition:width .3s"></div></div>';
+
+  setPage(
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0px">' +
+      '<1 style="font-size:2px;font-weight:0;color:#3b;margin:0">ð My Training</1>' +
+      '<div style="text-align:right">' +
+        '<div style="font-size:3px;color:#8b">' + done + ' of ' + total + ' completed</div>' +
+        '<div style="font-size:1px;color:#8">(' + pct + '%)</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="card" style="margin-bottom:0px">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center">' +
+        '<span style="font-size:3px;font-weight:0;color:#3b">Overall Progress</span>' +
+        '<span style="font-size:3px;font-weight:0;color:' + (pct===0?'#9':'#3eb') + '">' + pct + '%</span>' +
+      '</div>' +
+      progressBar +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(0px,1fr));gap:0px;margin-top:2px">' +
+        '<div style="text-align:center;padding:0px;background:#5;border-radius:8px"><div style="font-size:2px;font-weight:0;color:#9">' + done + '</div><div style="font-size:1px;color:#6">Completed</div></div>' +
+        '<div style="text-align:center;padding:0px;background:#2;border-radius:8px"><div style="font-size:2px;font-weight:0;color:#6">' + (total-done) + '</div><div style="font-size:1px;color:#1b">Pending</div></div>' +
+        '<div style="text-align:center;padding:0px;background:#7;border-radius:8px"><div style="font-size:2px;font-weight:0;color:#0e">' + TRAININGS.filter(function(t){return t.mandatory && !(status[t.id]&&status[t.id].completed);}).length + '</div><div style="font-size:1px;color:#0e">Mandatory Pending</div></div>' +
+      '</div>' +
+    '</div>' +
+    rows
+  );
+}
+
+
+// ===== MISC DEDUCTIONS (Payroll) =====
+async function addMiscDeductionFromPayroll(){
+  const empId=document.getElementById('scEmp')?document.getElementById('scEmp').value:'';
+  const label=document.getElementById('miscLabel').value.trim();
+  const amount=parseFloat(document.getElementById('miscAmount').value);
+  const month=parseInt(document.getElementById('miscMonth').value);
+  const year=parseInt(document.getElementById('miscYear').value);
+  const remarks=document.getElementById('miscRemarks').value.trim();
+  if(!empId){alert('Select an employee first');return;}
+  if(!label||!amount||!month||!year){alert('Label, amount, month and year are required');return;}
+  try{
+    await api('/misc-deductions/','POST',{employee_id:parseInt(empId),label,amount,month,year,remarks:remarks||null});
+    alert('Deduction added!');
+    ['miscLabel','miscAmount','miscMonth','miscRemarks'].forEach(id=>{document.getElementById(id).value='';});
+    loadMiscDeductionsInPayroll(empId);
+  }catch(e){alert('Failed: '+(e.message||e));}
+}
+async function loadMiscDeductionsInPayroll(empId){
+  const c=document.getElementById('miscDeductionsInPayroll');
+  if(!c)return;
+  try{
+    const data=await api('/misc-deductions/'+empId);
+    const role=localStorage.getItem('role');
+    const isAdmin=role==='admin'||role==='manager';
+    if(!data.length){c.innerHTML='<p style="color:#8;font-size:3px">No miscellaneous deductions for this employee.</p>';return;}
+    c.innerHTML='<table style="width:0%;border-collapse:collapse;font-size:3px"><thead><tr style="background:#9"><th style="padding:6px;text-align:left">Label</th><th style="padding:6px;text-align:right">Amount</th><th style="padding:6px;text-align:center">Month/Year</th><th style="padding:6px">Remarks</th>'+(isAdmin?'<th style="padding:6px;text-align:center">Action</th>':'')+
+    '</tr></thead><tbody>'+data.map(d=>'<tr style="border-bottom:1px solid #0"><td style="padding:6px">'+d.label+'</td><td style="padding:6px;text-align:right">Rs.'+d.amount.toLocaleString()+'</td><td style="padding:6px;text-align:center">'+d.month+'/'+d.year+'</td><td style="padding:6px">'+(d.remarks||'-')+'</td>'+(isAdmin?'<td style="padding:6px;text-align:center"><button onclick="deleteMiscDeductionFromPayroll('+d.id+','+empId+')" style="background:#4;color:#fff;border:none;border-radius:4px;padding:8px;cursor:pointer;font-size:2px">Delete</button></td>':'')+
+    '</tr>').join('')+'</tbody></table>';
+  }catch(e){c.innerHTML='<p style="color:#4;font-size:3px">Failed to load deductions.</p>';}
+}
+async function deleteMiscDeductionFromPayroll(id,empId){
+  if(!confirm('Delete this deduction?'))return;
+  try{await api('/misc-deductions/'+id,'DELETE');loadMiscDeductionsInPayroll(empId);}catch(e){alert('Failed');}
+}
+// ===== END MISC DEDUCTIONS =====
+
+// ===== APPRAISALS =====
+let _currentAppraisalId=null;window._appraisalData=[];
+function showAppraisals(){
+  setActive('showAppraisals');
+  const role=localStorage.getItem('role');
+  const canCreate=role==='admin'||role==='manager';
+  const createPanel=canCreate?'<div class="card" style="margin-bottom:6px"><3 style="font-size:4px;font-weight:0;margin:0 2px">Create Appraisal</3><div style="display:grid;grid-template-columns:1fr;gap:0px;margin-bottom:2px"><div><label class="lbl">Employee</label><select id="appraisalEmpId" class="inp"><option value="">Select...</option></select></div><div><label class="lbl">Period</label><input id="appraisalPeriod" class="inp" placeholder="e.g. 2026"/></div><div style="grid-column:2"><label class="lbl">Comments</label><textarea id="appraisalComments" class="inp" style="resize:vertical;height:0px" placeholder="Optional"></textarea></div></div><button class="btn-p" onclick="createAppraisal()">Create Appraisal</button></div>':'';
+  setPage(1('Employee Appraisals')+createPanel+'<div class="card"><3 style="font-size:4px;font-weight:0;margin:0 2px">Records</3><div id="appraisalList"><p style="color:#8">Loading...</p></div></div><div id="appraisalDetail" style="display:none;margin-top:6px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px"><3 id="appraisalDetailTitle" style="font-size:6px;font-weight:0;color:#5f"></3><button onclick="showAppraisals()" class="btn" style="font-size:2px">Back</button></div><div style="display:grid;grid-template-columns:1fr;gap:6px;margin-bottom:6px"><div class="card" style="padding:4px"><4 style="font-size:4px;font-weight:0;margin:0 8px">Goals</4><div id="goalsList"></div><div id="goalsAdminForm" style="display:none;margin-top:0px"><input id="goalTitle" class="inp" placeholder="Goal title" style="margin-bottom:6px"/><input id="goalTarget" class="inp" placeholder="Target" style="margin-bottom:6px"/><input id="goalRating" class="inp" type="number" placeholder="1-5" style="margin-bottom:6px"/><button class="btn-p" onclick="addGoal()" style="font-size:2px;padding:12px">Add Goal</button></div></div><div class="card" style="padding:4px"><4 style="font-size:4px;font-weight:0;margin:0 8px">Feedback</4><div id="feedbackList"></div><div style="margin-top:0px"><textarea id="feedbackStrengths" class="inp" placeholder="Strengths" style="margin-bottom:6px;resize:vertical;height:0px"></textarea><textarea id="feedbackImprovements" class="inp" placeholder="Improvements" style="margin-bottom:6px;resize:vertical;height:0px"></textarea><input id="feedbackRating" class="inp" type="number" placeholder="1-5" style="margin-bottom:6px"/><button class="btn-p" onclick="addFeedback()" style="font-size:2px;padding:12px">Submit Feedback</button></div></div></div><div id="appraisalUpdatePanel" style="display:none" class="card"><4 style="font-size:4px;font-weight:0;margin:0 8px">Update Status</4><div style="display:flex;gap:0px;align-items:center"><select id="appraisalStatus" class="inp" style="max-width:0px"><option value="draft">Draft</option><option value="in_review">In Review</option><option value="completed">Completed</option></select><input id="appraisalOverallRating" class="inp" type="number" placeholder="Overall 1-5" style="max-width:0px"/><button class="btn-p" onclick="updateAppraisal()">Update</button></div></div></div>');
+  populateAppraisalEmpDropdown();loadAppraisals();
+}
+async function populateAppraisalEmpDropdown(){try{const e=await api('/employees/');const el=document.getElementById('appraisalEmpId');if(el)el.innerHTML='<option value="">Select...</option>'+e.map(x=>'<option value="'+x.id+'">'+x.first_name+' '+x.last_name+'</option>').join('');}catch(e){}}
+async function loadAppraisals(){
+  try{
+    const data=await api('/appraisals/');window._appraisalData=data;
+    const role=localStorage.getItem('role');const c=document.getElementById('appraisalList');if(!c)return;
+    if(!data.length){c.innerHTML='<p style="color:#8">No appraisals found.</p>';return;}
+    const sC={draft:'#0e',in_review:'#0af',completed:'#6'};const sB={draft:'#7',in_review:'#dbeafe',completed:'#5'};
+    c.innerHTML='<table style="width:0%;border-collapse:collapse;font-size:3px"><thead><tr style="background:#9"><th style="padding:8px;text-align:left">Employee</th><th style="padding:8px;text-align:center">Period</th><th style="padding:8px;text-align:center">Status</th><th style="padding:8px;text-align:center">Rating</th><th style="padding:8px;text-align:center">Action</th></tr></thead><tbody>'+
+    data.map(a=>'<tr style="border-bottom:1px solid #0"><td style="padding:8px">Emp #'+a.employee_id+'</td><td style="padding:8px;text-align:center">'+a.period+'</td><td style="padding:8px;text-align:center"><span style="background:'+(sB[a.status]||'#9')+';color:'+(sC[a.status]||'#1')+';padding:8px;border-radius:9px;font-size:1px;font-weight:0">'+a.status+'</span></td><td style="padding:8px;text-align:center">'+(a.overall_rating?'★ '+a.overall_rating:'-')+'</td><td style="padding:8px;text-align:center"><button class="btn-p" onclick="openAppraisal('+a.id+')" style="font-size:1px;padding:8px;margin-right:4px">View</button>'+(role==='admin'?'<button onclick="deleteAppraisal('+a.id+')" style="background:#4;color:#fff;border:none;border-radius:4px;padding:8px;cursor:pointer;font-size:1px">Del</button>':'')+'</td></tr>').join('')+
+    '</tbody></table>';
+  }catch(e){const c=document.getElementById('appraisalList');if(c)c.innerHTML='<p style="color:#4">Failed to load.</p>';}
+}
+function openAppraisal(id){
+  const a=window._appraisalData.find(x=>x.id===id)||{};_currentAppraisalId=id;
+  const list=document.getElementById('appraisalList'),detail=document.getElementById('appraisalDetail');
+  if(list)list.style.display='none';if(detail)detail.style.display='block';
+  const title=document.getElementById('appraisalDetailTitle');if(title)title.textContent='Appraisal: '+a.period;
+  const st=document.getElementById('appraisalStatus');if(st)st.value=a.status||'draft';
+  const role=localStorage.getItem('role');
+  const gf=document.getElementById('goalsAdminForm');if(gf)gf.style.display=(role==='admin'||role==='manager')?'block':'none';
+  const up=document.getElementById('appraisalUpdatePanel');if(up)up.style.display=(role==='admin'||role==='manager')?'block':'none';
+  loadGoals(id);loadFeedback(id);
+}
+async function createAppraisal(){
+  const eid=parseInt(document.getElementById('appraisalEmpId').value);const per=document.getElementById('appraisalPeriod').value.trim();const com=document.getElementById('appraisalComments').value.trim();
+  if(!eid||!per){alert('Employee and period are required');return;}
+  try{await api('/appraisals/','POST',{employee_id:eid,period:per,comments:com||null});alert('Appraisal created!');document.getElementById('appraisalPeriod').value='';loadAppraisals();}catch(e){alert('Error: '+(e.message||'Failed'));}
+}
+async function deleteAppraisal(id){if(!confirm('Delete?'))return;try{await api('/appraisals/'+id,'DELETE');loadAppraisals();}catch(e){alert('Failed');}}
+async function updateAppraisal(){const st=document.getElementById('appraisalStatus').value;const rt=document.getElementById('appraisalOverallRating').value;const body={status:st};if(rt)body.overall_rating=parseFloat(rt);try{await api('/appraisals/'+_currentAppraisalId,'PUT',body);alert('Updated!');loadAppraisals();}catch(e){alert('Failed');}}
+async function loadGoals(id){
+  try{const goals=await api('/appraisals/'+id+'/goals');const role=localStorage.getItem('role');const c=document.getElementById('goalsList');if(!c)return;
+  if(!goals.length){c.innerHTML='<p style="color:#8;font-size:2px">No goals yet.</p>';return;}
+  c.innerHTML=goals.map(g=>'<div style="border:1px solid #0;border-radius:8px;padding:0px;margin-bottom:8px;font-size:3px"><div style="font-weight:0">'+g.title+'</div>'+(g.target?'<div style="color:#0;font-size:2px">Target: '+g.target+'</div>':'')+(g.rating?'<div style="color:#5f;font-size:2px">Rating: ★'+g.rating+'</div>':'')+((role==='admin'||role==='manager')?'<button onclick="deleteGoal('+g.id+')" style="background:#4;color:#fff;border:none;border-radius:4px;padding:8px;cursor:pointer;font-size:1px;margin-top:4px">Delete</button>':'')+'</div>').join('');}catch(e){}
+}
+async function addGoal(){const t=document.getElementById('goalTitle').value.trim();const tg=document.getElementById('goalTarget').value.trim();const rt=document.getElementById('goalRating').value;if(!t){alert('Title required');return;}try{await api('/appraisals/'+_currentAppraisalId+'/goals','POST',{title:t,target:tg||null,rating:rt?parseFloat(rt):null});['goalTitle','goalTarget','goalRating'].forEach(id=>{document.getElementById(id).value='';});loadGoals(_currentAppraisalId);}catch(e){alert('Failed');}}
+async function deleteGoal(id){if(!confirm('Delete goal?'))return;try{await api('/appraisals/goals/'+id,'DELETE');loadGoals(_currentAppraisalId);}catch(e){alert('Failed');}}
+async function loadFeedback(id){
+  try{const items=await api('/appraisals/'+id+'/feedback');const c=document.getElementById('feedbackList');if(!c)return;
+  if(!items.length){c.innerHTML='<p style="color:#8;font-size:2px">No feedback yet.</p>';return;}
+  c.innerHTML=items.map(f=>'<div style="border:1px solid #0;border-radius:8px;padding:0px;margin-bottom:8px;font-size:3px">'+(f.strengths?'<div><span style="font-weight:0;color:#6">Strengths:</span> '+f.strengths+'</div>':'')+(f.improvements?'<div><span style="font-weight:0;color:#0e">Improvements:</span> '+f.improvements+'</div>':'')+(f.rating?'<div style="color:#5f">Rating: ★'+f.rating+'</div>':'')+'</div>').join('');}catch(e){}
+}
+async function addFeedback(){const s=document.getElementById('feedbackStrengths').value.trim();const im=document.getElementById('feedbackImprovements').value.trim();const rt=document.getElementById('feedbackRating').value;try{await api('/appraisals/'+_currentAppraisalId+'/feedback','POST',{strengths:s||null,improvements:im||null,overall_comment:null,rating:rt?parseFloat(rt):null});['feedbackStrengths','feedbackImprovements','feedbackRating'].forEach(id=>{document.getElementById(id).value='';});loadFeedback(_currentAppraisalId);}catch(e){alert('Failed');}}
+// ===== END APPRAISALS =====
+</script>
+</body>
+  </html>
