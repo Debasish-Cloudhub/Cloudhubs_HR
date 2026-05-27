@@ -47,6 +47,59 @@ with engine.connect() as conn:
 
 print("Migrations complete")
 
+def _safe_add_feature_columns():
+    dialect = engine.dialect.name
+    if dialect == "postgresql":
+        type_map = {
+            "float": "DOUBLE PRECISION",
+            "text": "TEXT",
+            "int": "INTEGER",
+            "datetime": "TIMESTAMP WITH TIME ZONE",
+        }
+        def add(table, col, typ):
+            return f"ALTER TABLE {table} ADD COLUMN IF NOT EXISTS {col} {type_map[typ]}"
+        enum_statements = [
+            "ALTER TYPE appraisalstatusenum ADD VALUE IF NOT EXISTS 'pending_hr_approval'",
+            "ALTER TYPE appraisalstatusenum ADD VALUE IF NOT EXISTS 'approved'",
+            "ALTER TYPE appraisalstatusenum ADD VALUE IF NOT EXISTS 'rejected'",
+        ]
+        with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
+            for stmt in enum_statements:
+                try:
+                    conn.execute(text(stmt))
+                except Exception as e:
+                    print("Migration warning (appraisal enum):", e)
+    else:
+        type_map = {"float": "FLOAT", "text": "TEXT", "int": "INTEGER", "datetime": "DATETIME"}
+        def add(table, col, typ):
+            return f"ALTER TABLE {table} ADD COLUMN {col} {type_map[typ]}"
+
+    feature_columns = [
+        ("salary_components", "lta", "float"), ("salary_components", "extra_earnings", "text"),
+        ("salary_components", "extra_deductions", "text"), ("salary_records", "lta", "float"),
+        ("salary_records", "misc_deductions", "float"), ("salary_records", "extra_earnings", "text"),
+        ("salary_records", "extra_deductions", "text"), ("salary_records", "deduction_breakdown", "text"),
+        ("appraisals", "assigned_manager_id", "int"), ("appraisals", "additional_reviewer_ids", "text"),
+        ("appraisals", "appraisal_year", "int"), ("appraisals", "manager_feedback", "text"),
+        ("appraisals", "additional_reviewer_feedback", "text"), ("appraisals", "salary_hike_percent", "float"),
+        ("appraisals", "final_status", "text"), ("appraisals", "approved_by", "int"),
+        ("appraisals", "approved_at", "datetime"),
+    ]
+    with engine.connect() as conn:
+        for table, col, typ in feature_columns:
+            try:
+                conn.execute(text(add(table, col, typ)))
+                conn.commit()
+            except Exception as e:
+                if "already exists" in str(e).lower() or "duplicate" in str(e).lower():
+                    conn.rollback()
+                else:
+                    print(f"Migration warning ({table}.{col}):", e)
+                    conn.rollback()
+
+_safe_add_feature_columns()
+print("Feature migrations complete")
+
 # ─── SEED DATA ───
 db = SessionLocal()
 
