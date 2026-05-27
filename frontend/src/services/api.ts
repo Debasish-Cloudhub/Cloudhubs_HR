@@ -15,7 +15,15 @@ export const setSalaryComponents=(data:any)=>api.post('/payroll/components',data
 export const generatePayslip=(data:any)=>api.post('/payroll/generate',data);
 export const getSalaryRecords=()=>api.get('/payroll/records');
 export const downloadPayslip=(id:number)=>api.get('/payroll/slip/'+id,{responseType:'blob'});
-export const getHolidays=(year?:number)=>api.get('/holidays/',{params:year?{year}:{}});
+export const createMiscDeduction=(data:any)=>api.post('/misc-deductions/',data);
+export const getMiscDeductions=(params?:any)=>api.get('/misc-deductions/',{params});
+export const deleteMiscDeduction=(id:number)=>api.delete('/misc-deductions/'+id);
+export const getAppraisals=()=>api.get('/appraisals/');
+export const createAppraisal=(data:any)=>api.post('/appraisals/',data);
+export const updateAppraisal=(id:number,data:any)=>api.put('/appraisals/'+id,data);
+export const approveAppraisal=(id:number,data:any)=>api.put('/appraisals/'+id+'/approve',data);
+export const downloadAppraisal=(id:number)=>api.get('/appraisals/'+id+'/pdf',{responseType:'blob'});
+export const getHolidays=(year?:number)=>api.get('/holidays/',{params:year?{year}:{}}); 
 export const createHoliday=(data:any)=>api.post('/holidays/',data);
 export const deleteHoliday=(id:number)=>api.delete('/holidays/'+id);
 export const getDocuments=()=>api.get('/documents/');

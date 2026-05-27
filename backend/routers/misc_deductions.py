@@ -35,6 +35,20 @@ def get_misc_deductions(
             raise HTTPException(status_code=403, detail="Access denied")
     return db.query(MiscDeduction).filter(MiscDeduction.employee_id == employee_id).all()
 
+@router.get("/", response_model=List[MiscDeductionOut])
+def list_misc_deductions(
+    month: int | None = None,
+    year: int | None = None,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin)
+):
+    query = db.query(MiscDeduction)
+    if month:
+        query = query.filter(MiscDeduction.month == month)
+    if year:
+        query = query.filter(MiscDeduction.year == year)
+    return query.order_by(MiscDeduction.year.desc(), MiscDeduction.month.desc(), MiscDeduction.created_at.desc()).all()
+
 @router.delete("/{deduction_id}")
 def delete_misc_deduction(
     deduction_id: int,

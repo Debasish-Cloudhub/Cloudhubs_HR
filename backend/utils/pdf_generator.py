@@ -7,6 +7,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import io
 from datetime import datetime
+import json
 
 # -- Font setup --
 import os as _os
@@ -47,6 +48,15 @@ def _clean_employment_type(val):
 def _fmt(v):
     if v is None: return 'INR 0.00'
     return f"INR {float(v):,.2f}"
+
+def _json_rows(value):
+    if not value:
+        return []
+    try:
+        rows = json.loads(value) if isinstance(value, str) else value
+    except Exception:
+        return []
+    return [r for r in rows if r.get('name') and float(r.get('amount') or 0) != 0]
 
 def generate_salary_slip(employee, salary_record):
     buffer = io.BytesIO()
@@ -140,12 +150,20 @@ def generate_salary_slip(employee, salary_record):
         ('House Rent Allowance (HRA)', salary_record.hra),
         ('Special Allowances',         salary_record.allowances),
         ('Performance Bonus',          salary_record.bonus),
+        ('Leave Travel Allowance (LTA)', getattr(salary_record, 'lta', 0)),
     ]
+    earn_rows.extend((row.get('name'), row.get('amount')) for row in _json_rows(getattr(salary_record, 'extra_earnings', None)))
     ded_rows = [
         ('Provident Fund (PF)',  salary_record.pf_deduction),
         ('Professional Tax',     salary_record.professional_tax),
         ('Income Tax (TDS)',     salary_record.income_tax),
     ]
+    ded_rows.extend((row.get('name'), row.get('amount')) for row in _json_rows(getattr(salary_record, 'extra_deductions', None)))
+    ded_rows.extend(
+        (row.get('name'), row.get('amount'))
+        for row in _json_rows(getattr(salary_record, 'deduction_breakdown', None))
+        if row.get('name') not in {'Provident Fund (PF)', 'Professional Tax', 'Income Tax (TDS)'}
+    )
     max_r  = max(len(earn_rows), len(ded_rows))
     earn_p = earn_rows + [('-', None)] * (max_r - len(earn_rows))
     ded_p  = ded_rows  + [('-', None)] * (max_r - len(ded_rows))
@@ -209,6 +227,74 @@ def generate_salary_slip(employee, salary_record):
                   ps('fd', size=7, color=colors.grey, align=2)),
     ]]
     story.append(Table(ft_data, colWidths=[9*cm, 9*cm]))
+    doc.build(story)
+    buffer.seek(0)
+    return buffer.read()
+
+def generate_appraisal_report(employee, appraisal, manager=None, reviewers=None):
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buffer, pagesize=A4,
+        topMargin=1.4*cm, bottomMargin=1.2*cm,
+        leftMargin=1.6*cm, rightMargin=1.6*cm
+    )
+    story = []
+
+    def ps(name, font=F_REG, size=9, color=colors.black, bold=False, align=0, space_after=4, leading=None):
+        return ParagraphStyle(
+            name, fontName=F_BLD if bold else font, fontSize=size,
+            textColor=color, alignment=align, spaceAfter=space_after,
+            leading=leading or (size * 1.35)
+        )
+
+    story.append(Paragraph(COMPANY_NAME, ps('app_cn', size=14, color=PRIMARY, bold=True, align=1)))
+    story.append(Paragraph(COMPANY_ALIAS, ps('app_ca', size=10, color=SECONDARY, bold=True, align=1)))
+    story.append(Paragraph('APPRAISAL LETTER / REPORT', ps('app_title', size=18, color=PRIMARY, bold=True, align=1, space_after=10)))
+    story.append(HRFlowable(width='100%', thickness=2, color=PRIMARY, spaceAfter=12))
+
+    full_name = f'{employee.first_name} {employee.last_name}'
+    manager_name = f'{manager.first_name} {manager.last_name}' if manager else '-'
+    reviewer_names = ', '.join(f'{r.first_name} {r.last_name}' for r in (reviewers or [])) or '-'
+    meta_rows = [
+        ['Employee ID', employee.employee_id, 'Employee Name', full_name],
+        ['Designation', employee.designation or '-', 'Department', employee.department or '-'],
+        ['Appraisal Year', appraisal.appraisal_year or '-', 'Period', appraisal.period],
+        ['Assigned Manager', manager_name, 'Additional Reviewers', reviewer_names],
+        ['Final Status', appraisal.final_status or str(appraisal.status).replace('_', ' ').title(), 'Salary Hike %', appraisal.salary_hike_percent if appraisal.salary_hike_percent is not None else '-'],
+    ]
+    lbl = ps('app_lbl', bold=True, color=PRIMARY, size=8)
+    val = ps('app_val', size=8)
+    table = Table(
+        [[Paragraph(str(r[0]), lbl), Paragraph(str(r[1]), val), Paragraph(str(r[2]), lbl), Paragraph(str(r[3]), val)] for r in meta_rows],
+        colWidths=[3.4*cm, 5.2*cm, 3.4*cm, 5.8*cm]
+    )
+    table.setStyle(TableStyle([
+        ('BACKGROUND',(0,0),(0,-1),LIGHT_BG), ('BACKGROUND',(2,0),(2,-1),LIGHT_BG),
+        ('GRID',(0,0),(-1,-1),0.4,BORDER), ('PADDING',(0,0),(-1,-1),5),
+        ('VALIGN',(0,0),(-1,-1),'TOP'),
+    ]))
+    story.append(table)
+    story.append(Spacer(1, 0.4*cm))
+
+    section = ps('app_section', bold=True, color=PRIMARY, size=11, space_after=6)
+    body = ps('app_body', size=9, leading=13)
+    for title, text in [
+        ('Manager Feedback', appraisal.manager_feedback),
+        ('Additional Reviewer Feedback', appraisal.additional_reviewer_feedback),
+        ('Ratings / Comments', appraisal.comments),
+    ]:
+        story.append(Paragraph(title, section))
+        story.append(Paragraph((text or '-').replace('\n', '<br/>'), body))
+        story.append(Spacer(1, 0.2*cm))
+
+    rating = appraisal.overall_rating if appraisal.overall_rating is not None else '-'
+    story.append(Paragraph(f'<b>Overall Rating:</b> {rating}', body))
+    approved_date = appraisal.approved_at.strftime('%d %B %Y') if appraisal.approved_at else datetime.now().strftime('%d %B %Y')
+    story.append(Spacer(1, 0.8*cm))
+    story.append(Paragraph(
+        f'This appraisal has been approved by HR/Admin on {approved_date}. This is a system-generated report and does not require a physical signature.',
+        ps('app_note', size=8, color=colors.grey)
+    ))
     doc.build(story)
     buffer.seek(0)
     return buffer.read()

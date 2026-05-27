@@ -121,9 +121,12 @@ class SalaryComponent(Base):
     hra = Column(Float, default=0)
     allowances = Column(Float, default=0)
     bonus = Column(Float, default=0)
+    lta = Column(Float, default=0)
     pf_deduction = Column(Float, default=0)
     professional_tax = Column(Float, default=0)
     income_tax = Column(Float, default=0)
+    extra_earnings = Column(Text, nullable=True)
+    extra_deductions = Column(Text, nullable=True)
     effective_from = Column(Date)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     employee = relationship("Employee", back_populates="salary_components")
@@ -138,10 +141,15 @@ class SalaryRecord(Base):
     hra = Column(Float, default=0)
     allowances = Column(Float, default=0)
     bonus = Column(Float, default=0)
+    lta = Column(Float, default=0)
     gross_salary = Column(Float, default=0)
     pf_deduction = Column(Float, default=0)
     professional_tax = Column(Float, default=0)
     income_tax = Column(Float, default=0)
+    misc_deductions = Column(Float, default=0)
+    extra_earnings = Column(Text, nullable=True)
+    extra_deductions = Column(Text, nullable=True)
+    deduction_breakdown = Column(Text, nullable=True)
     total_deductions = Column(Float, default=0)
     net_salary = Column(Float, default=0)
     generated_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -239,6 +247,9 @@ class MiscDeduction(Base):
 class AppraisalStatusEnum(str, enum.Enum):
     draft = "draft"
     in_review = "in_review"
+    pending_hr_approval = "pending_hr_approval"
+    approved = "approved"
+    rejected = "rejected"
     completed = "completed"
 
     def __str__(self):
@@ -249,12 +260,22 @@ class Appraisal(Base):
     id = Column(Integer, primary_key=True, index=True)
     employee_id = Column(Integer, ForeignKey("employees.id"), nullable=False)
     reviewer_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    assigned_manager_id = Column(Integer, ForeignKey("employees.id"), nullable=True)
+    additional_reviewer_ids = Column(Text, nullable=True)
+    appraisal_year = Column(Integer, nullable=True)
     period = Column(String, nullable=False)
     status = Column(SAEnum(AppraisalStatusEnum), default=AppraisalStatusEnum.draft)
+    manager_feedback = Column(Text, nullable=True)
+    additional_reviewer_feedback = Column(Text, nullable=True)
     overall_rating = Column(Float, nullable=True)
     comments = Column(Text, nullable=True)
+    salary_hike_percent = Column(Float, nullable=True)
+    final_status = Column(String, nullable=True)
+    approved_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    approved_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     employee = relationship("Employee", back_populates="appraisals")
+    assigned_manager = relationship("Employee", foreign_keys=[assigned_manager_id])
     goals = relationship("AppraisalGoal", back_populates="appraisal", cascade="all, delete-orphan")
     feedback = relationship("AppraisalFeedback", back_populates="appraisal", cascade="all, delete-orphan")
 
