@@ -13,11 +13,11 @@ def apply_additive_schema_updates():
     dialect = engine.dialect.name
     statements = []
     if dialect == "postgresql":
-        statements.extend([
+        enum_statements = [
             "ALTER TYPE appraisalstatusenum ADD VALUE IF NOT EXISTS 'pending_hr_approval'",
             "ALTER TYPE appraisalstatusenum ADD VALUE IF NOT EXISTS 'approved'",
             "ALTER TYPE appraisalstatusenum ADD VALUE IF NOT EXISTS 'rejected'",
-        ])
+        ]
         column_type = {
             "float": "DOUBLE PRECISION",
             "text": "TEXT",
@@ -40,13 +40,19 @@ def apply_additive_schema_updates():
         ("appraisals", "approved_at", "datetime"),
     ]
     statements.extend(add(table, col, typ) for table, col, typ in new_columns)
+    if dialect == "postgresql":
+        with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
+            for stmt in enum_statements:
+                try:
+                    conn.execute(text(stmt))
+                except Exception as exc:
+                    print(f"Schema update warning: {exc}")
     with engine.begin() as conn:
         for stmt in statements:
             try:
                 conn.execute(text(stmt))
-            except Exception:
-                if dialect == "postgresql":
-                    raise
+            except Exception as exc:
+                print(f"Schema update warning: {exc}")
 
 apply_additive_schema_updates()
 app = FastAPI(title="CloudHub HR Portal API", version="2.0.0")
