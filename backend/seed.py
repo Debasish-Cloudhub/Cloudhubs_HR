@@ -18,11 +18,11 @@ with engine.connect() as conn:
         conn.commit()
         print("Migration: added employees.status")
     except Exception as e:
+        conn.rollback()
         if 'already exists' in str(e).lower() or 'duplicate' in str(e).lower():
             print("Migration: employees.status already exists")
         else:
             print("Migration warning (status):", e)
-            conn.rollback()
 
     # Add manager_id column to employees if missing
     try:
@@ -30,11 +30,11 @@ with engine.connect() as conn:
         conn.commit()
         print("Migration: added employees.manager_id")
     except Exception as e:
+        conn.rollback()
         if 'already exists' in str(e).lower() or 'duplicate' in str(e).lower():
             print("Migration: employees.manager_id already exists")
         else:
             print("Migration warning (manager_id):", e)
-            conn.rollback()
 
     # Update any NULL status values to 'active'
     try:
@@ -42,8 +42,8 @@ with engine.connect() as conn:
         conn.commit()
         print("Migration: updated NULL status values")
     except Exception as e:
-        print("Migration warning (update status):", e)
         conn.rollback()
+        print("Migration warning (update status):", e)
 
     # Add lta column to salary_components if missing
     try:
@@ -51,11 +51,11 @@ with engine.connect() as conn:
         conn.commit()
         print("Migration: added salary_components.lta")
     except Exception as e:
+        conn.rollback()
         if 'already exists' in str(e).lower() or 'duplicate' in str(e).lower():
             print("Migration: salary_components.lta already exists")
         else:
             print("Migration warning (lta):", e)
-            conn.rollback()
 
 print("Migrations complete")
 
