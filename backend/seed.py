@@ -57,6 +57,18 @@ with engine.connect() as conn:
         else:
             print("Migration warning (lta):", e)
 
+    # Add manager_id to appraisals if missing (for existing partial tables)
+    try:
+        conn.execute(text("ALTER TABLE appraisals ADD COLUMN manager_id INTEGER REFERENCES users(id)"))
+        conn.commit()
+        print("Migration: added appraisals.manager_id")
+    except Exception as e:
+        conn.rollback()
+        if 'already exists' in str(e).lower() or 'duplicate' in str(e).lower() or 'does not exist' in str(e).lower():
+            print("Migration: appraisals.manager_id already exists or table doesn't exist yet")
+        else:
+            print("Migration warning (appraisals.manager_id):", e)
+
 print("Migrations complete")
 
 # ─── SEED DATA ───
