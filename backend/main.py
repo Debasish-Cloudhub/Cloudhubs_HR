@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import os
 from database.db import engine, Base
-from routers import auth, employees, timesheets, payroll, holidays, documents, dashboard, leaves
+from routers import auth, employees, timesheets, payroll, holidays, documents, dashboard, leaves, appraisals
 Base.metadata.create_all(bind=engine)
 app = FastAPI(title="CloudHub HR Portal API", version="2.0.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
@@ -20,6 +20,7 @@ app.include_router(holidays.router, prefix="/holidays", tags=["Holidays & Leaves
 app.include_router(documents.router, prefix="/documents", tags=["Documents"])
 app.include_router(dashboard.router, prefix="/dashboard", tags=["Dashboard"])
 app.include_router(leaves.router, prefix="/leaves", tags=["Leave Management"])
+app.include_router(appraisals.router, prefix="/appraisals", tags=["Appraisals"])
 @app.get("/api")
 def root(): return {"message": "CloudHub HR Portal API v2.0", "status": "running"}
 @app.get("/health")

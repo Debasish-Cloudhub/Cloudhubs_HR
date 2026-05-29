@@ -48,7 +48,7 @@ def _fmt(v):
     if v is None: return 'INR 0.00'
     return f"INR {float(v):,.2f}"
 
-def generate_salary_slip(employee, salary_record):
+def generate_salary_slip(employee, salary_record, misc_deductions=None, lta=0):
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(
         buffer, pagesize=A4,
@@ -141,11 +141,16 @@ def generate_salary_slip(employee, salary_record):
         ('Special Allowances',         salary_record.allowances),
         ('Performance Bonus',          salary_record.bonus),
     ]
+    if lta and lta > 0:
+        earn_rows.append(('Leave Travel Allowance (LTA)', lta))
     ded_rows = [
         ('Provident Fund (PF)',  salary_record.pf_deduction),
         ('Professional Tax',     salary_record.professional_tax),
         ('Income Tax (TDS)',     salary_record.income_tax),
     ]
+    if misc_deductions:
+        for md in misc_deductions:
+            ded_rows.append((md.deduction_head, md.amount))
     max_r  = max(len(earn_rows), len(ded_rows))
     earn_p = earn_rows + [('-', None)] * (max_r - len(earn_rows))
     ded_p  = ded_rows  + [('-', None)] * (max_r - len(ded_rows))
@@ -242,3 +247,131 @@ def _num_to_words(n):
         parts.append(_th(n))
     
     return ' '.join(parts)
+
+
+def generate_appraisal_pdf(employee, appraisal, reviewers_data):
+    """Generate an appraisal letter PDF."""
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buffer, pagesize=A4,
+        topMargin=1.5*cm, bottomMargin=1.5*cm,
+        leftMargin=1.5*cm, rightMargin=1.5*cm
+    )
+    story = []
+
+    def ps(name, font=F_REG, size=9, color=colors.black, bold=False,
+                       align=0, space_after=2, leading=None):
+        return ParagraphStyle(name + '_apr',
+                              fontName=F_BLD if bold else font,
+                              fontSize=size,
+                              textColor=color,
+                              alignment=align,
+                              spaceAfter=space_after,
+                              leading=leading or (size * 1.3)
+                             )
+
+    # Company header
+    hdr_data = [[
+        Paragraph(COMPANY_NAME, ps('cn', size=14, color=PRIMARY, bold=True)),
+        Paragraph('APPRAISAL LETTER', ps('ps', size=18, color=PRIMARY, bold=True, align=2))
+    ],[
+        Paragraph(COMPANY_ALIAS, ps('ca', size=10, color=SECONDARY, bold=True)),
+        Paragraph('', ps('x'))
+    ],[
+        Paragraph(COMPANY_ADDR1, ps('a1', size=8, color=colors.HexColor('#555'))),
+        Paragraph('', ps('x2'))
+    ],[
+        Paragraph(COMPANY_ADDR2 + ' | ' + COMPANY_EMAIL, ps('a2', size=8, color=colors.HexColor('#555'))),
+        Paragraph('', ps('x3'))
+    ]]
+    ht = Table(hdr_data, colWidths=[12*cm, 6*cm])
+    ht.setStyle(TableStyle([('VALIGN',(0,0),(-1,-1),'TOP'),('BOTTOMPADDING',(0,0),(-1,-1),1)]))
+    story.append(ht)
+    story.append(HRFlowable(width='100%', thickness=2, color=PRIMARY, spaceAfter=10))
+
+    lbl = ps('lbl', bold=True, color=PRIMARY, size=9)
+    val = ps('val', size=9)
+
+    full_name = f"{employee.first_name} {employee.last_name}"
+    period_label = str(appraisal.period.value).replace('_', ' ').title()
+
+    # Employee details
+    emp_rows = [
+        ['Employee ID', employee.employee_id, 'Name', full_name],
+        ['Designation', employee.designation or '-', 'Department', employee.department or '-'],
+        ['Appraisal Year', str(appraisal.year), 'Period', period_label],
+    ]
+    fmt_emp = [[Paragraph(r[0],lbl), Paragraph(str(r[1]),val),
+                Paragraph(r[2],lbl), Paragraph(str(r[3]),val)] for r in emp_rows]
+    et = Table(fmt_emp, colWidths=[3.5*cm, 5.5*cm, 3.5*cm, 5.5*cm])
+    et.setStyle(TableStyle([
+        ('BACKGROUND',(0,0),(0,-1),LIGHT_BG), ('BACKGROUND',(2,0),(2,-1),LIGHT_BG),
+        ('GRID',(0,0),(-1,-1),0.4,BORDER), ('PADDING',(0,0),(-1,-1),5),
+        ('ROWBACKGROUNDS',(0,0),(-1,-1),[colors.white, colors.HexColor('#f4f7ff')]),
+    ]))
+    story.append(et)
+    story.append(Spacer(1, 0.5*cm))
+
+    # Manager feedback
+    story.append(Paragraph('MANAGER FEEDBACK', ps('mfh', bold=True, color=colors.white, size=10)))
+    mf_hdr = Table([[Paragraph('Manager Feedback', ps('mfh2', bold=True, color=colors.white, size=10))]], colWidths=[18*cm])
+    mf_hdr.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),PRIMARY),('PADDING',(0,0),(-1,-1),8)]))
+    story.append(mf_hdr)
+    story.append(Spacer(1, 0.2*cm))
+    story.append(Paragraph(appraisal.manager_feedback or 'No feedback provided.', ps('mfb', size=9, space_after=6)))
+    story.append(Spacer(1, 0.3*cm))
+
+    # Reviewer feedback
+    if reviewers_data:
+        rv_hdr = Table([[Paragraph('Reviewer Feedback', ps('rvh', bold=True, color=colors.white, size=10))]], colWidths=[18*cm])
+        rv_hdr.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),SECONDARY),('PADDING',(0,0),(-1,-1),8)]))
+        story.append(rv_hdr)
+        story.append(Spacer(1, 0.2*cm))
+
+        rv_data = [[Paragraph('Reviewer', ps('rvhl', bold=True, size=9)),
+                     Paragraph('Rating', ps('rvhr', bold=True, size=9)),
+                     Paragraph('Comments', ps('rvhc', bold=True, size=9))]]
+        for rv in reviewers_data:
+            rv_data.append([
+                Paragraph(rv['name'], val),
+                Paragraph(str(rv['rating']) + '/5' if rv['rating'] else '-', val),
+                Paragraph(rv['feedback'], val),
+            ])
+        rvt = Table(rv_data, colWidths=[5*cm, 3*cm, 10*cm])
+        rvt.setStyle(TableStyle([
+            ('BACKGROUND',(0,0),(-1,0),colors.HexColor('#f0f4ff')),
+            ('GRID',(0,0),(-1,-1),0.4,BORDER), ('PADDING',(0,0),(-1,-1),5),
+        ]))
+        story.append(rvt)
+        story.append(Spacer(1, 0.3*cm))
+
+    # Salary hike and status
+    status_color = colors.HexColor('#059669') if appraisal.final_status.value == 'approved' else colors.HexColor('#dc2626')
+    result_rows = [
+        ['Final Status', str(appraisal.final_status.value).upper()],
+    ]
+    if appraisal.salary_hike_percent is not None:
+        result_rows.append(['Salary Hike', f"{appraisal.salary_hike_percent}%"])
+
+    res_data = [[Paragraph(r[0], ps('rl_'+str(i), bold=True, size=10, color=PRIMARY)),
+                  Paragraph(r[1], ps('rv_'+str(i), bold=True, size=12, color=status_color))] for i, r in enumerate(result_rows)]
+    rt = Table(res_data, colWidths=[9*cm, 9*cm])
+    rt.setStyle(TableStyle([
+        ('BACKGROUND',(0,0),(-1,-1),NET_BG), ('GRID',(0,0),(-1,-1),1,PRIMARY),
+        ('PADDING',(0,0),(-1,-1),10), ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+    ]))
+    story.append(rt)
+    story.append(Spacer(1, 0.5*cm))
+
+    # Footer
+    story.append(HRFlowable(width='100%', thickness=0.5, color=BORDER, spaceAfter=4))
+    ft_data = [[
+        Paragraph('This is a system-generated appraisal letter and does not require a physical signature.',
+                  ps('fl2', size=7, color=colors.grey)),
+        Paragraph(f"Generated: {datetime.now().strftime('%d %B %Y %H:%M')} | {COMPANY_NAME}",
+                  ps('fd2', size=7, color=colors.grey, align=2)),
+    ]]
+    story.append(Table(ft_data, colWidths=[9*cm, 9*cm]))
+    doc.build(story)
+    buffer.seek(0)
+    return buffer.read()

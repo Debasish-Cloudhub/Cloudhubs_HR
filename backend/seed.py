@@ -1,7 +1,7 @@
 import sys, os
 sys.path.insert(0, '.')
 from database.db import SessionLocal, engine, Base
-from models.models import User, Employee, Holiday, SalaryComponent, LeaveConfig, LeaveBalance, LeaveTypeEnum, RoleEnum, EmploymentTypeEnum, EmployeeStatusEnum
+from models.models import User, Employee, Holiday, SalaryComponent, LeaveConfig, LeaveBalance, LeaveTypeEnum, RoleEnum, EmploymentTypeEnum, EmployeeStatusEnum, Appraisal, AppraisalReviewer, MiscDeduction
 from utils.auth import hash_password
 from utils.employee_id import generate_employee_id
 from datetime import date
@@ -44,6 +44,18 @@ with engine.connect() as conn:
     except Exception as e:
         print("Migration warning (update status):", e)
         conn.rollback()
+
+    # Add lta column to salary_components if missing
+    try:
+        conn.execute(text("ALTER TABLE salary_components ADD COLUMN lta FLOAT DEFAULT 0"))
+        conn.commit()
+        print("Migration: added salary_components.lta")
+    except Exception as e:
+        if 'already exists' in str(e).lower() or 'duplicate' in str(e).lower():
+            print("Migration: salary_components.lta already exists")
+        else:
+            print("Migration warning (lta):", e)
+            conn.rollback()
 
 print("Migrations complete")
 

@@ -3,8 +3,8 @@ from fastapi.responses import Response
 from sqlalchemy.orm import Session
 from typing import List
 from database.db import get_db
-from models.models import User, Employee, SalaryComponent, SalaryRecord, RoleEnum
-from schemas.schemas import SalaryComponentCreate, SalaryComponentOut, SalaryGenerateRequest, SalaryRecordOut
+from models.models import User, Employee, SalaryComponent, SalaryRecord, RoleEnum, MiscDeduction
+from schemas.schemas import SalaryComponentCreate, SalaryComponentOut, SalaryGenerateRequest, SalaryRecordOut, MiscDeductionCreate, MiscDeductionOut
 from utils.auth import get_current_user, require_admin
 from utils.pdf_generator import generate_salary_slip
 from datetime import date
@@ -40,8 +40,10 @@ def generate_payslip(data: SalaryGenerateRequest, db: Session = Depends(get_db),
     ).first()
     if existing:
         raise HTTPException(status_code=400, detail="Payslip already exists for this month/year. Please choose a different period or delete the existing record.")
-    gross = comp.basic + comp.hra + comp.allowances + comp.bonus
-    deductions = comp.pf_deduction + comp.professional_tax + comp.income_tax
+    gross = comp.basic + comp.hra + comp.allowances + comp.bonus + (comp.lta or 0)
+    misc_deds = db.query(MiscDeduction).filter(MiscDeduction.employee_id == data.employee_id, MiscDeduction.month == data.month, MiscDeduction.year == data.year).all()
+    misc_total = sum(d.amount for d in misc_deds)
+    deductions = comp.pf_deduction + comp.professional_tax + comp.income_tax + misc_total
     rec = SalaryRecord(
         employee_id=data.employee_id, month=data.month, year=data.year,
         basic=comp.basic, hra=comp.hra, allowances=comp.allowances, bonus=comp.bonus,
@@ -61,7 +63,7 @@ def generate_all_from_joining(employee_id: int, db: Session = Depends(get_db), a
     if not emp.date_of_joining:
         raise HTTPException(status_code=400, detail="Employee has no date of joining set.")
     
-    gross = comp.basic + comp.hra + comp.allowances + comp.bonus
+    gross = comp.basic + comp.hra + comp.allowances + comp.bonus + (comp.lta or 0)
     deductions = comp.pf_deduction + comp.professional_tax + comp.income_tax
     net = gross - deductions
 
@@ -120,7 +122,12 @@ def download_slip(record_id: int, db: Session = Depends(get_db), current_user: U
         my_emp = db.query(Employee).filter(Employee.user_id == current_user.id).first()
         if not my_emp or my_emp.id != rec.employee_id:
             raise HTTPException(status_code=403, detail="Access denied")
-    pdf = generate_salary_slip(emp, rec)
+    
+    misc_deds = db.query(MiscDeduction).filter(MiscDeduction.employee_id == rec.employee_id, MiscDeduction.month == rec.month, MiscDeduction.year == rec.year).all()
+    comp = db.query(SalaryComponent).filter(SalaryComponent.employee_id == rec.employee_id).first()
+    lta_val = comp.lta if comp else 0
+    
+    pdf = generate_salary_slip(emp, rec, misc_deductions=misc_deds, lta=lta_val)
     fname = f"Payslip_{emp.employee_id}_{rec.month:02d}_{rec.year}.pdf"
     return Response(content=pdf, media_type="application/pdf",
                     headers={"Content-Disposition": f"attachment; filename={fname}"})
@@ -134,3 +141,28 @@ def delete_slip(record_id: int, db: Session = Depends(get_db), admin: User = Dep
     db.commit()
     return {"message": "Payslip deleted successfully"}
 
+# ── Misc Deductions ──
+@router.post("/misc_deductions", response_model=MiscDeductionOut)
+def add_misc_deduction(data: MiscDeductionCreate, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    d = MiscDeduction(**data.model_dump())
+    db.add(d)
+    db.commit()
+    db.refresh(d)
+    return d
+
+@router.get("/misc_deductions/{employee_id}/{year}/{month}", response_model=List[MiscDeductionOut])
+def get_misc_deductions(employee_id: int, year: int, month: int, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    return db.query(MiscDeduction).filter(
+        MiscDeduction.employee_id == employee_id,
+        MiscDeduction.year == year,
+        MiscDeduction.month == month
+    ).all()
+
+@router.delete("/misc_deductions/{deduction_id}")
+def delete_misc_deduction(deduction_id: int, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    d = db.query(MiscDeduction).filter(MiscDeduction.id == deduction_id).first()
+    if not d:
+        raise HTTPException(status_code=404, detail="Deduction not found")
+    db.delete(d)
+    db.commit()
+    return {"message": "Deduction deleted"}

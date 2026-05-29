@@ -157,6 +157,7 @@ function buildNav(){
     ['🕐 Timesheets','showTimesheets'],
     ['🌴 Leave Requests','showLeaveReq'],
     ['💰 Payroll','showPayroll'],
+    ['📈 Appraisals','showAppraisals'],
     ['📅 Holidays & Leaves','showHolidaysLeaves'],
     ['📄 Documents','showDocs'],
   ]:[
@@ -165,6 +166,7 @@ function buildNav(){
     ['🌴 Apply Leave','showApplyLeave'],
     ['📊 Leave Balance','showLeaveBalance'],
     ['💰 My Payslips','showPayslips'],
+    ['📈 My Appraisals','showMyAppraisals'],
     ['📅 Holidays','showHolidaysLeaves'],
     ['📄 Documents','showDocs'],
     ['👤 My Profile','showProfile'],
@@ -403,6 +405,7 @@ async function showPayroll(){
           <div><label class="lbl">PF Deduction (₹)</label><input id="sc_pf" type="number" class="inp" placeholder="e.g. 6000" min="0"></div>
           <div><label class="lbl">Professional Tax (₹)</label><input id="sc_pt" type="number" class="inp" placeholder="e.g. 200" min="0"></div>
           <div><label class="lbl">Income Tax (₹)</label><input id="sc_it" type="number" class="inp" placeholder="e.g. 2000" min="0"></div>
+          <div><label class="lbl">LTA (₹)</label><input id="sc_lta" type="number" class="inp" placeholder="e.g. 5000" min="0"></div>
           <div><label class="lbl">Effective From</label><input id="sc_date" type="date" class="inp"></div>
         </div>
         <div id="scAlert" style="margin-bottom:10px"></div>
@@ -410,6 +413,19 @@ async function showPayroll(){
           <button onclick="saveSalaryComp()" class="btn btn-p">💾 Save Salary Config</button>
           <span style="font-size:12px;color:#94a3b8">Changes apply from next payslip generation</span>
         </div>
+      </div>`+
+      // ── MISC DEDUCTIONS ──
+      `<div class="card" style="margin-bottom:20px">
+        <h3 style="font-size:14px;font-weight:600;margin:0 0 14px">💸 Add Misc Deduction (Monthly)</h3>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
+          <div><label class="lbl">Employee</label><select id="mdEmp" class="inp" style="min-width:180px"><option value="">Select...</option>${emps.map(e=>'<option value="'+e.id+'">'+e.first_name+' '+e.last_name+'</option>').join('')}</select></div>
+          <div><label class="lbl">Month</label><select id="mdMo" class="inp">${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map((m,i)=>'<option value="'+(i+1)+'">'+m+'</option>').join('')}</select></div>
+          <div><label class="lbl">Year</label><input id="mdYr" type="number" value="${new Date().getFullYear()}" class="inp" style="width:90px"></div>
+          <div><label class="lbl">Head/Reason</label><input id="mdHead" type="text" class="inp" placeholder="e.g. Late Attendance"></div>
+          <div><label class="lbl">Amount (₹)</label><input id="mdAmt" type="number" class="inp" style="width:100px" min="0"></div>
+          <button onclick="addMiscDeduction()" class="btn btn-p">➕ Add Deduction</button>
+        </div>
+        <div id="mdAlert" style="margin-top:10px"></div>
       </div>`+
       // ── GENERATE PAYSLIP ──
       `<div class="card" style="margin-bottom:20px">
@@ -449,13 +465,14 @@ async function loadSalaryComp(empId){
     $('sc_pf').value = c.pf_deduction || '';
     $('sc_pt').value = c.professional_tax || '';
     $('sc_it').value = c.income_tax || '';
+    $('sc_lta').value = c.lta || '';
     $('sc_date').value = c.effective_from || '';
     alert2('scAlert','✅ Loaded existing salary configuration','s');
   }catch(e){
     // 404 = not configured yet, clear fields
     $('sc_basic').value=''; $('sc_hra').value=''; $('sc_allow').value='';
     $('sc_bonus').value=''; $('sc_pf').value=''; $('sc_pt').value='';
-    $('sc_it').value=''; $('sc_date').value='';
+    $('sc_it').value=''; $('sc_lta').value=''; $('sc_date').value='';
     if(e.detail && e.detail.includes('404')) alert2('scAlert','No salary configured yet for this employee — fill in the fields and save','s');
   }
 }
@@ -472,6 +489,7 @@ async function saveSalaryComp(){
     pf_deduction:parseFloat($('sc_pf').value)||0,
     professional_tax:parseFloat($('sc_pt').value)||0,
     income_tax:parseFloat($('sc_it').value)||0,
+    lta:parseFloat($('sc_lta').value)||0,
   };
   const d=$('sc_date').value; if(d) data.effective_from=d;
   try{
@@ -485,6 +503,19 @@ async function genPayslip(){
   if(!emp){alert2('payAlert','Select employee');return;}
   try{await api('/payroll/generate','POST',{employee_id:parseInt(emp),month:parseInt($('pMo').value),year:parseInt($('pYr').value)});alert2('payAlert','✅ Payslip generated!','s');setTimeout(showPayroll,1200);}
   catch(err){alert2('payAlert','❌ '+(err.detail||'Configure salary components first'));}
+}
+
+async function addMiscDeduction(){
+  const emp=$('mdEmp').value, mo=$('mdMo').value, yr=$('mdYr').value, hd=$('mdHead').value, am=$('mdAmt').value;
+  if(!emp || !mo || !yr || !hd || !am) { alert2('mdAlert','All fields are required'); return; }
+  try {
+    await api('/payroll/misc_deductions','POST',{
+      employee_id:parseInt(emp), month:parseInt(mo), year:parseInt(yr),
+      deduction_head:hd, amount:parseFloat(am)
+    });
+    alert2('mdAlert','✅ Misc deduction added successfully!','s');
+    $('mdHead').value=''; $('mdAmt').value='';
+  }catch(e){alert2('mdAlert','❌ '+(e.detail||'Failed to add'));}
 }
 
 // ── HOLIDAYS & LEAVES ──
@@ -1241,6 +1272,138 @@ window.showTraining = async function() {
     '</div>' +
     rows
   );
+}
+
+// ── APPRAISALS (ADMIN/MANAGER) ──
+async function showAppraisals(){
+  setActive('showAppraisals');
+  setPage(h1('Appraisals')+'<p style="color:#94a3b8">Loading...</p>');
+  try{
+    const [apps,emps]=await Promise.all([api('/appraisals/'),api('/employees/')]);
+    const isM = role==='manager';
+    setPage(h1('Appraisals')+
+      // Add Appraisal Form
+      `<div class="card" style="margin-bottom:20px">
+        <h3 style="font-size:14px;font-weight:600;margin:0 0 14px">📝 Initiate Appraisal</h3>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
+          <div><label class="lbl">Employee</label><select id="apEmp" class="inp" style="min-width:180px"><option value="">Select...</option>${emps.map(e=>'<option value="'+e.id+'">'+e.first_name+' '+e.last_name+'</option>').join('')}</select></div>
+          <div><label class="lbl">Manager</label><select id="apMgr" class="inp" style="min-width:180px"><option value="">Select...</option>${emps.map(e=>'<option value="'+e.user_id+'">'+e.first_name+' '+e.last_name+'</option>').join('')}</select></div>
+          <div><label class="lbl">Year</label><input id="apYr" type="number" value="${new Date().getFullYear()}" class="inp" style="width:90px"></div>
+          <div><label class="lbl">Period</label><select id="apPer" class="inp"><option value="quarterly">Quarterly</option><option value="half_yearly">Half-Yearly</option><option value="annual">Annual</option></select></div>
+          <button onclick="createAppraisal()" class="btn btn-p">Create</button>
+        </div>
+        <div id="apAlert" style="margin-top:10px"></div>
+      </div>`+
+      // Appraisals List
+      tblWrap(
+        ['Employee','Manager','Year/Period','Status','Hike %','Action'].map(th).join(''),
+        apps.length?apps.map(a=>`<tr>
+          <td style="font-weight:500">${a.employee_name}</td>
+          <td>${a.manager_email||'-'}</td>
+          <td>${a.year} - ${a.period.replace('_',' ')}</td>
+          <td><span class="badge badge-${a.final_status}">${a.final_status.toUpperCase()}</span></td>
+          <td>${a.salary_hike_percent!=null?a.salary_hike_percent+'%':'-'}</td>
+          <td>
+            <button onclick="viewAppraisal(${a.id})" class="btn btn-n" style="padding:4px 8px;font-size:11px">View/Edit</button>
+            ${a.final_status==='approved'?`<button onclick="window.open('/appraisals/${a.id}/pdf')" class="btn btn-s" style="padding:4px 8px;font-size:11px;margin-left:4px">PDF</button>`:''}
+          </td>
+        </tr>`).join(''):noRows(6,'No appraisals found.')
+      ));
+  }catch(e){setPage(h1('Appraisals')+'<p style="color:#ef4444">Failed to load</p>');}
+}
+
+async function createAppraisal(){
+  const emp=$('apEmp').value, mgr=$('apMgr').value, yr=$('apYr').value, per=$('apPer').value;
+  if(!emp||!mgr||!yr){alert2('apAlert','Select Employee, Manager, and Year');return;}
+  try{
+    await api('/appraisals/','POST',{employee_id:parseInt(emp), manager_id:parseInt(mgr), year:parseInt(yr), period:per});
+    alert2('apAlert','✅ Appraisal created successfully','s');
+    setTimeout(showAppraisals,1000);
+  }catch(e){alert2('apAlert','❌ '+(e.detail||'Failed'));}
+}
+
+async function viewAppraisal(id){
+  try{
+    const a = await api('/appraisals/'+id);
+    const emps = await api('/employees/');
+    const isA = role==='admin';
+    const isM = role==='manager';
+    let h = `<h3>Appraisal for ${a.employee_name} (${a.year} - ${a.period})</h3>`;
+    h += `<div style="margin-bottom:12px"><b>Status:</b> ${a.final_status.toUpperCase()}</div>`;
+    h += `<div style="margin-bottom:12px"><b>Manager Feedback:</b><br><textarea id="apMgrFb" class="inp" rows="3" ${a.final_status==='approved'?'disabled':''}>${a.manager_feedback||''}</textarea></div>`;
+    if(!a.final_status.includes('approved') && (isA||isM)){
+      h += `<button onclick="updateAppraisal(${a.id})" class="btn btn-p" style="margin-bottom:20px">Save Feedback</button>`;
+    }
+    
+    // Reviewers
+    h += `<h4>Reviewers</h4><ul style="padding-left:20px;margin-bottom:12px">`;
+    if(a.reviewers && a.reviewers.length){
+      a.reviewers.forEach(r=>{
+        h += `<li><b>${r.reviewer_name}</b>: Rating ${r.rating||'-'}/5 - ${r.feedback||'Pending'}</li>`;
+      });
+    } else { h += `<li>No additional reviewers</li>`; }
+    h += `</ul>`;
+    if(!a.final_status.includes('approved') && (isA||isM)){
+      h += `<div style="display:flex;gap:8px;margin-bottom:20px"><select id="apRev" class="inp" style="width:200px"><option value="">Select Reviewer...</option>${emps.map(e=>'<option value="'+e.id+'">'+e.first_name+' '+e.last_name+'</option>').join('')}</select><button onclick="addReviewer(${a.id})" class="btn btn-n">Add</button></div>`;
+    }
+    
+    // HR Approval
+    if(isA && !a.final_status.includes('approved')){
+      h += `<hr style="margin:20px 0;border-color:#e2e8f0"><h4>HR Approval</h4>`;
+      h += `<div style="display:flex;gap:12px;align-items:flex-end">
+        <div><label class="lbl">Salary Hike %</label><input id="apHike" type="number" class="inp" style="width:100px" value="${a.salary_hike_percent||0}"></div>
+        <div><label class="lbl">Status</label><select id="apStatus" class="inp"><option value="approved">Approve</option><option value="rejected">Reject</option></select></div>
+        <button onclick="approveAppraisal(${a.id})" class="btn btn-s">Confirm</button>
+      </div>`;
+    }
+    
+    showModal(h);
+  }catch(e){alert('Failed to load appraisal details');}
+}
+
+async function updateAppraisal(id){
+  const fb = $('apMgrFb').value;
+  try{
+    const a = await api('/appraisals/'+id); // re-fetch to get current mgr
+    await api('/appraisals/'+id,'PUT',{employee_id:a.employee_id, manager_id:a.manager_id, year:a.year, period:a.period, manager_feedback:fb});
+    alert('Feedback updated'); closeModal(); showAppraisals();
+  }catch(e){alert(e.detail||'Failed');}
+}
+
+async function addReviewer(id){
+  const rev = $('apRev').value;
+  if(!rev) return;
+  try{
+    await api(`/appraisals/${id}/reviewers`,'POST',{reviewer_id:parseInt(rev)});
+    viewAppraisal(id); // reload modal
+  }catch(e){alert(e.detail||'Failed');}
+}
+
+async function approveAppraisal(id){
+  const hike = $('apHike').value, st = $('apStatus').value;
+  try{
+    await api(`/appraisals/${id}/approve`,'PATCH',{salary_hike_percent:parseFloat(hike), final_status:st});
+    alert('Appraisal '+st); closeModal(); showAppraisals();
+  }catch(e){alert(e.detail||'Failed');}
+}
+
+// ── APPRAISALS (EMPLOYEE) ──
+async function showMyAppraisals(){
+  setActive('showMyAppraisals');
+  setPage(h1('My Appraisals')+'<p style="color:#94a3b8">Loading...</p>');
+  try{
+    const apps = await api('/appraisals/');
+    setPage(h1('My Appraisals')+
+      tblWrap(
+        ['Year/Period','Manager','Status','Action'].map(th).join(''),
+        apps.length?apps.map(a=>`<tr>
+          <td>${a.year} - ${a.period.replace('_',' ')}</td>
+          <td>${a.manager_email||'-'}</td>
+          <td><span class="badge badge-approved">APPROVED</span></td>
+          <td><button onclick="window.open('/appraisals/${a.id}/pdf')" class="btn btn-s" style="padding:6px 12px;font-size:12px">⬇️ Download PDF</button></td>
+        </tr>`).join(''):noRows(4,'No approved appraisals yet.')
+      ));
+  }catch(e){setPage(h1('My Appraisals')+'<p style="color:#ef4444">Failed to load</p>');}
 }
 
 </script>

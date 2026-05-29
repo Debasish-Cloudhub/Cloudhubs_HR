@@ -55,6 +55,23 @@ class EmployeeStatusEnum(str, enum.Enum):
     def __str__(self):
         return self.value
 
+class AppraisalPeriodEnum(str, enum.Enum):
+    quarterly = "quarterly"
+    half_yearly = "half_yearly"
+    annual = "annual"
+
+    def __str__(self):
+        return self.value
+
+class AppraisalStatusEnum(str, enum.Enum):
+    pending = "pending"
+    approved = "approved"
+    rejected = "rejected"
+
+    def __str__(self):
+        return self.value
+
+
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
@@ -122,6 +139,7 @@ class SalaryComponent(Base):
     pf_deduction = Column(Float, default=0)
     professional_tax = Column(Float, default=0)
     income_tax = Column(Float, default=0)
+    lta = Column(Float, default=0)
     effective_from = Column(Date)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     employee = relationship("Employee", back_populates="salary_components")
@@ -219,3 +237,43 @@ class ResignationRecord(Base):
     status = Column(String, default="pending")
     reviewed_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class Appraisal(Base):
+    __tablename__ = "appraisals"
+    id = Column(Integer, primary_key=True, index=True)
+    employee_id = Column(Integer, ForeignKey("employees.id"))
+    manager_id = Column(Integer, ForeignKey("users.id"))
+    year = Column(Integer, nullable=False)
+    period = Column(SAEnum(AppraisalPeriodEnum), nullable=False)
+    manager_feedback = Column(Text, nullable=True)
+    salary_hike_percent = Column(Float, nullable=True)
+    final_status = Column(SAEnum(AppraisalStatusEnum), default=AppraisalStatusEnum.pending)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    employee = relationship("Employee", foreign_keys=[employee_id])
+    manager = relationship("User", foreign_keys=[manager_id])
+    reviewers = relationship("AppraisalReviewer", back_populates="appraisal", cascade="all, delete-orphan")
+
+class AppraisalReviewer(Base):
+    __tablename__ = "appraisal_reviewers"
+    id = Column(Integer, primary_key=True, index=True)
+    appraisal_id = Column(Integer, ForeignKey("appraisals.id"))
+    reviewer_id = Column(Integer, ForeignKey("employees.id"))
+    feedback = Column(Text, nullable=True)
+    rating = Column(Integer, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    appraisal = relationship("Appraisal", back_populates="reviewers")
+    reviewer = relationship("Employee", foreign_keys=[reviewer_id])
+
+class MiscDeduction(Base):
+    __tablename__ = "misc_deductions"
+    id = Column(Integer, primary_key=True, index=True)
+    employee_id = Column(Integer, ForeignKey("employees.id"))
+    month = Column(Integer, nullable=False)
+    year = Column(Integer, nullable=False)
+    deduction_head = Column(String, nullable=False)
+    amount = Column(Float, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    employee = relationship("Employee", foreign_keys=[employee_id])

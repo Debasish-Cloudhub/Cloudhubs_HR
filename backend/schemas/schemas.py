@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 from datetime import date, datetime
-from models.models import RoleEnum, EmploymentTypeEnum, TimesheetStatusEnum, EmployeeStatusEnum
+from models.models import RoleEnum, EmploymentTypeEnum, TimesheetStatusEnum, EmployeeStatusEnum, AppraisalPeriodEnum, AppraisalStatusEnum
 
 class LoginRequest(BaseModel):
     email: EmailStr
@@ -87,6 +87,7 @@ class SalaryComponentCreate(BaseModel):
     pf_deduction: float = 0
     professional_tax: float = 0
     income_tax: float = 0
+    lta: float = 0
     effective_from: Optional[date] = None
 
 class SalaryComponentOut(BaseModel):
@@ -99,6 +100,7 @@ class SalaryComponentOut(BaseModel):
     pf_deduction: float
     professional_tax: float
     income_tax: float
+    lta: float
     effective_from: Optional[date] = None
     class Config:
         from_attributes = True
@@ -148,6 +150,69 @@ class DocumentOut(BaseModel):
     description: Optional[str] = None
     file_name: str
     is_public: bool
+    created_at: datetime
+    class Config:
+        from_attributes = True
+
+# ── Appraisal Schemas ──
+class AppraisalCreate(BaseModel):
+    employee_id: int
+    manager_id: int
+    year: int
+    period: AppraisalPeriodEnum
+    manager_feedback: Optional[str] = None
+
+class AppraisalApprove(BaseModel):
+    salary_hike_percent: Optional[float] = None
+    final_status: AppraisalStatusEnum
+
+class ReviewerAdd(BaseModel):
+    reviewer_id: int
+
+class ReviewerFeedback(BaseModel):
+    feedback: Optional[str] = None
+    rating: Optional[int] = None
+
+class AppraisalReviewerOut(BaseModel):
+    id: int
+    reviewer_id: int
+    reviewer_name: Optional[str] = None
+    feedback: Optional[str] = None
+    rating: Optional[int] = None
+    class Config:
+        from_attributes = True
+
+class AppraisalOut(BaseModel):
+    id: int
+    employee_id: int
+    employee_name: Optional[str] = None
+    manager_id: int
+    manager_email: Optional[str] = None
+    year: int
+    period: AppraisalPeriodEnum
+    manager_feedback: Optional[str] = None
+    salary_hike_percent: Optional[float] = None
+    final_status: AppraisalStatusEnum
+    reviewers: List[AppraisalReviewerOut] = []
+    created_at: datetime
+    class Config:
+        from_attributes = True
+
+# ── Misc Deduction Schemas ──
+class MiscDeductionCreate(BaseModel):
+    employee_id: int
+    month: int
+    year: int
+    deduction_head: str
+    amount: float
+
+class MiscDeductionOut(BaseModel):
+    id: int
+    employee_id: int
+    month: int
+    year: int
+    deduction_head: str
+    amount: float
     created_at: datetime
     class Config:
         from_attributes = True
